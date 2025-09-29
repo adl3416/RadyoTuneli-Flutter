@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Allow cleartext traffic for all domains (for HTTP radio streams) -->
+        <domain includeSubdomains="true">api.radio-browser.info</domain>
+        <domain includeSubdomains="true">de2.api.radio-browser.info</domain>
+        <domain includeSubdomains="true">fi1.api.radio-browser.info</domain>
+        <!-- Allow all radio streaming domains -->
+        <domain includeSubdomains="true">radyo.yayin.com.tr</domain>
+        <domain includeSubdomains="true">canliyayin.org</domain>
+        <domain includeSubdomains="true">radyotvonline.net</domain>
+        <domain includeSubdomains="true">streamtheworld.com</domain>
+        <domain includeSubdomains="true">live.streamtheworld.com</domain>
+        <domain includeSubdomains="true">mediatriple.net</domain>
+        <domain includeSubdomains="true">radyotelekom.com</domain>
+        <domain includeSubdomains="true">ozelip.com</domain>
+        <domain includeSubdomains="true">netradyom.com</domain>
+        <domain includeSubdomains="true">radyohizmeti.com</domain>
+        <domain includeSubdomains="true">yayindakiler.com</domain>
+    </domain-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+</network-security-config>
