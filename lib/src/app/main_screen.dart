@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../features/stations/ui/home_screen.dart';
 import '../features/favorites/ui/favorites_screen.dart';
 import '../features/settings/ui/settings_screen.dart';
 import '../features/player/ui/mini_player.dart';
-import '../core/constants/app_constants.dart';
+import '../core/theme/app_theme.dart';
 
 final selectedTabProvider = StateProvider<int>((ref) => 0);
 
@@ -51,12 +52,29 @@ class MainScreen extends ConsumerWidget {
         ),
         child: BottomNavigationBar(
           currentIndex: selectedTab,
-          onTap: (index) =>
-              ref.read(selectedTabProvider.notifier).state = index,
+          onTap: (index) {
+            // Farklı sekmeler için farklı haptic feedback türleri
+            switch (index) {
+              case 0: // Ana Sayfa
+                HapticFeedback.lightImpact();
+                break;
+              case 1: // Favoriler
+                HapticFeedback.mediumImpact();
+                break;
+              case 2: // Ayarlar
+                HapticFeedback.heavyImpact();
+                break;
+              default:
+                HapticFeedback.selectionClick();
+            }
+            
+            // Tab değiştir
+            ref.read(selectedTabProvider.notifier).state = index;
+          },
           type: BottomNavigationBarType.fixed,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           selectedItemColor: Theme.of(context).primaryColor,
-          unselectedItemColor: AppConstants.textSecondary,
+          unselectedItemColor: AppTheme.gray500,
           selectedLabelStyle:
               const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           unselectedLabelStyle:

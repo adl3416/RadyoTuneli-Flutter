@@ -16,8 +16,21 @@
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     
+    <!-- Android Auto permissions -->
+    <uses-permission android:name="com.google.android.gms.permission.CAR_APPLICATION"/>
+    
+    <!-- CarPlay support -->
+    <uses-feature
+        android:name="android.hardware.type.automotive"
+        android:required="false" />
+        
+    <!-- Android Auto specific declaration -->
+    <uses-feature 
+        android:name="android.software.car" 
+        android:required="false"/>
+    
     <application
-        android:label="turkradyo"
+        android:label="Radyo Tüneli"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -50,11 +63,25 @@
             android:name="flutterEmbedding"
             android:value="2" />
             
-        <!-- AudioService service -->
+        <!-- Android Auto metadata -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+            
+        <!-- AudioService for media playback and Android Auto -->
         <service
             android:name="com.ryanheise.audioservice.AudioService"
-            android:foregroundServiceType="mediaPlayback"
-            android:exported="false" />
+            android:exported="true"
+            android:enabled="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.media.browse.MediaBrowserService"
+                android:value="true" />
+        </service>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

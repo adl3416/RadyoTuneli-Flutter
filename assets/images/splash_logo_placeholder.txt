@@ -1,0 +1,3 @@
+# Splash Logo Placeholder
+# Bu dosya splash_logo.png için placeholder'dır
+# Gerçek logo dosyası assets/images/ klasörüne eklenmeli

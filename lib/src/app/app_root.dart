@@ -9,8 +9,9 @@ class AppRoot extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      title: 'Türk Radyosu',
-      theme: AppTheme.darkTheme,
+      title: 'Radyo Tüneli',
+      theme: AppTheme.lightTheme,
+      themeMode: ThemeMode.light,
       home: const MainScreen(),
       debugShowCheckedModeBanner: false,
     );

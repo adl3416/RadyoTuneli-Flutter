@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:audio_service/audio_service.dart';
-import 'src/app/app_root.dart';
+import 'src/features/splash/ui/splash_app.dart';
 import 'src/features/player/data/audio_service_handler.dart';
 
 // Global audio handler for fallback
@@ -13,7 +13,7 @@ void main() async {
   // Initialize audio service before starting app
   await _initializeAudioService();
 
-  runApp(const ProviderScope(child: AppRoot()));
+  runApp(const ProviderScope(child: SplashApp()));
 }
 
 Future<void> _initializeAudioService() async {
@@ -40,6 +40,12 @@ Future<void> _initializeAudioService() async {
         fastForwardInterval: const Duration(seconds: 10),
         rewindInterval: const Duration(seconds: 10),
         preloadArtwork: true,
+        // Android Auto ve CarPlay desteği
+        androidBrowsableRootExtras: {
+          'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
+          'android.media.browse.CONTENT_STYLE_PLAYABLE_HINT': 1,
+          'android.media.browse.CONTENT_STYLE_BROWSABLE_HINT': 2,
+        },
       ),
     );
 

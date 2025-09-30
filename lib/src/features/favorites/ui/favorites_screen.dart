@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/constants/app_constants.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/vintage_radio_logo.dart';
+import '../data/favorites_provider.dart';
 import '../../stations/data/stations_provider.dart';
+import '../../player/data/player_provider.dart';
 import '../../stations/ui/widgets/station_list_tile.dart';
 
 class FavoritesScreen extends ConsumerWidget {
@@ -9,107 +13,124 @@ class FavoritesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favoriteStationsAsync = ref.watch(favoriteStationsProvider);
+    final favorites = ref.watch(favoritesProvider);
+    final stationsAsync = ref.watch(stationsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Favoriler'),
-        actions: [
-          favoriteStationsAsync.when(
-            data: (favoriteStations) => favoriteStations.isNotEmpty
-                ? TextButton(
-                    onPressed: () {
-                      _showClearFavoritesDialog(context, ref);
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppTheme.headerPurple,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  // Favorite Icon
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: const Icon(
+                      Icons.favorite,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Title
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Favori Radyolarım',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          '${favorites.length} radyo istasyonu',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Clear All Button
+                  if (favorites.isNotEmpty)
+                    IconButton(
+                      onPressed: () => _showClearAllDialog(context, ref),
+                      icon: const Icon(
+                        Icons.clear_all,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Favorites List
+            Expanded(
+              child: stationsAsync.when(
+                data: (allStations) {
+                  // Sadece favori olan istasyonları filtrele
+                  final favoriteStations = allStations
+                      .where((station) => favorites.contains(station.id))
+                      .toList();
+
+                  if (favoriteStations.isEmpty) {
+                    return _buildEmptyState(context);
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: favoriteStations.length,
+                    itemBuilder: (context, index) {
+                      final station = favoriteStations[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: RadioStationCard(
+                          title: station.name,
+                          subtitle: station.genre ?? 'Radio',
+                          imageUrl: station.logoUrl,
+                          isPlaying: ref.watch(playerStateProvider).currentStation?.id == station.id &&
+                                    ref.watch(playerStateProvider).isPlaying,
+                          isFavorite: true, // Favori sayfasında hepsi favori
+                          onTap: () {
+                            HapticFeedback.mediumImpact();
+                            ref.read(playerStateProvider.notifier).playStation(station);
+                          },
+                          onFavoriteToggle: () {
+                            ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
+                          },
+                        ),
+                      );
                     },
-                    child: Text(
-                      'Temizle',
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  )
-                : const SizedBox.shrink(),
-            loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-        ],
-      ),
-      body: favoriteStationsAsync.when(
-        data: (favoriteStations) {
-          if (favoriteStations.isEmpty) {
-            return _buildEmptyState(context);
-          }
-
-          return Column(
-            children: [
-              // Favorites count info
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  '${favoriteStations.length} favori istasyon',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppConstants.textSecondary,
-                      ),
+                  );
+                },
+                loading: () => const Center(
+                  child: CircularProgressIndicator(
+                    color: AppTheme.headerPurple,
+                  ),
                 ),
+                error: (error, stack) => _buildErrorState(context, error.toString()),
               ),
-
-              // Favorites list
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: favoriteStations.length,
-                  itemBuilder: (context, index) {
-                    final station = favoriteStations[index];
-                    return StationListTile(
-                      station: station,
-                      onPlayPressed: () {
-                        // TODO: Implement play functionality
-                        print('Playing favorite: ${station.name}');
-                      },
-                      onTap: () {
-                        // TODO: Navigate to player screen
-                        print('Favorite station tapped: ${station.name}');
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: AppConstants.textSecondary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Favoriler yüklenemedi',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppConstants.textSecondary,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Lütfen tekrar deneyin',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppConstants.textSecondary,
-                    ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.refresh(favoriteStationsProvider),
-                child: const Text('Tekrar Dene'),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -120,43 +141,51 @@ class FavoritesScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.favorite_outline,
-            size: 80,
-            color: AppConstants.textSecondary.withOpacity(0.5),
+          // Vintage Radio Logo
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              color: AppTheme.headerPurple.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.all(20),
+              child: VintageRadioLogo(
+                size: 80,
+                primaryColor: AppTheme.headerPurple,
+                accentColor: AppTheme.cardPurple,
+              ),
+            ),
           ),
           const SizedBox(height: 24),
           Text(
-            'Henüz favori radyo istasyonunuz yok',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppConstants.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Text(
-              'Beğendiğiniz istasyonları favorilere eklemek için kalp ikonuna dokunun',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppConstants.textSecondary,
-                  ),
-              textAlign: TextAlign.center,
+            'Henüz Favori Yok',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppTheme.gray500,
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 8),
+          Text(
+            'Radyo istasyonlarının yanındaki kalp simgesine\ntıklayarak favorilerinize ekleyebilirsiniz',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppTheme.gray500,
+            ),
+          ),
+          const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () {
-              // TODO: Navigate to home screen or stations list
+              // Ana sayfaya geç
+              HapticFeedback.lightImpact();
             },
             icon: const Icon(Icons.explore),
-            label: const Text('İstasyonları Keşfet'),
+            label: const Text('Radyoları Keşfet'),
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 12,
-              ),
+              backgroundColor: AppTheme.headerPurple,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
           ),
         ],
@@ -164,35 +193,81 @@ class FavoritesScreen extends ConsumerWidget {
     );
   }
 
-  void _showClearFavoritesDialog(BuildContext context, WidgetRef ref) {
+  Widget _buildErrorState(BuildContext context, String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 64,
+            color: AppTheme.gray500,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Bir Hata Oluştu',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppTheme.gray500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppTheme.gray500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showClearAllDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Favorileri Temizle'),
-          content: const Text(
-            'Tüm favori istasyonları kaldırmak istediğinizden emin misiniz?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('İptal'),
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.cardPurple,
+        title: Row(
+          children: [
+            Icon(
+              Icons.warning_amber,
+              color: AppTheme.orange400,
             ),
-            TextButton(
-              onPressed: () {
-                // TODO: Implement clear all favorites
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'Temizle',
-                style: TextStyle(color: AppConstants.vibrantRed),
-              ),
+            const SizedBox(width: 8),
+            Text(
+              'Tüm Favorileri Temizle',
+              style: TextStyle(color: Colors.white),
             ),
           ],
-        );
-      },
+        ),
+        content: Text(
+          'Tüm favori radyo istasyonlarınızı silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz.',
+          style: TextStyle(color: Colors.white.withOpacity(0.9)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'İptal',
+              style: TextStyle(color: Colors.white.withOpacity(0.8)),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              ref.read(favoritesProvider.notifier).clearAllFavorites();
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Temizle'),
+          ),
+        ],
+      ),
     );
   }
 }
