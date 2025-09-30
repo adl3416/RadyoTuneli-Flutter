@@ -95,4 +95,29 @@ final favoriteStationsCountProvider = FutureProvider<int>((ref) async {
   return stations.where((station) => station.isFavorite).length;
 });
 
-// Provider to manage fa
+// Provider to manage favorite toggle
+final favoriteNotifierProvider =
+    NotifierProvider<FavoriteNotifier, void>(FavoriteNotifier.new);
+
+class FavoriteNotifier extends Notifier<void> {
+  @override
+  void build() {}
+
+  void toggleFavorite(String stationId) {
+    final repository = ref.read(stationRepositoryProvider);
+    repository.toggleFavorite(stationId);
+
+    // Invalidate providers to trigger rebuild
+    ref.invalidateSelf();
+    ref.invalidate(stationsProvider);
+  }
+
+  void clearAll() {
+    final repository = ref.read(stationRepositoryProvider);
+    repository.clearAllFavorites();
+
+    // Invalidate providers to trigger rebuild
+    ref.invalidateSelf();
+    ref.invalidate(stationsProvider);
+  }
+}

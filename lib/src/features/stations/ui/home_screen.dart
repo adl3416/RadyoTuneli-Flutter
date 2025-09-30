@@ -92,7 +92,7 @@ class HomeScreen extends ConsumerWidget {
                   ref.read(searchQueryProvider.notifier).state = value;
                 },
                 decoration: InputDecoration(
-                  hintText: 'Search for station, genre...',
+                  hintText: 'İstasyon, türü ara...',
                   prefixIcon: Icon(
                     Icons.search,
                     color: AppTheme.gray500,
@@ -166,7 +166,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   loading: () => const Center(child: CircularProgressIndicator()),
                   error: (error, stack) => Center(
-                    child: Text('Error loading recent stations: $error'),
+                    child: Text('Son dinlenen istasyonlar yüklenemedi: $error'),
                   ),
                 ),
               ),
@@ -262,7 +262,7 @@ class HomeScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Failed to load stations',
+                        'İstasyonlar yüklenemedi',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: AppTheme.gray500,
                         ),
@@ -270,8 +270,8 @@ class HomeScreen extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Text(
                         error.toString().contains('timeout') 
-                            ? 'Connection timeout. Please check your internet.'
-                            : 'Please check your internet connection and try again.',
+                            ? 'Bağlantı zaman aşımı. İnternet bağlantınızı kontrol edin.'
+                            : 'İnternet bağlantınızı kontrol edip tekrar deneyin.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppTheme.gray500,
                         ),
@@ -281,7 +281,7 @@ class HomeScreen extends ConsumerWidget {
                       ElevatedButton.icon(
                         onPressed: () => ref.refresh(filteredStationsProvider),
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Retry'),
+                        label: const Text('Tekrar Dene'),
                       ),
                     ],
                   ),
@@ -306,14 +306,14 @@ class HomeScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'No stations found',
+            'İstasyon bulunamadı',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: AppTheme.gray500,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Try searching with different keywords',
+            'Farklı anahtar kelimelerle aramayı deneyin',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppTheme.gray500,
             ),
@@ -542,4 +542,11 @@ class HomeScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Tamam',
-              style: TextStyle(color: C
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
