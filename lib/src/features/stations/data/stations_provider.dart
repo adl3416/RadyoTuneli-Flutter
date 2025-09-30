@@ -33,15 +33,28 @@ final favoriteStationsProvider = FutureProvider<List<Station>>((ref) async {
 // Provider for search query
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
+// Provider for A-Z sorting state
+final sortAtoZProvider = StateProvider<bool>((ref) => false);
+
 // Provider for filtered stations based on search - now async
 final filteredStationsProvider = FutureProvider<List<Station>>((ref) async {
   final query = ref.watch(searchQueryProvider);
+  final sortAtoZ = ref.watch(sortAtoZProvider);
   final repository = ref.read(stationRepositoryProvider);
 
+  List<Station> stations;
   if (query.isEmpty) {
-    return await repository.getTurkishStations();
+    stations = await repository.getTurkishStations();
+  } else {
+    stations = await repository.searchStations(query);
   }
-  return await repository.searchStations(query);
+  
+  // A-Z sıralama uygula
+  if (sortAtoZ) {
+    stations.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+  }
+  
+  return stations;
 });
 
 // Provider for recently played stations (using featured stations for now)
@@ -51,35 +64,35 @@ final recentlyPlayedStationsProvider =
   return await repository.getFeaturedStations();
 });
 
+// Provider for recently played stations management
+final recentlyPlayedNotifierProvider = 
+    StateNotifierProvider<RecentlyPlayedNotifier, List<String>>((ref) {
+  return RecentlyPlayedNotifier();
+});
+
+class RecentlyPlayedNotifier extends StateNotifier<List<String>> {
+  RecentlyPlayedNotifier() : super([]);
+
+  void addRecentStation(String stationId) {
+    // Remove if already exists to avoid duplicates
+    state = state.where((id) => id != stationId).toList();
+    // Add to beginning of list
+    state = [stationId, ...state];
+    // Keep only last 10 items
+    if (state.length > 10) {
+      state = state.take(10).toList();
+    }
+  }
+
+  void clearRecent() {
+    state = [];
+  }
+}
+
 // Provider for favorite stations count
 final favoriteStationsCountProvider = FutureProvider<int>((ref) async {
   final stations = await ref.watch(stationsProvider.future);
   return stations.where((station) => station.isFavorite).length;
 });
 
-// Provider to manage favorite toggle
-final favoriteNotifierProvider =
-    NotifierProvider<FavoriteNotifier, void>(FavoriteNotifier.new);
-
-class FavoriteNotifier extends Notifier<void> {
-  @override
-  void build() {}
-
-  void toggleFavorite(String stationId) {
-    final repository = ref.read(stationRepositoryProvider);
-    repository.toggleFavorite(stationId);
-
-    // Invalidate providers to trigger rebuild
-    ref.invalidateSelf();
-    ref.invalidate(stationsProvider);
-  }
-
-  void clearAll() {
-    final repository = ref.read(stationRepositoryProvider);
-    repository.clearAllFavorites();
-
-    // Invalidate providers to trigger rebuild
-    ref.invalidateSelf();
-    ref.invalidate(stationsProvider);
-  }
-}
+// Provider to manage fa

@@ -1,9 +1,33 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../stations/data/stations_provider.dart';
+import '../../stations/domain/station_model.dart';
 
 // Favori istasyonları yönetmek için provider
 final favoritesProvider = StateNotifierProvider<FavoritesNotifier, Set<String>>((ref) {
   return FavoritesNotifier();
+});
+
+// Provider for A-Z sorting in favorites
+final favoritesSortAtoZProvider = StateProvider<bool>((ref) => false);
+
+// Provider for sorted favorite stations
+final sortedFavoriteStationsProvider = FutureProvider<List<Station>>((ref) async {
+  final favorites = ref.watch(favoritesProvider);
+  final allStations = await ref.watch(stationsProvider.future);
+  final sortAtoZ = ref.watch(favoritesSortAtoZProvider);
+  
+  // Sadece favori olan istasyonları filtrele
+  var favoriteStations = allStations
+      .where((station) => favorites.contains(station.id))
+      .toList();
+  
+  // A-Z sıralama uygula
+  if (sortAtoZ) {
+    favoriteStations.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+  }
+  
+  return favoriteStations;
 });
 
 class FavoritesNotifier extends StateNotifier<Set<String>> {

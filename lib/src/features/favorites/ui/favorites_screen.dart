@@ -14,7 +14,7 @@ class FavoritesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final favorites = ref.watch(favoritesProvider);
-    final stationsAsync = ref.watch(stationsProvider);
+    final sortedFavoriteStationsAsync = ref.watch(sortedFavoriteStationsProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -33,16 +33,16 @@ class FavoritesScreen extends ConsumerWidget {
                 children: [
                   // Favorite Icon
                   Container(
-                    width: 50,
-                    height: 50,
+                    width: 45,
+                    height: 45,
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(25),
+                      borderRadius: BorderRadius.circular(22),
                     ),
                     child: const Icon(
                       Icons.favorite,
                       color: Colors.white,
-                      size: 24,
+                      size: 22,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -53,29 +53,48 @@ class FavoritesScreen extends ConsumerWidget {
                       children: [
                         Text(
                           'Favori Radyolarım',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
                         Text(
-                          '${favorites.length} radyo istasyonu',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          '${favorites.length} istasyon',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.white.withOpacity(0.8),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  // Clear All Button
+                  // A-Z Sort Button
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final sortAtoZ = ref.watch(favoritesSortAtoZProvider);
+                      return IconButton(
+                        onPressed: () {
+                          HapticFeedback.mediumImpact();
+                          ref.read(favoritesSortAtoZProvider.notifier).state = !sortAtoZ;
+                        },
+                        icon: Icon(
+                          sortAtoZ ? Icons.sort_by_alpha : Icons.sort,
+                          color: sortAtoZ ? Colors.white : Colors.white70,
+                          size: 22,
+                        ),
+                        tooltip: sortAtoZ ? 'Normal Sıralama' : 'A-Z Sıralama',
+                      );
+                    },
+                  ),
+                  // Clear All Button - Delete All iconuna değiştirdik
                   if (favorites.isNotEmpty)
                     IconButton(
                       onPressed: () => _showClearAllDialog(context, ref),
                       icon: const Icon(
-                        Icons.clear_all,
+                        Icons.delete_sweep,
                         color: Colors.white,
-                        size: 24,
+                        size: 22,
                       ),
+                      tooltip: 'Tümünü Temizle',
                     ),
                 ],
               ),
@@ -85,13 +104,8 @@ class FavoritesScreen extends ConsumerWidget {
             
             // Favorites List
             Expanded(
-              child: stationsAsync.when(
-                data: (allStations) {
-                  // Sadece favori olan istasyonları filtrele
-                  final favoriteStations = allStations
-                      .where((station) => favorites.contains(station.id))
-                      .toList();
-
+              child: sortedFavoriteStationsAsync.when(
+                data: (favoriteStations) {
                   if (favoriteStations.isEmpty) {
                     return _buildEmptyState(context);
                   }
@@ -234,17 +248,26 @@ class FavoritesScreen extends ConsumerWidget {
             Icon(
               Icons.warning_amber,
               color: AppTheme.orange400,
+              size: 24,
             ),
             const SizedBox(width: 8),
-            Text(
-              'Tüm Favorileri Temizle',
-              style: TextStyle(color: Colors.white),
+            Expanded(
+              child: Text(
+                'Tüm Favorileri Temizle',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
             ),
           ],
         ),
         content: Text(
           'Tüm favori radyo istasyonlarınızı silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz.',
-          style: TextStyle(color: Colors.white.withOpacity(0.9)),
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.9),
+            fontSize: 14,
+          ),
         ),
         actions: [
           TextButton(

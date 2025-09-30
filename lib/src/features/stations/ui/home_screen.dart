@@ -17,6 +17,7 @@ class HomeScreen extends ConsumerWidget {
     final filteredStationsAsync = ref.watch(filteredStationsProvider);
     final recentlyPlayedAsync = ref.watch(recentlyPlayedStationsProvider);
     final searchQuery = ref.watch(searchQueryProvider);
+    final sortAtoZ = ref.watch(sortAtoZProvider);
 
     return Scaffold(
       drawer: _buildDrawer(context),
@@ -59,8 +60,24 @@ class HomeScreen extends ConsumerWidget {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  // Empty space for symmetry
-                  const SizedBox(width: 48),
+                  // A-Z Sort Button
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final sortAtoZ = ref.watch(sortAtoZProvider);
+                      return IconButton(
+                        onPressed: () {
+                          HapticFeedback.mediumImpact();
+                          ref.read(sortAtoZProvider.notifier).state = !sortAtoZ;
+                        },
+                        icon: Icon(
+                          sortAtoZ ? Icons.sort_by_alpha : Icons.sort,
+                          color: sortAtoZ ? Colors.white : Colors.white70,
+                          size: 28,
+                        ),
+                        tooltip: sortAtoZ ? 'Normal Sıralama' : 'A-Z Sıralama',
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -107,17 +124,18 @@ class HomeScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Recently Played',
+                      'Son Dinlenenler',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextButton(
                       onPressed: () {
-                        // TODO: Implement clear recently played
+                        HapticFeedback.lightImpact();
+                        ref.read(recentlyPlayedNotifierProvider.notifier).clearRecent();
                       },
                       child: Text(
-                        'Clear',
+                        'Temizle',
                         style: TextStyle(
                           color: Theme.of(context).primaryColor,
                           fontWeight: FontWeight.w500,
@@ -322,8 +340,11 @@ class HomeScreen extends ConsumerWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            // Drawer Header
-            DrawerHeader(
+            // Custom Header Container (DrawerHeader yerine)
+            Container(
+              width: double.infinity,
+              height: 220,
+              padding: const EdgeInsets.fromLTRB(16, 50, 16, 20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -336,11 +357,12 @@ class HomeScreen extends ConsumerWidget {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // App Icon
                   Container(
-                    width: 70,
-                    height: 70,
+                    width: 60,
+                    height: 60,
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(15),
@@ -348,25 +370,25 @@ class HomeScreen extends ConsumerWidget {
                     child: const Padding(
                       padding: EdgeInsets.all(8),
                       child: VintageRadioLogo(
-                        size: 50,
+                        size: 40,
                         primaryColor: Colors.white,
                         accentColor: Color(0xFFE5E7EB),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   // App Name
                   Text(
                     'Radyo Tüneli',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     'Müziğin Renkli Dünyası',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white.withOpacity(0.8),
                     ),
                   ),
@@ -520,11 +542,4 @@ class HomeScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Tamam',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+              style: TextStyle(color: C
