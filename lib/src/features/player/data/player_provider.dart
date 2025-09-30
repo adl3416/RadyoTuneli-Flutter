@@ -4,6 +4,7 @@ import '../domain/player_state_model.dart';
 import '../data/audio_service_handler.dart';
 import '../data/recently_played_provider.dart';
 import '../../stations/domain/station_model.dart';
+import '../../stations/data/stations_provider.dart';
 import '../../../../main.dart' show globalAudioHandler;
 
 // Audio Handler Provider - uses the global audio handler as AudioHandler (base type)
@@ -148,8 +149,8 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
         station.logoUrl,
       );
 
-      // Update recently played
-      _ref.read(recentlyPlayedProvider.notifier).addStation(station);
+      // Update recently played with new provider
+      _ref.read(recentlyPlayedNotifierProvider.notifier).addRecentStation(station.id);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,

@@ -15,12 +15,13 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filteredStationsAsync = ref.watch(filteredStationsProvider);
-    final recentlyPlayedAsync = ref.watch(recentlyPlayedStationsProvider);
+    final recentlyPlayedAsync = ref.watch(actualRecentlyPlayedStationsProvider);
     final searchQuery = ref.watch(searchQueryProvider);
     final sortAtoZ = ref.watch(sortAtoZProvider);
+    final selectedCategory = ref.watch(selectedCategoryProvider);
 
     return Scaffold(
-      drawer: _buildDrawer(context),
+      drawer: _buildDrawer(context, ref),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,6 +84,39 @@ class HomeScreen extends ConsumerWidget {
             ),
             
             const SizedBox(height: 8),
+            
+            // Selected Category Indicator
+            Consumer(
+              builder: (context, ref, child) {
+                final selectedCategory = ref.watch(selectedCategoryProvider);
+                if (selectedCategory == null) return const SizedBox.shrink();
+                
+                // Find category name from nested structure
+                String categoryName = selectedCategory;
+                for (final group in radioCategories.values) {
+                  if (group.containsKey(selectedCategory)) {
+                    categoryName = group[selectedCategory] ?? selectedCategory;
+                    break;
+                  }
+                }
+                
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Chip(
+                    backgroundColor: AppTheme.cardPurple,
+                    deleteIconColor: Colors.white,
+                    onDeleted: () {
+                      HapticFeedback.lightImpact();
+                      ref.read(selectedCategoryProvider.notifier).state = null;
+                    },
+                    label: Text(
+                      categoryName,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                );
+              },
+            ),
             
             // Search Bar
             Padding(
@@ -323,7 +357,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDrawer(BuildContext context) {
+  Widget _buildDrawer(BuildContext context, WidgetRef ref) {
     return Drawer(
       child: Container(
         decoration: BoxDecoration(
@@ -412,13 +446,86 @@ class HomeScreen extends ConsumerWidget {
                 // Navigate to favorites if needed
               },
             ),
+            
+            // Radio Categories
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                'Kategori Seç',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            
+            // Expandable Categories
+            ...radioCategories.entries.map((categoryGroup) {
+              final groupKey = categoryGroup.key;
+              final groupData = categoryGroup.value;
+              final groupTitle = groupData['title'] ?? '';
+              
+              return Consumer(
+                builder: (context, ref, child) {
+                  final expandedCategories = ref.watch(expandedCategoriesProvider);
+                  final isExpanded = expandedCategories.contains(groupKey);
+                  
+                  return Column(
+                    children: [
+                      // Main Category Header
+                      _buildDrawerItem(
+                        context,
+                        icon: _getCategoryIcon(groupKey),
+                        title: groupTitle,
+                        trailing: Icon(
+                          isExpanded ? Icons.expand_less : Icons.expand_more,
+                          color: Colors.white,
+                        ),
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          final expanded = ref.read(expandedCategoriesProvider.notifier);
+                          final currentExpanded = Set<String>.from(expanded.state);
+                          if (isExpanded) {
+                            currentExpanded.remove(groupKey);
+                          } else {
+                            currentExpanded.add(groupKey);
+                          }
+                          expanded.state = currentExpanded;
+                        },
+                      ),
+                      // Subcategories
+                      if (isExpanded) ...[
+                        ...groupData.entries
+                            .where((entry) => entry.key != 'title')
+                            .map((subCategory) {
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: _buildDrawerItem(
+                              context,
+                              icon: _getSubCategoryIcon(subCategory.key),
+                              title: subCategory.value,
+                              onTap: () {
+                                Navigator.pop(context);
+                                ref.read(selectedCategoryProvider.notifier).state = subCategory.key;
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ],
+                  );
+                },
+              );
+            }).toList(),
+            
             _buildDrawerItem(
               context,
-              icon: Icons.category_outlined,
-              title: 'Kategoriler',
+              icon: Icons.clear_all,
+              title: 'Tüm Kategoriler',
               onTap: () {
                 Navigator.pop(context);
-                // Navigate to categories if needed
+                ref.read(selectedCategoryProvider.notifier).state = null;
               },
             ),
             _buildDrawerItem(
@@ -483,6 +590,7 @@ class HomeScreen extends ConsumerWidget {
     required IconData icon,
     required String title,
     required VoidCallback onTap,
+    Widget? trailing,
   }) {
     return ListTile(
       leading: Icon(
@@ -498,6 +606,7 @@ class HomeScreen extends ConsumerWidget {
           fontWeight: FontWeight.w500,
         ),
       ),
+      trailing: trailing,
       onTap: () {
         HapticFeedback.selectionClick();
         onTap();
@@ -507,6 +616,60 @@ class HomeScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(8),
       ),
     );
+  }
+
+  IconData _getCategoryIcon(String categoryKey) {
+    switch (categoryKey) {
+      case 'muzik':
+        return Icons.music_note;
+      case 'haber_spor':
+        return Icons.newspaper;
+      case 'yasam':
+        return Icons.people;
+      default:
+        return Icons.category;
+    }
+  }
+
+  IconData _getSubCategoryIcon(String subCategoryKey) {
+    switch (subCategoryKey) {
+      case 'pop':
+        return Icons.star;
+      case 'rock':
+        return Icons.music_note;
+      case 'arabesk':
+        return Icons.music_note_sharp;
+      case 'turku':
+        return Icons.piano;
+      case '90lar':
+        return Icons.library_music;
+      case 'klasik':
+        return Icons.music_note_outlined;
+      case 'jazz':
+        return Icons.album;
+      case 'elektronik':
+        return Icons.graphic_eq;
+      case 'haber':
+        return Icons.article;
+      case 'spor':
+        return Icons.sports_soccer;
+      case 'ekonomi':
+        return Icons.trending_up;
+      case 'siyaset':
+        return Icons.account_balance;
+      case 'cocuk':
+        return Icons.child_care;
+      case 'dini':
+        return Icons.mosque;
+      case 'yerel':
+        return Icons.location_city;
+      case 'saglik':
+        return Icons.medical_services;
+      case 'egitim':
+        return Icons.school;
+      default:
+        return Icons.radio;
+    }
   }
 
   void _showAboutDialog(BuildContext context) {
