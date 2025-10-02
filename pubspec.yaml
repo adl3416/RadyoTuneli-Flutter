@@ -41,12 +41,26 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
-  
+
   # Code Generation
   build_runner: ^2.4.7
   riverpod_generator: ^2.3.9
   freezed: ^2.4.6
   json_serializable: ^6.7.1
+
+  # App Icon
+  flutter_launcher_icons: ^0.13.1
+# App Icon Configuration
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/radio_logo.png"
+  adaptive_icon_background: "#7C3AED"
+  adaptive_icon_foreground: "assets/images/radio_logo.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+  # Logo boyutunu ayarla ve merkeze al
+  adaptive_icon_padding: 80
 
 flutter:
   uses-material-design: true

@@ -204,12 +204,16 @@ class _SplashScreenState extends State<SplashScreen>
                                     ),
                                   ],
                                 ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(20),
-                                  child: VintageRadioLogo(
-                                    size: 100,
-                                    primaryColor: Colors.white,
-                                    accentColor: Color(0xFFE5E7EB),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Image.asset(
+                                      'assets/images/radio_logo.png',
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                               ),

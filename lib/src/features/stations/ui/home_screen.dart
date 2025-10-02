@@ -83,7 +83,7 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
             
-            const SizedBox(height: 8),
+            const SizedBox(height: 2),
             
             // Selected Category Indicator
             Consumer(
@@ -182,7 +182,7 @@ class HomeScreen extends ConsumerWidget {
               
               // Recently Played List (Horizontal)
               SizedBox(
-                height: 100,
+                height: 82,
                 child: recentlyPlayedAsync.when(
                   data: (recentlyPlayedStations) => ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -358,6 +358,7 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildDrawer(BuildContext context, WidgetRef ref) {
+    // Tek bir "Kategori Seç" başlığı altında tüm kategoriler ve alt kategoriler açılır olarak gösterilecek
     return Drawer(
       child: Container(
         decoration: BoxDecoration(
@@ -374,215 +375,192 @@ class HomeScreen extends ConsumerWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            // Custom Header Container (DrawerHeader yerine)
-            Container(
-              width: double.infinity,
-              height: 220,
-              padding: const EdgeInsets.fromLTRB(16, 50, 16, 20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppTheme.headerPurple,
-                    AppTheme.cardPurple,
+              // Custom Header Container (DrawerHeader yerine)
+              Container(
+                width: double.infinity,
+                height: 220,
+                padding: const EdgeInsets.fromLTRB(16, 50, 16, 20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppTheme.headerPurple,
+                      AppTheme.cardPurple,
+                    ],
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // App Icon
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            'assets/images/radio_logo.png',
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    // App Name
+                    Text(
+                      'Radyo Tüneli',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Müziğin Renkli Dünyası',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // App Icon
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: VintageRadioLogo(
-                        size: 40,
-                        primaryColor: Colors.white,
-                        accentColor: Color(0xFFE5E7EB),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // App Name
-                  Text(
-                    'Radyo Tüneli',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Müziğin Renkli Dünyası',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white.withOpacity(0.8),
-                    ),
-                  ),
-                ],
+              _buildDrawerItem(
+                context,
+                icon: Icons.home_outlined,
+                title: 'Ana Sayfa',
+                onTap: () => Navigator.pop(context),
               ),
-            ),
-            
-            // Menu Items
-            _buildDrawerItem(
-              context,
-              icon: Icons.home_outlined,
-              title: 'Ana Sayfa',
-              onTap: () => Navigator.pop(context),
-            ),
-            _buildDrawerItem(
-              context,
-              icon: Icons.favorite_outline,
-              title: 'Favoriler',
-              onTap: () {
-                Navigator.pop(context);
-                // Navigate to favorites if needed
-              },
-            ),
-            
-            // Radio Categories
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                'Kategori Seç',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
+              _buildDrawerItem(
+                context,
+                icon: Icons.favorite_outline,
+                title: 'Favoriler',
+                onTap: () {
+                  Navigator.pop(context);
+                  // Navigate to favorites if needed
+                },
               ),
-            ),
-            
-            // Expandable Categories
-            ...radioCategories.entries.map((categoryGroup) {
-              final groupKey = categoryGroup.key;
-              final groupData = categoryGroup.value;
-              final groupTitle = groupData['title'] ?? '';
-              
-              return Consumer(
+              // Tek bir expandable ana kategori
+              Consumer(
                 builder: (context, ref, child) {
-                  final expandedCategories = ref.watch(expandedCategoriesProvider);
-                  final isExpanded = expandedCategories.contains(groupKey);
-                  
+                  final expanded = ref.watch(expandedCategoriesProvider);
+                  final isExpanded = expanded.contains('all_categories');
                   return Column(
                     children: [
-                      // Main Category Header
                       _buildDrawerItem(
                         context,
-                        icon: _getCategoryIcon(groupKey),
-                        title: groupTitle,
+                        icon: Icons.category,
+                        title: 'Kategori Seç',
                         trailing: Icon(
                           isExpanded ? Icons.expand_less : Icons.expand_more,
                           color: Colors.white,
                         ),
                         onTap: () {
                           HapticFeedback.lightImpact();
-                          final expanded = ref.read(expandedCategoriesProvider.notifier);
-                          final currentExpanded = Set<String>.from(expanded.state);
+                          final notifier = ref.read(expandedCategoriesProvider.notifier);
+                          final current = Set<String>.from(notifier.state);
                           if (isExpanded) {
-                            currentExpanded.remove(groupKey);
+                            current.remove('all_categories');
                           } else {
-                            currentExpanded.add(groupKey);
+                            current.add('all_categories');
                           }
-                          expanded.state = currentExpanded;
+                          notifier.state = current;
                         },
                       ),
-                      // Subcategories
-                      if (isExpanded) ...[
-                        ...groupData.entries
+                      if (isExpanded)
+                        ...radioCategories.entries.expand((categoryGroup) {
+                          final groupKey = categoryGroup.key;
+                          final groupData = categoryGroup.value;
+                          return groupData.entries
                             .where((entry) => entry.key != 'title')
-                            .map((subCategory) {
-                          return Padding(
-                            padding: const EdgeInsets.only(left: 16),
-                            child: _buildDrawerItem(
-                              context,
-                              icon: _getSubCategoryIcon(subCategory.key),
-                              title: subCategory.value,
-                              onTap: () {
-                                Navigator.pop(context);
-                                ref.read(selectedCategoryProvider.notifier).state = subCategory.key;
-                              },
-                            ),
-                          );
+                            .map((subCategory) => Padding(
+                                  padding: const EdgeInsets.only(left: 32),
+                                  child: _buildDrawerItem(
+                                    context,
+                                    icon: _getSubCategoryIcon(subCategory.key),
+                                    title: subCategory.value,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      ref.read(selectedCategoryProvider.notifier).state = subCategory.key;
+                                    },
+                                  ),
+                                ));
                         }).toList(),
-                      ],
                     ],
                   );
                 },
-              );
-            }).toList(),
-            
-            _buildDrawerItem(
-              context,
-              icon: Icons.clear_all,
-              title: 'Tüm Kategoriler',
-              onTap: () {
-                Navigator.pop(context);
-                ref.read(selectedCategoryProvider.notifier).state = null;
-              },
-            ),
-            _buildDrawerItem(
-              context,
-              icon: Icons.history_outlined,
-              title: 'Son Çalınanlar',
-              onTap: () {
-                Navigator.pop(context);
-                // Show recently played
-              },
-            ),
-            
-            // Divider
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Divider(
-                color: Colors.white.withOpacity(0.3),
               ),
-            ),
-            
-            _buildDrawerItem(
-              context,
-              icon: Icons.car_rental_outlined,
-              title: 'Android Auto',
-              onTap: () {
-                Navigator.pop(context);
-                // Navigate to automotive screen
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AutomotivePlayerScreen(),
-                  ),
-                );
-              },
-            ),
-            _buildDrawerItem(
-              context,
-              icon: Icons.settings_outlined,
-              title: 'Ayarlar',
-              onTap: () {
-                Navigator.pop(context);
-                // Navigate to settings
-              },
-            ),
-            _buildDrawerItem(
-              context,
-              icon: Icons.info_outline,
-              title: 'Hakkında',
-              onTap: () {
-                Navigator.pop(context);
-                _showAboutDialog(context);
-              },
-            ),
-          ],
+              _buildDrawerItem(
+                context,
+                icon: Icons.clear_all,
+                title: 'Tüm Kategoriler',
+                onTap: () {
+                  Navigator.pop(context);
+                  ref.read(selectedCategoryProvider.notifier).state = null;
+                },
+              ),
+              _buildDrawerItem(
+                context,
+                icon: Icons.history_outlined,
+                title: 'Son Çalınanlar',
+                onTap: () {
+                  Navigator.pop(context);
+                  // Show recently played
+                },
+              ),
+              // Divider
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Divider(
+                  color: Colors.white.withOpacity(0.3),
+                ),
+              ),
+              _buildDrawerItem(
+                context,
+                icon: Icons.car_rental_outlined,
+                title: 'Android Auto',
+                onTap: () {
+                  Navigator.pop(context);
+                  // Navigate to automotive screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AutomotivePlayerScreen(),
+                    ),
+                  );
+                },
+              ),
+              _buildDrawerItem(
+                context,
+                icon: Icons.settings_outlined,
+                title: 'Ayarlar',
+                onTap: () {
+                  Navigator.pop(context);
+                  // Navigate to settings
+                },
+              ),
+              _buildDrawerItem(
+                context,
+                icon: Icons.info_outline,
+                title: 'Hakkında',
+                onTap: () {
+                  Navigator.pop(context);
+                  _showAboutDialog(context);
+                },
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildDrawerItem(

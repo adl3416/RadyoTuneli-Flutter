@@ -210,11 +210,15 @@ class OnboardingScreen extends StatelessWidget {
           ),
         ],
       ),
-      child: const Center(
-        child: VintageRadioLogo(
-          size: 120,
-          primaryColor: Colors.white,
-          accentColor: Color(0xFFE5E7EB),
+      child: Center(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(25),
+          child: Image.asset(
+            'assets/images/radio_logo.png',
+            width: 120,
+            height: 120,
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );

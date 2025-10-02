@@ -208,9 +208,8 @@ final actualRecentlyPlayedStationsProvider = FutureProvider<List<Station>>((ref)
   final allStations = await ref.watch(stationsProvider.future);
   
   if (recentlyPlayedIds.isEmpty) {
-    // If no recent stations, show featured stations as fallback
-    final repository = ref.read(stationRepositoryProvider);
-    return await repository.getFeaturedStations();
+    // Eğer hiç son dinlenen yoksa, boş liste dön
+    return [];
   }
   
   // Return stations in the order they were recently played

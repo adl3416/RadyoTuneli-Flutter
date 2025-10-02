@@ -1,0 +1,1 @@
+import 'minimal_android_auto_test.dart' as minimal;

@@ -163,12 +163,16 @@ class FavoritesScreen extends ConsumerWidget {
               color: AppTheme.headerPurple.withOpacity(0.1),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Padding(
-              padding: EdgeInsets.all(20),
-              child: VintageRadioLogo(
-                size: 80,
-                primaryColor: AppTheme.headerPurple,
-                accentColor: AppTheme.cardPurple,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.asset(
+                  'assets/images/radio_logo.png',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),

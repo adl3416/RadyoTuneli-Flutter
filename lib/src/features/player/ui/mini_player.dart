@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../core/constants/app_constants.dart';
+import '../../../core/theme/app_theme.dart';
 import '../data/player_provider.dart';
 
 class MiniPlayer extends ConsumerWidget {
@@ -18,14 +18,23 @@ class MiniPlayer extends ConsumerWidget {
     final station = playerState.currentStation!;
 
     return Container(
-      height: 64,
+      height: 70,
       decoration: BoxDecoration(
-        color: AppConstants.surface,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppTheme.headerPurple,
+            AppTheme.cardPurple,
+            AppTheme.cardPurpleDark,
+          ],
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            offset: const Offset(0, -2),
-            blurRadius: 8,
+            color: AppTheme.cardPurpleDark.withOpacity(0.3),
+            offset: const Offset(0, -4),
+            blurRadius: 12,
+            spreadRadius: 0,
           ),
         ],
       ),
@@ -37,54 +46,77 @@ class MiniPlayer extends ConsumerWidget {
             _showFullScreenPlayer(context);
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
-                // Station Logo
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: station.logoUrl != null
-                      ? CachedNetworkImage(
-                          imageUrl: station.logoUrl!,
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            width: 48,
-                            height: 48,
-                            color: AppConstants.surfaceVariant,
+                // Station Logo with modern styling
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        offset: const Offset(0, 2),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: station.logoUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: station.logoUrl!,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.radio,
+                                color: Colors.white70,
+                                size: 28,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.radio,
+                                color: Colors.white70,
+                                size: 28,
+                              ),
+                            ),
+                          )
+                        : Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             child: const Icon(
                               Icons.radio,
-                              color: AppConstants.textSecondary,
-                              size: 24,
+                              color: Colors.white70,
+                              size: 28,
                             ),
                           ),
-                          errorWidget: (context, url, error) => Container(
-                            width: 48,
-                            height: 48,
-                            color: AppConstants.surfaceVariant,
-                            child: const Icon(
-                              Icons.radio,
-                              color: AppConstants.textSecondary,
-                              size: 24,
-                            ),
-                          ),
-                        )
-                      : Container(
-                          width: 48,
-                          height: 48,
-                          color: AppConstants.surfaceVariant,
-                          child: const Icon(
-                            Icons.radio,
-                            color: AppConstants.textSecondary,
-                            size: 24,
-                          ),
-                        ),
+                  ),
                 ),
 
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
 
-                // Station Info
+                // Station Info with modern typography
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -92,58 +124,99 @@ class MiniPlayer extends ConsumerWidget {
                     children: [
                       Text(
                         station.name,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: AppConstants.textPrimary,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Colors.white,
                               fontWeight: FontWeight.w600,
+                              fontSize: 15,
                             ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      const SizedBox(height: 2),
                       Text(
-                        playerState.isPlaying ? 'Playing' : 'Paused',
+                        playerState.isPlaying ? 'Çalıyor' : 'Duraklatıldı',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppConstants.textSecondary,
+                              color: Colors.white70,
+                              fontSize: 12,
                             ),
                       ),
                     ],
                   ),
                 ),
 
-                // Loading indicator or Play/Pause Button
+                // Loading indicator or Play/Pause Button with modern styling
                 if (playerState.isLoading)
-                  const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: AppConstants.primaryAccent,
-                      strokeWidth: 2,
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      ),
                     ),
                   )
                 else
-                  IconButton(
-                    onPressed: () async {
-                      if (playerState.isPlaying) {
-                        await ref.read(playerStateProvider.notifier).pause();
-                      } else {
-                        await ref.read(playerStateProvider.notifier).resume();
-                      }
-                    },
-                    icon: Icon(
-                      playerState.isPlaying ? Icons.pause : Icons.play_arrow,
-                      color: AppConstants.textPrimary,
-                      size: 24,
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: IconButton(
+                      onPressed: () async {
+                        if (playerState.isPlaying) {
+                          await ref.read(playerStateProvider.notifier).pause();
+                        } else {
+                          await ref.read(playerStateProvider.notifier).resume();
+                        }
+                      },
+                      icon: Icon(
+                        playerState.isPlaying ? Icons.pause : Icons.play_arrow,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      padding: EdgeInsets.zero,
                     ),
                   ),
 
-                // Stop Button
-                IconButton(
-                  onPressed: () async {
-                    await ref.read(playerStateProvider.notifier).stop();
-                  },
-                  icon: const Icon(
-                    Icons.stop,
-                    color: AppConstants.textPrimary,
-                    size: 24,
+                const SizedBox(width: 8),
+
+                // Stop Button with modern styling
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: IconButton(
+                    onPressed: () async {
+                      await ref.read(playerStateProvider.notifier).stop();
+                    },
+                    icon: const Icon(
+                      Icons.stop,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                    padding: EdgeInsets.zero,
                   ),
                 ),
               ],
@@ -161,10 +234,18 @@ class MiniPlayer extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.9,
-        decoration: const BoxDecoration(
-          color: AppConstants.primaryBackground,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppTheme.headerPurple,
+              AppTheme.cardPurple,
+              AppTheme.cardPurpleDark,
+            ],
+          ),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(24),
           ),
         ),
         child: const FullScreenPlayer(),
@@ -183,8 +264,11 @@ class FullScreenPlayer extends ConsumerWidget {
     if (playerState.currentStation == null) {
       return const Center(
         child: Text(
-          'No station playing',
-          style: TextStyle(color: AppConstants.textPrimary),
+          'İstasyon çalmıyor',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+          ),
         ),
       );
     }
@@ -195,110 +279,153 @@ class FullScreenPlayer extends ConsumerWidget {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          // Drag Handle
+          // Drag Handle with modern styling
           Container(
-            width: 40,
-            height: 4,
+            width: 50,
+            height: 5,
             decoration: BoxDecoration(
-              color: AppConstants.textSecondary,
-              borderRadius: BorderRadius.circular(2),
+              color: Colors.white.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(3),
             ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Station Logo (Large)
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: station.logoUrl != null
-                ? CachedNetworkImage(
-                    imageUrl: station.logoUrl!,
-                    width: 200,
-                    height: 200,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      width: 200,
-                      height: 200,
-                      color: AppConstants.surfaceVariant,
-                      child: const Icon(
-                        Icons.radio,
-                        color: AppConstants.textSecondary,
-                        size: 80,
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      width: 200,
-                      height: 200,
-                      color: AppConstants.surfaceVariant,
-                      child: const Icon(
-                        Icons.radio,
-                        color: AppConstants.textSecondary,
-                        size: 80,
-                      ),
-                    ),
-                  )
-                : Container(
-                    width: 200,
-                    height: 200,
-                    color: AppConstants.surfaceVariant,
-                    child: const Icon(
-                      Icons.radio,
-                      color: AppConstants.textSecondary,
-                      size: 80,
-                    ),
-                  ),
           ),
 
           const SizedBox(height: 32),
 
-          // Station Info
-          Text(
-            station.name,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppConstants.textPrimary,
-                  fontWeight: FontWeight.bold,
+          // Station Logo with modern styling
+          Container(
+            width: 220,
+            height: 220,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  offset: const Offset(0, 8),
+                  blurRadius: 24,
+                  spreadRadius: 0,
                 ),
-            textAlign: TextAlign.center,
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: station.logoUrl != null
+                  ? CachedNetworkImage(
+                      imageUrl: station.logoUrl!,
+                      width: 220,
+                      height: 220,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        width: 220,
+                        height: 220,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: const Icon(
+                          Icons.radio,
+                          color: Colors.white70,
+                          size: 80,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        width: 220,
+                        height: 220,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: const Icon(
+                          Icons.radio,
+                          color: Colors.white70,
+                          size: 80,
+                        ),
+                      ),
+                    )
+                  : Container(
+                      width: 220,
+                      height: 220,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: const Icon(
+                        Icons.radio,
+                        color: Colors.white70,
+                        size: 80,
+                      ),
+                    ),
+            ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 40),
+
+          // Station Info with modern typography
+          Text(
+            station.name,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+
+          const SizedBox(height: 12),
 
           Text(
             station.artist,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppConstants.textSecondary,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Colors.white70,
+                  fontSize: 18,
                 ),
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
 
           const Spacer(),
 
-          // Control Buttons
+          // Control Buttons with modern styling
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // Previous (disabled for radio)
-              IconButton(
-                onPressed: null,
-                icon: const Icon(
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: const Icon(
                   Icons.skip_previous,
-                  size: 36,
-                  color: AppConstants.textSecondary,
+                  size: 32,
+                  color: Colors.white38,
                 ),
               ),
 
-              // Play/Pause
+              // Play/Pause with enhanced styling
               Container(
-                width: 72,
-                height: 72,
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
-                  color: AppConstants.primaryAccent,
-                  borderRadius: BorderRadius.circular(36),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(40),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      offset: const Offset(0, 4),
+                      blurRadius: 16,
+                    ),
+                  ],
                 ),
                 child: playerState.isLoading
                     ? const Center(
                         child: CircularProgressIndicator(
-                          color: Colors.white,
+                          color: AppTheme.headerPurple,
+                          strokeWidth: 3,
                         ),
                       )
                     : IconButton(
@@ -317,46 +444,56 @@ class FullScreenPlayer extends ConsumerWidget {
                           playerState.isPlaying
                               ? Icons.pause
                               : Icons.play_arrow,
-                          color: Colors.white,
-                          size: 36,
+                          color: AppTheme.headerPurple,
+                          size: 40,
                         ),
                       ),
               ),
 
               // Next (disabled for radio)
-              IconButton(
-                onPressed: null,
-                icon: const Icon(
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: const Icon(
                   Icons.skip_next,
-                  size: 36,
-                  color: AppConstants.textSecondary,
+                  size: 32,
+                  color: Colors.white38,
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 40),
 
-          // Stop Button
+          // Stop Button with modern styling
           SizedBox(
             width: double.infinity,
-            height: 48,
+            height: 56,
             child: ElevatedButton(
               onPressed: () async {
                 await ref.read(playerStateProvider.notifier).stop();
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppConstants.vibrantRed,
+                backgroundColor: Colors.white.withOpacity(0.2),
                 foregroundColor: Colors.white,
+                elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(28),
+                  side: BorderSide(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1,
+                  ),
                 ),
               ),
               child: const Text(
-                'Stop',
+                'Durdur',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
               ),

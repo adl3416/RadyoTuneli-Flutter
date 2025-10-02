@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Radyo Tüneli</string>
+    <string name="app_description">Türk Radyo İstasyonları</string>
+    
+    <!-- Android Auto specific strings -->
+    <string name="android_auto_app_name">Radyo Tüneli</string>
+    <string name="android_auto_app_description">Türkiye\'nin En İyi Radyo İstasyonları</string>
+</resources>

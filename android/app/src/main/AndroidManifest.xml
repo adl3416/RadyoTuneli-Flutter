@@ -19,16 +19,6 @@
     <!-- Android Auto permissions -->
     <uses-permission android:name="com.google.android.gms.permission.CAR_APPLICATION"/>
     
-    <!-- CarPlay support -->
-    <uses-feature
-        android:name="android.hardware.type.automotive"
-        android:required="false" />
-        
-    <!-- Android Auto specific declaration -->
-    <uses-feature 
-        android:name="android.software.car" 
-        android:required="false"/>
-    
     <application
         android:label="Radyo Tüneli"
         android:name="${applicationName}"
@@ -74,13 +64,13 @@
             android:exported="true"
             android:enabled="true"
             android:foregroundServiceType="mediaPlayback">
+            
+            <!-- MediaBrowserService ve MEDIA_BUTTON intent filters like Radio FM -->
             <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
                 <action android:name="android.media.browse.MediaBrowserService" />
-                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <meta-data
-                android:name="android.media.browse.MediaBrowserService"
-                android:value="true" />
+                
         </service>
     </application>
     <!-- Required to query activities that can process text, see:

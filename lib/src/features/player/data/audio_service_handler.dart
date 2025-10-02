@@ -184,11 +184,23 @@ class RadioAudioHandler extends BaseAudioHandler
   };
 
   RadioAudioHandler() {
+    print("🚗🚗🚗 ANDROID AUTO: RadioAudioHandler CONSTRUCTOR called");
     _init();
+    _setupAndroidAutoSupport();
+  }
+
+  void _setupAndroidAutoSupport() {
+    print("🚗🚗🚗 ANDROID AUTO: Setting up support");
+    
+    // Force MediaBrowserService to be ready
+    Future.delayed(Duration(seconds: 1), () {
+      print("🚗🚗🚗 ANDROID AUTO: MediaBrowserService ready for discovery");
+    });
   }
 
   void _init() {
     print("🎧 Initializing RadioAudioHandler...");
+    print("🚗🚗🚗 ANDROID AUTO: _init() method called");
 
     // Initialize playback state
     playbackState.add(PlaybackState(
@@ -443,8 +455,14 @@ class RadioAudioHandler extends BaseAudioHandler
         id: AudioService.browsableRootId,
         title: 'Radyo Tüneli',
         artist: 'Türk Radyo İstasyonları',
+        artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
         playable: false,
-        extras: {'browsable': true},
+        extras: {
+          'browsable': true,
+          'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
+          'android.media.browse.CONTENT_STYLE_PLAYABLE_HINT': 1,
+          'android.media.browse.CONTENT_STYLE_BROWSABLE_HINT': 2,
+        },
       );
     }
     
@@ -455,8 +473,14 @@ class RadioAudioHandler extends BaseAudioHandler
         id: mediaId,
         title: categoryData['title']!,
         artist: categoryData['description']!,
+        artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
         playable: false,
-        extras: {'browsable': true},
+        extras: {
+          'browsable': true,
+          'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
+          'android.media.browse.CONTENT_STYLE_PLAYABLE_HINT': 1,
+          'android.media.browse.CONTENT_STYLE_BROWSABLE_HINT': 2,
+        },
       );
     }
     
@@ -475,40 +499,74 @@ class RadioAudioHandler extends BaseAudioHandler
 
   @override
   Future<List<MediaItem>> getChildren(String parentMediaId, [Map<String, dynamic>? options]) async {
-    print("🚗 Android Auto: getChildren called with parentMediaId: $parentMediaId");
+    print("🚗🚗🚗 Android Auto: getChildren called with parentMediaId: $parentMediaId");
     
-    switch (parentMediaId) {
-      case AudioService.browsableRootId:
-        // Root level - show categories
-        return _categoryInfo.entries.map((entry) {
-          final categoryId = entry.key;
-          final categoryData = entry.value;
-          
-          return MediaItem(
-            id: categoryId,
-            title: categoryData['title']!,
-            artist: categoryData['description']!,
-            playable: false,
-            extras: {
-              'android.media.browse.CONTENT_STYLE_BROWSABLE_HINT': 1,
-              'android.media.browse.CONTENT_STYLE_LIST_ITEM_HINT_VALUE': 1,
-            },
-          );
-        }).toList();
-        
-      // Specific categories
-      case 'haber':
-      case 'muzik':
-      case 'turkce_pop':
-      case 'turku':
-      case 'spor':
-      case 'dini':
-      case 'klasik':
-        return _radioCategories[parentMediaId] ?? [];
-        
-      default:
-        return [];
+    if (parentMediaId == AudioService.browsableRootId) {
+      // Root level - return simple stations directly (like Radyo Kulesi)
+      print("🚗🚗🚗 Returning ROOT level stations");
+      
+      return [
+        MediaItem(
+          id: 'trt_haber',
+          title: 'TRT Haber',
+          artist: 'Haber Radyosu',
+          album: 'Türk Radyo',
+          artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+          playable: true,
+          duration: null, // Live stream
+          extras: {
+            'streamUrl': 'https://nmgvodsgemstts1.mediatriple.net/trt_haber',
+            'isLive': true,
+            'android.media.metadata.CONTENT_TYPE': 'audio/mpeg',
+          },
+        ),
+        MediaItem(
+          id: 'trt_fm',
+          title: 'TRT FM',
+          artist: 'Pop Müzik',
+          album: 'Türk Radyo',
+          artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+          playable: true,
+          duration: null, // Live stream
+          extras: {
+            'streamUrl': 'https://nmgvodsgemstts1.mediatriple.net/trt_fm',
+            'isLive': true,
+            'android.media.metadata.CONTENT_TYPE': 'audio/mpeg',
+          },
+        ),
+        MediaItem(
+          id: 'kral_pop',
+          title: 'Kral Pop',
+          artist: 'Türkçe Pop',
+          album: 'Türk Radyo',
+          artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+          playable: true,
+          duration: null, // Live stream
+          extras: {
+            'streamUrl': 'https://kralpop.radyotvonline.com/listen/kralpop/radio.mp3',
+            'isLive': true,
+            'android.media.metadata.CONTENT_TYPE': 'audio/mpeg',
+          },
+        ),
+        MediaItem(
+          id: 'power_fm',
+          title: 'Power FM',
+          artist: 'Pop ve Dance',
+          album: 'Türk Radyo',
+          artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+          playable: true,
+          duration: null, // Live stream
+          extras: {
+            'streamUrl': 'https://powerfm.radyotvonline.com/listen/powerfm/radio.mp3',
+            'isLive': true,
+            'android.media.metadata.CONTENT_TYPE': 'audio/mpeg',
+          },
+        ),
+      ];
     }
+    
+    print("🚗🚗🚗 Unknown parentMediaId: $parentMediaId, returning empty");
+    return [];
   }
 
   @override
@@ -567,5 +625,55 @@ class RadioAudioHandler extends BaseAudioHandler
       // Set the media item but don't start playing yet
       this.mediaItem.add(foundStation);
     }
+  }
+
+  @override
+  Future<void> playFromMediaId(String mediaId, [Map<String, dynamic>? extras]) async {
+    print("🚗 Android Auto: playFromMediaId -> $mediaId");
+
+    // Simple hardcoded mapping for direct play
+    final Map<String, String> stationUrls = {
+      'trt_haber': 'https://nmgvodsgemstts1.mediatriple.net/trt_haber',
+      'trt_fm': 'https://nmgvodsgemstts1.mediatriple.net/trt_fm',
+      'kral_pop': 'https://kralpop.radyotvonline.com/listen/kralpop/radio.mp3',
+      'power_fm': 'https://powerfm.radyotvonline.com/listen/powerfm/radio.mp3',
+    };
+
+    final streamUrl = stationUrls[mediaId];
+    if (streamUrl != null) {
+      print("🚗 Found stream URL for $mediaId: $streamUrl");
+      
+      // Create MediaItem for the current selection
+      final currentItem = MediaItem(
+        id: mediaId,
+        title: mediaId.replaceAll('_', ' ').toUpperCase(),
+        artist: 'Turkish Radio',
+        album: 'Live Stream',
+        artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+        playable: true,
+        duration: null, // Live stream
+        extras: {
+          'streamUrl': streamUrl,
+          'isLive': true,
+        },
+      );
+
+      // Set media item first
+      mediaItem.add(currentItem);
+      print("🚗 MediaItem set for Android Auto");
+
+      // Then start playback
+      await playStation(
+        streamUrl,
+        currentItem.title,
+        currentItem.artist ?? 'Radio',
+        currentItem.artUri?.toString(),
+      );
+      
+      print("🚗 playStation completed for $mediaId");
+      return;
+    }
+
+    print('❌ playFromMediaId failed: Unknown mediaId $mediaId');
   }
 }

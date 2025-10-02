@@ -45,6 +45,11 @@ Future<void> _initializeAudioService() async {
           'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
           'android.media.browse.CONTENT_STYLE_PLAYABLE_HINT': 1,
           'android.media.browse.CONTENT_STYLE_BROWSABLE_HINT': 2,
+          'android.media.browse.CONTENT_STYLE_CATEGORY_LIST_ENABLED': true,
+          'android.media.browse.CONTENT_STYLE_CATEGORY_GRID_ENABLED': true,
+          'com.google.android.gms.car.media.ALWAYS_RESERVE_SPACE_FOR.ACTION_QUEUE': false,
+          'com.google.android.gms.car.media.ALWAYS_RESERVE_SPACE_FOR.ACTION_SKIP_TO_NEXT': false,
+          'com.google.android.gms.car.media.ALWAYS_RESERVE_SPACE_FOR.ACTION_SKIP_TO_PREVIOUS': false,
         },
       ),
     );
