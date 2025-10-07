@@ -19,20 +19,20 @@ class MiniPlayer extends ConsumerWidget {
     final station = playerState.currentStation!;
 
     return Container(
-      height: 70,
+      height: 78,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppTheme.headerPurple,
-            AppTheme.cardPurple,
-            AppTheme.cardPurpleDark,
+            Color(0xFF1E1E2E), // Dark blue-gray
+            Color(0xFF2D2A3F), // Purple-gray
+            Color(0xFF3B3C5D), // Medium blue-gray
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.cardPurpleDark.withOpacity(0.3),
+            color: Color(0xFF1E1E2E).withOpacity(0.3),
             offset: const Offset(0, -4),
             blurRadius: 12,
             spreadRadius: 0,
@@ -148,30 +148,30 @@ class MiniPlayer extends ConsumerWidget {
                 // Loading indicator or Play/Pause Button with modern styling
                 if (playerState.isLoading)
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 50,
+                    height: 50,
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(25),
                     ),
                     child: const Center(
                       child: SizedBox(
-                        width: 20,
-                        height: 20,
+                        width: 24,
+                        height: 24,
                         child: CircularProgressIndicator(
                           color: Colors.white,
-                          strokeWidth: 2,
+                          strokeWidth: 2.5,
                         ),
                       ),
                     ),
                   )
                 else
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 50,
+                    height: 50,
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(25),
                       border: Border.all(
                         color: Colors.white.withOpacity(0.3),
                         width: 1,
@@ -188,7 +188,7 @@ class MiniPlayer extends ConsumerWidget {
                       icon: Icon(
                         playerState.isPlaying ? Icons.pause : Icons.play_arrow,
                         color: Colors.white,
-                        size: 20,
+                        size: 26,
                       ),
                       padding: EdgeInsets.zero,
                     ),
@@ -198,11 +198,11 @@ class MiniPlayer extends ConsumerWidget {
 
                 // Stop Button with modern styling
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 46,
+                  height: 46,
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(23),
                     border: Border.all(
                       color: Colors.white.withOpacity(0.3),
                       width: 1,
@@ -215,7 +215,7 @@ class MiniPlayer extends ConsumerWidget {
                     icon: const Icon(
                       Icons.stop,
                       color: Colors.white,
-                      size: 18,
+                      size: 22,
                     ),
                     padding: EdgeInsets.zero,
                   ),
@@ -240,9 +240,9 @@ class MiniPlayer extends ConsumerWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppTheme.headerPurple,
-              AppTheme.cardPurple,
-              AppTheme.cardPurpleDark,
+              Color(0xFF1E1E2E), // Dark blue-gray
+              Color(0xFF2D2A3F), // Purple-gray
+              Color(0xFF3B3C5D), // Medium blue-gray
             ],
           ),
           borderRadius: const BorderRadius.vertical(
