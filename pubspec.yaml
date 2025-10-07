@@ -30,6 +30,7 @@ dependencies:
   # Utilities
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
+  path_provider: ^2.1.1
 
   # HTTP
   http: ^1.1.0
@@ -53,14 +54,14 @@ dev_dependencies:
 # App Icon Configuration
 flutter_icons:
   android: true
-  ios: false
-  image_path: "assets/images/radio_logo.png"
-  adaptive_icon_background: "#7C3AED"
-  adaptive_icon_foreground: "assets/images/radio_logo.png"
+  ios: true
+  image_path: "assets/images/vintage_radio_logo.png"
+  adaptive_icon_background: "#2D1B69"  # Deep purple background
+  adaptive_icon_foreground: "assets/images/vintage_radio_logo.png"
   min_sdk_android: 21
   remove_alpha_ios: true
   # Logo boyutunu ayarla ve merkeze al
-  adaptive_icon_padding: 80
+  adaptive_icon_padding: 40  # Reduced padding for better visibility
 
 flutter:
   uses-material-design: true

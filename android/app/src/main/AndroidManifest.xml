@@ -65,10 +65,15 @@
             android:enabled="true"
             android:foregroundServiceType="mediaPlayback">
             
-            <!-- MediaBrowserService ve MEDIA_BUTTON intent filters like Radio FM -->
+            <!-- MediaBrowserService ve MEDIA_BUTTON intent filters -->
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
                 <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+            
+            <!-- Android Auto support -->
+            <intent-filter>
+                <action android:name="com.google.android.gms.car.media.CarMediaBrowserService" />
             </intent-filter>
                 
         </service>

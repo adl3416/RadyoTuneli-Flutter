@@ -26,7 +26,7 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
+            // Header - sabit olarak üstte kalacak
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -85,147 +85,151 @@ class HomeScreen extends ConsumerWidget {
             
             const SizedBox(height: 2),
             
-            // Selected Category Indicator
-            Consumer(
-              builder: (context, ref, child) {
-                final selectedCategory = ref.watch(selectedCategoryProvider);
-                if (selectedCategory == null) return const SizedBox.shrink();
-                
-                // Find category name from nested structure
-                String categoryName = selectedCategory;
-                for (final group in radioCategories.values) {
-                  if (group.containsKey(selectedCategory)) {
-                    categoryName = group[selectedCategory] ?? selectedCategory;
-                    break;
-                  }
-                }
-                
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Chip(
-                    backgroundColor: AppTheme.cardPurple,
-                    deleteIconColor: Colors.white,
-                    onDeleted: () {
-                      HapticFeedback.lightImpact();
-                      ref.read(selectedCategoryProvider.notifier).state = null;
-                    },
-                    label: Text(
-                      categoryName,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                );
-              },
-            ),
-            
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: TextField(
-                onChanged: (value) {
-                  ref.read(searchQueryProvider.notifier).state = value;
-                },
-                decoration: InputDecoration(
-                  hintText: 'İstasyon, türü ara...',
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: AppTheme.gray500,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppTheme.headerPurple, width: 2),
-                  ),
-                  suffixIcon: searchQuery.isNotEmpty
-                      ? IconButton(
-                          onPressed: () {
-                            ref.read(searchQueryProvider.notifier).state = '';
-                          },
-                          icon: Icon(
-                            Icons.clear,
-                            color: AppTheme.headerPurple,
-                          ),
-                        )
-                      : null,
-                ),
-              ),
-            ),
-            
-            // Recently Played Section (only show if no search)
-            if (searchQuery.isEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Son Dinlenenler',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        HapticFeedback.lightImpact();
-                        ref.read(recentlyPlayedNotifierProvider.notifier).clearRecent();
-                      },
-                      child: Text(
-                        'Temizle',
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              // Recently Played List (Horizontal)
-              SizedBox(
-                height: 82,
-                child: recentlyPlayedAsync.when(
-                  data: (recentlyPlayedStations) => ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: recentlyPlayedStations.length,
-                    itemBuilder: (context, index) {
-                      final station = recentlyPlayedStations[index];
-                      return RecentlyPlayedStationItem(
-                        station: station,
-                        onTap: () {
-                          ref.read(playerStateProvider.notifier).playStation(station);
-                        },
-                      );
-                    },
-                  ),
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (error, stack) => Center(
-                    child: Text('Son dinlenen istasyonlar yüklenemedi: $error'),
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-            ],
-            
-            // Stations List
+            // Scroll edilebilir içerik - CustomScrollView içinde
             Expanded(
               child: filteredStationsAsync.when(
                 data: (filteredStations) {
-                  if (filteredStations.isEmpty) {
-                    return _buildEmptyState(context, searchQuery);
-                  }
-                  
                   return CustomScrollView(
                     slivers: [
-                      // Section Title
+                      // Selected Category Indicator
+                      SliverToBoxAdapter(
+                        child: Consumer(
+                          builder: (context, ref, child) {
+                            final selectedCategory = ref.watch(selectedCategoryProvider);
+                            if (selectedCategory == null) return const SizedBox.shrink();
+                            
+                            // Find category name from nested structure
+                            String categoryName = selectedCategory;
+                            for (final group in radioCategories.values) {
+                              if (group.containsKey(selectedCategory)) {
+                                categoryName = group[selectedCategory] ?? selectedCategory;
+                                break;
+                              }
+                            }
+                            
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: Chip(
+                                backgroundColor: AppTheme.cardPurple,
+                                deleteIconColor: Colors.white,
+                                onDeleted: () {
+                                  HapticFeedback.lightImpact();
+                                  ref.read(selectedCategoryProvider.notifier).state = null;
+                                },
+                                label: Text(
+                                  categoryName,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      
+                      // Search Bar
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: TextField(
+                            onChanged: (value) {
+                              ref.read(searchQueryProvider.notifier).state = value;
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'İstasyon, türü ara...',
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: AppTheme.gray500,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: AppTheme.headerPurple, width: 2),
+                              ),
+                              suffixIcon: searchQuery.isNotEmpty
+                                  ? IconButton(
+                                      onPressed: () {
+                                        ref.read(searchQueryProvider.notifier).state = '';
+                                      },
+                                      icon: Icon(
+                                        Icons.clear,
+                                        color: AppTheme.headerPurple,
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      // Recently Played Section (only show if no search)
+                      if (searchQuery.isEmpty) ...[
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Son Dinlenenler',
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    HapticFeedback.lightImpact();
+                                    ref.read(recentlyPlayedNotifierProvider.notifier).clearRecent();
+                                  },
+                                  child: Text(
+                                    'Temizle',
+                                    style: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        
+                        // Recently Played List (Horizontal)
+                        SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: 82,
+                            child: recentlyPlayedAsync.when(
+                              data: (recentlyPlayedStations) => ListView.builder(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                scrollDirection: Axis.horizontal,
+                                itemCount: recentlyPlayedStations.length,
+                                itemBuilder: (context, index) {
+                                  final station = recentlyPlayedStations[index];
+                                  return RecentlyPlayedStationItem(
+                                    station: station,
+                                    onTap: () {
+                                      ref.read(playerStateProvider.notifier).playStation(station);
+                                    },
+                                  );
+                                },
+                              ),
+                              loading: () => const Center(child: CircularProgressIndicator()),
+                              error: (error, stack) => Center(
+                                child: Text('Son dinlenen istasyonlar yüklenemedi: $error'),
+                              ),
+                            ),
+                          ),
+                        ),
+                        
+                        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                      ],
+                      
+                      // Section Title for Stations
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             searchQuery.isNotEmpty 
-                                ? 'Search Results (${filteredStations.length})'
-                                : 'All Stations (${filteredStations.length})',
+                                ? 'Arama Sonuçları (${filteredStations.length})'
+                                : 'Tüm İstasyonlar (${filteredStations.length})',
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -235,32 +239,37 @@ class HomeScreen extends ConsumerWidget {
                       
                       const SliverToBoxAdapter(child: SizedBox(height: 16)),
                       
-                      // List
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final station = filteredStations[index];
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                              child: RadioStationCard(
-                                title: station.name,
-                                subtitle: station.genre ?? 'Turkish Radio',
-                                imageUrl: station.logoUrl,
-                                isPlaying: ref.watch(playerStateProvider).currentStation?.id == station.id &&
-                                          ref.watch(playerStateProvider).isPlaying,
-                                isFavorite: ref.watch(favoritesProvider).contains(station.id),
-                                onTap: () {
-                                  ref.read(playerStateProvider.notifier).playStation(station);
-                                },
-                                onFavoriteToggle: () {
-                                  ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
-                                },
-                              ),
-                            );
-                          },
-                          childCount: filteredStations.length,
+                      // Stations List
+                      if (filteredStations.isEmpty)
+                        SliverToBoxAdapter(
+                          child: _buildEmptyState(context, searchQuery),
+                        )
+                      else
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final station = filteredStations[index];
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                child: RadioStationCard(
+                                  title: station.name,
+                                  subtitle: station.genre ?? 'Turkish Radio',
+                                  imageUrl: station.logoUrl,
+                                  isPlaying: ref.watch(playerStateProvider).currentStation?.id == station.id &&
+                                            ref.watch(playerStateProvider).isPlaying,
+                                  isFavorite: ref.watch(favoritesProvider).contains(station.id),
+                                  onTap: () {
+                                    ref.read(playerStateProvider.notifier).playStation(station);
+                                  },
+                                  onFavoriteToggle: () {
+                                    ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
+                                  },
+                                ),
+                              );
+                            },
+                            childCount: filteredStations.length,
+                          ),
                         ),
-                      ),
                     ],
                   );
                 },
@@ -271,12 +280,12 @@ class HomeScreen extends ConsumerWidget {
                       CircularProgressIndicator(),
                       SizedBox(height: 16),
                       Text(
-                        'Loading Turkish radio stations...',
+                        'Türkçe radyo istasyonları yükleniyor...',
                         style: TextStyle(fontSize: 16),
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'This might take a few moments',
+                        'Bu birkaç dakika sürebilir',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
