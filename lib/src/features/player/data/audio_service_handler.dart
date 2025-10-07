@@ -333,13 +333,13 @@ class RadioAudioHandler extends BaseAudioHandler
   }
 
   Future<void> playStation(
-      String streamUrl, String title, String artist, String? artUri) async {
+      String streamUrl, String title, String artist, String? artUri, {String? stationId}) async {
     try {
-      print("📻 Setting up radio station: $title");
+      print("📻 Setting up radio station: $title (ID: ${stationId ?? 'none'})");
 
       // Set media item for system UI first
       final mediaItem = MediaItem(
-        id: streamUrl,
+        id: stationId ?? streamUrl, // Use station ID if provided, fallback to streamUrl
         album: 'Turkish Radio',
         title: title,
         artist: artist,
@@ -349,6 +349,7 @@ class RadioAudioHandler extends BaseAudioHandler
         extras: {
           'isLive': true,
           'streamUrl': streamUrl,
+          'stationId': stationId, // Store original station ID
         },
       );
 
@@ -569,6 +570,7 @@ class RadioAudioHandler extends BaseAudioHandler
         mediaItem.title,
         mediaItem.artist ?? 'Radio',
         mediaItem.artUri?.toString(),
+        stationId: mediaItem.id, // Use mediaItem.id as station ID
       );
     }
   }
@@ -646,6 +648,7 @@ class RadioAudioHandler extends BaseAudioHandler
           foundStation.title,
           foundStation.artist ?? 'Radio',
           foundStation.artUri?.toString(),
+          stationId: foundStation.id, // Use station ID
         );
         
         print("🚗 playStation completed for $mediaId");
@@ -690,6 +693,7 @@ class RadioAudioHandler extends BaseAudioHandler
         currentItem.title,
         currentItem.artist ?? 'Radio',
         currentItem.artUri?.toString(),
+        stationId: currentItem.id, // Use station ID
       );
       
       print("🚗 playStation completed for $mediaId");
@@ -697,5 +701,22 @@ class RadioAudioHandler extends BaseAudioHandler
     }
 
     print('❌ playFromMediaId failed: Unknown mediaId $mediaId');
+  }
+
+  // Handle custom actions (like volume control)
+  @override
+  Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) async {
+    switch (name) {
+      case 'setVolume':
+        if (extras != null && extras.containsKey('volume')) {
+          final volume = extras['volume'] as double;
+          await _player.setVolume(volume);
+          print('🔊 Volume set to: $volume');
+        }
+        break;
+      default:
+        print('⚠️ Unknown custom action: $name');
+    }
+    return super.customAction(name, extras);
   }
 }

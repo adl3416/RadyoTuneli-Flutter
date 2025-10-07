@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/theme/app_theme.dart';
@@ -391,18 +392,34 @@ class FullScreenPlayer extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // Previous (disabled for radio)
+              // Previous Button - now active
               Container(
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: const Icon(
-                  Icons.skip_previous,
-                  size: 32,
-                  color: Colors.white38,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () async {
+                      print('🔄 Previous button tapped in FullScreenPlayer');
+                      HapticFeedback.mediumImpact();
+                      try {
+                        await ref.read(playerStateProvider.notifier).previousStation();
+                        print('✅ Previous station method completed');
+                      } catch (e) {
+                        print('❌ Error calling previousStation: $e');
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(30),
+                    child: const Icon(
+                      Icons.skip_previous,
+                      size: 32,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
 
@@ -450,18 +467,34 @@ class FullScreenPlayer extends ConsumerWidget {
                       ),
               ),
 
-              // Next (disabled for radio)
+              // Next Button - now active
               Container(
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: const Icon(
-                  Icons.skip_next,
-                  size: 32,
-                  color: Colors.white38,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () async {
+                      print('🔄 Next button tapped in FullScreenPlayer');
+                      HapticFeedback.mediumImpact();
+                      try {
+                        await ref.read(playerStateProvider.notifier).nextStation();
+                        print('✅ Next station method completed');
+                      } catch (e) {
+                        print('❌ Error calling nextStation: $e');
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(30),
+                    child: const Icon(
+                      Icons.skip_next,
+                      size: 32,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ],

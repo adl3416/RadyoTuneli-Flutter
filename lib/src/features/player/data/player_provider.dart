@@ -147,6 +147,7 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
         station.name,
         station.description ?? 'Turkish Radio',
         station.logoUrl,
+        stationId: station.id, // Add station ID parameter
       );
 
       // Update recently played with new provider
@@ -199,6 +200,133 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
 
   void clearError() {
     state = state.copyWith(error: null);
+  }
+
+  // Audio handler getter for external access
+  AudioHandler? get audioHandler => _audioHandler ?? globalAudioHandler;
+
+  // Navigate to next station in the filtered list
+  Future<void> nextStation() async {
+    try {
+      print('🔄 nextStation called');
+      
+      // Get search and filter states
+      final searchQuery = _ref.read(searchQueryProvider);
+      final selectedCategory = _ref.read(selectedCategoryProvider);
+      
+      print('🔄 Search query: "$searchQuery"');
+      print('🔄 Selected category: $selectedCategory');
+      
+      // Get stations based on current filters
+      List<Station> availableStations;
+      
+      if (searchQuery.isNotEmpty || selectedCategory != null) {
+        // Use filtered stations if there's active search/category
+        final filteredStations = await _ref.read(filteredStationsProvider.future);
+        availableStations = filteredStations;
+        print('🔄 Using filtered stations: ${availableStations.length}');
+      } else {
+        // Use all stations if no filter
+        final allStations = await _ref.read(stationsProvider.future);
+        availableStations = allStations;
+        print('🔄 Using all stations: ${availableStations.length}');
+      }
+      
+      if (availableStations.isEmpty) {
+        print('🔄 No stations available');
+        return;
+      }
+
+      final currentStationId = state.currentStation?.id;
+      print('🔄 Current station ID: $currentStationId');
+      
+      if (currentStationId == null) {
+        print('🔄 No current station, playing first available');
+        await playStation(availableStations.first);
+        return;
+      }
+
+      // Find current station index in available list
+      final currentIndex = availableStations.indexWhere((s) => s.id == currentStationId);
+      print('🔄 Current station index: $currentIndex');
+      
+      if (currentIndex == -1) {
+        print('🔄 Current station not in available list, playing first');
+        await playStation(availableStations.first);
+        return;
+      }
+
+      // Go to next station (wrap around to first if at end)
+      final nextIndex = (currentIndex + 1) % availableStations.length;
+      print('🔄 Next station index: $nextIndex');
+      print('🔄 Next station name: ${availableStations[nextIndex].name}');
+      await playStation(availableStations[nextIndex]);
+    } catch (e) {
+      print('❌ Error in nextStation: $e');
+      state = state.copyWith(error: 'Sonraki istasyon yüklenirken hata oluştu.');
+    }
+  }
+
+  // Navigate to previous station in the filtered list
+  Future<void> previousStation() async {
+    try {
+      print('🔄 previousStation called');
+      
+      // Get search and filter states
+      final searchQuery = _ref.read(searchQueryProvider);
+      final selectedCategory = _ref.read(selectedCategoryProvider);
+      
+      print('🔄 Search query: "$searchQuery"');
+      print('🔄 Selected category: $selectedCategory');
+      
+      // Get stations based on current filters
+      List<Station> availableStations;
+      
+      if (searchQuery.isNotEmpty || selectedCategory != null) {
+        // Use filtered stations if there's active search/category
+        final filteredStations = await _ref.read(filteredStationsProvider.future);
+        availableStations = filteredStations;
+        print('🔄 Using filtered stations: ${availableStations.length}');
+      } else {
+        // Use all stations if no filter
+        final allStations = await _ref.read(stationsProvider.future);
+        availableStations = allStations;
+        print('🔄 Using all stations: ${availableStations.length}');
+      }
+      
+      if (availableStations.isEmpty) {
+        print('🔄 No stations available');
+        return;
+      }
+
+      final currentStationId = state.currentStation?.id;
+      print('🔄 Current station ID: $currentStationId');
+      
+      if (currentStationId == null) {
+        print('🔄 No current station, playing last available');
+        await playStation(availableStations.last);
+        return;
+      }
+
+      // Find current station index in available list
+      final currentIndex = availableStations.indexWhere((s) => s.id == currentStationId);
+      print('🔄 Current station index: $currentIndex');
+      
+      if (currentIndex == -1) {
+        print('🔄 Current station not in available list, playing last');
+        await playStation(availableStations.last);
+        return;
+      }
+
+      // Go to previous station (wrap around to last if at beginning)
+      final previousIndex = currentIndex == 0 ? availableStations.length - 1 : currentIndex - 1;
+      print('🔄 Previous station index: $previousIndex');
+      print('🔄 Previous station name: ${availableStations[previousIndex].name}');
+      await playStation(availableStations[previousIndex]);
+    } catch (e) {
+      print('❌ Error in previousStation: $e');
+      state = state.copyWith(error: 'Önceki istasyon yüklenirken hata oluştu.');
+    }
   }
 
   String _getErrorMessage(dynamic error) {

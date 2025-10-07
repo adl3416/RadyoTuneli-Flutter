@@ -18,27 +18,27 @@ class RecentlyPlayedStationItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 80,
-        margin: const EdgeInsets.only(right: 16),
+        width: 70, // 80'den 70'e küçültüldü
+        margin: const EdgeInsets.only(right: 12), // 16'dan 12'ye küçültüldü
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: 50, // 60'dan 50'ye küçültüldü
+              height: 50, // 60'dan 50'ye küçültüldü
               decoration: BoxDecoration(
                 color: AppConstants.surfaceVariant,
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(25), // 30'dan 25'e küçültüldü
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
+                    blurRadius: 6, // 8'den 6'ya küçültüldü
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(25), // 30'dan 25'e küçültüldü
                 child: CachedNetworkImage(
                   imageUrl: station.logoUrl,
                   fit: BoxFit.cover,
@@ -46,7 +46,7 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                     color: AppConstants.surfaceVariant,
                     child: Icon(
                       Icons.radio,
-                      size: 24,
+                      size: 20, // 24'den 20'ye küçültüldü
                       color: AppConstants.textSecondary,
                     ),
                   ),
@@ -54,20 +54,20 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                     color: AppConstants.surfaceVariant,
                     child: Icon(
                       Icons.radio,
-                      size: 24,
+                      size: 20, // 24'den 20'ye küçültüldü
                       color: AppConstants.textSecondary,
                     ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4), // 6'dan 4'e küçültüldü
             Expanded(
               child: Text(
                 station.name,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.w500,
-                      fontSize: 12,
+                      fontSize: 10, // 12'den 10'a küçültüldü
                     ),
                 textAlign: TextAlign.center,
                 maxLines: 2,

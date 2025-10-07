@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:audio_service/audio_service.dart';
 import 'src/features/splash/ui/splash_app.dart';
@@ -9,6 +10,12 @@ RadioAudioHandler? globalAudioHandler;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Lock device orientation to portrait
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   // Initialize audio service before starting app
   await _initializeAudioService();

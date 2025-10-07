@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../stations/domain/station_model.dart';
 import '../data/player_provider.dart';
+import '../data/audio_service_handler.dart';
+import '../../favorites/data/favorites_provider.dart';
 
 class AutomotivePlayerScreen extends ConsumerWidget {
   const AutomotivePlayerScreen({super.key});
@@ -164,9 +166,9 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                   _buildLargeButton(
                     icon: Icons.skip_previous,
                     label: 'ÖNCEKİ',
-                    onPressed: () {
+                    onPressed: () async {
                       HapticFeedback.mediumImpact();
-                      // TODO: Implement previous station
+                      await ref.read(playerStateProvider.notifier).previousStation();
                     },
                   ),
                   
@@ -198,9 +200,9 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                   _buildLargeButton(
                     icon: Icons.skip_next,
                     label: 'SONRAKİ',
-                    onPressed: () {
+                    onPressed: () async {
                       HapticFeedback.mediumImpact();
-                      // TODO: Implement next station
+                      await ref.read(playerStateProvider.notifier).nextStation();
                     },
                   ),
                 ],
@@ -225,7 +227,7 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                     label: 'FAVORİLER',
                     onPressed: () {
                       HapticFeedback.lightImpact();
-                      // TODO: Show favorites
+                      _showFavoritesModal(context, ref);
                     },
                   ),
                   _buildSmallButton(
@@ -233,7 +235,7 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                     label: 'SES',
                     onPressed: () {
                       HapticFeedback.lightImpact();
-                      // TODO: Volume control
+                      _showVolumeModal(context, ref);
                     },
                   ),
                 ],
@@ -330,6 +332,274 @@ class AutomotivePlayerScreen extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void _showVolumeModal(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Consumer(
+        builder: (context, ref, child) {
+          return Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.grey[900],
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.volume_up,
+                      color: AppTheme.orange400,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 16),
+                    Text(
+                      'SES SEVİYESİ',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '80%',
+                      style: TextStyle(
+                        color: AppTheme.orange400,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.volume_mute,
+                      color: Colors.grey[400],
+                      size: 24,
+                    ),
+                    Expanded(
+                      child: SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          trackShape: const RoundedRectSliderTrackShape(),
+                          trackHeight: 6,
+                          thumbColor: AppTheme.orange400,
+                          activeTrackColor: AppTheme.orange400,
+                          inactiveTrackColor: Colors.grey[700],
+                          thumbShape: const RoundSliderThumbShape(
+                            enabledThumbRadius: 12,
+                          ),
+                        ),
+                        child: Slider(
+                          value: 0.8,
+                          onChanged: (value) {
+                            HapticFeedback.selectionClick();
+                            // Apply volume to audio service
+                            final audioHandler = ref.read(playerStateProvider.notifier).audioHandler;
+                            if (audioHandler != null) {
+                              // Use the base AudioHandler's customAction for volume
+                              audioHandler.customAction('setVolume', {'volume': value});
+                            }
+                          },
+                          min: 0.0,
+                          max: 1.0,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.volume_up,
+                      color: Colors.grey[400],
+                      size: 24,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildVolumePreset('DÜŞÜK', 0.3, ref),
+                    _buildVolumePreset('ORTA', 0.6, ref),
+                    _buildVolumePreset('YÜKSEK', 0.9, ref),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildVolumePreset(String label, double value, WidgetRef ref) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        final audioHandler = ref.read(playerStateProvider.notifier).audioHandler;
+        if (audioHandler != null) {
+          // Use the base AudioHandler's customAction for volume
+          audioHandler.customAction('setVolume', {'volume': value});
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey[800],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showFavoritesModal(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Consumer(
+        builder: (context, ref, child) {
+          final favoritesAsync = ref.watch(sortedFavoriteStationsProvider);
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.7,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.grey[900],
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.favorite,
+                      color: AppTheme.orange400,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 16),
+                    Text(
+                      'FAVORİ İSTASYONLAR',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Expanded(
+                  child: favoritesAsync.when(
+                    data: (favorites) {
+                      if (favorites.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.favorite_border,
+                                color: Colors.grey[400],
+                                size: 64,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Henüz favori istasyon yok',
+                                style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return ListView.builder(
+                        itemCount: favorites.length,
+                        itemBuilder: (context, index) {
+                          final station = favorites[index];
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[800],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: CircleAvatar(
+                                backgroundColor: AppTheme.orange400.withOpacity(0.2),
+                                child: Icon(
+                                  Icons.radio,
+                                  color: AppTheme.orange400,
+                                ),
+                              ),
+                              title: Text(
+                                station.name,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              subtitle: Text(
+                                station.description ?? station.genre ?? '',
+                                style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 12,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              trailing: Icon(
+                                Icons.play_arrow,
+                                color: AppTheme.orange400,
+                                size: 28,
+                              ),
+                              onTap: () {
+                                HapticFeedback.mediumImpact();
+                                ref.read(playerStateProvider.notifier).playStation(station);
+                                Navigator.pop(context);
+                              },
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    error: (error, stack) => Center(
+                      child: Text(
+                        'Favoriler yüklenemedi',
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

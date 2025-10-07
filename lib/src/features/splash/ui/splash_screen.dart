@@ -176,9 +176,10 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
             child: SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+              child: Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 20, left: 24, right: 24),
+                child: Column(
+                  children: [
                   // Logo Section
                   Expanded(
                     flex: 3,
@@ -276,43 +277,46 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
 
                   // Bottom Section
-                  Expanded(
-                    flex: 1,
-                    child: AnimatedBuilder(
-                      animation: _textController,
-                      builder: (context, child) {
-                        return Opacity(
-                          opacity: _textFadeAnimation.value,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                'Modern Radio Experience',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.white.withOpacity(0.6),
-                                  letterSpacing: 0.8,
+                  SafeArea(
+                    child: Container(
+                      height: 160, // Fixed height to prevent overflow
+                      child: AnimatedBuilder(
+                        animation: _textController,
+                        builder: (context, child) {
+                          return Opacity(
+                            opacity: _textFadeAnimation.value,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'Modern Radio Experience',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.white.withOpacity(0.6),
+                                    letterSpacing: 0.8,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 20),
-                              // Feature indicators
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  _buildFeatureIcon(Icons.category, 'Kategoriler'),
-                                  const SizedBox(width: 20),
-                                  _buildFeatureIcon(Icons.car_rental, 'Android Auto'),
-                                  const SizedBox(width: 20),
-                                  _buildFeatureIcon(Icons.favorite, 'Favoriler'),
-                                ],
-                              ),
-                              const SizedBox(height: 40),
-                            ],
-                          ),
-                        );
-                      },
+                                const SizedBox(height: 16),
+                                // Feature indicators
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _buildFeatureIcon(Icons.category, 'Kategoriler'),
+                                    const SizedBox(width: 20),
+                                    _buildFeatureIcon(Icons.car_rental, 'Android Auto'),
+                                    const SizedBox(width: 20),
+                                    _buildFeatureIcon(Icons.favorite, 'Favoriler'),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
