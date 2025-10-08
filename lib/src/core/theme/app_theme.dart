@@ -26,14 +26,21 @@ class AppTheme {
   static const Color gray500 = Color(0xFF6B7280); // Gray-500
   static const Color gray900 = Color(0xFF111827); // Gray-900
   
-  // Tema Renkleri
+  // Light Theme Renkleri
   static const Color lightTint = Color(0xFF2f95dc); // Light Theme Tint
   static const Color lightBackground = Color(0xFFFFFFFF); // Light Background
   static const Color lightText = Color(0xFF000000); // Light Text
   
-  static const Color darkTint = Color(0xFFFFFFFF); // Dark Theme Tint
-  static const Color darkBackground = Color(0xFF000000); // Dark Background
-  static const Color darkText = Color(0xFFFFFFFF); // Dark Text
+  // Dark Theme Renkleri - Yeni modern dark konsept
+  static const Color darkPrimary = Color(0xFF6366F1); // İndigo-500
+  static const Color darkSecondary = Color(0xFFF59E0B); // Amber-500
+  static const Color darkBackground = Color(0xFF0F0F0F); // Çok koyu siyah
+  static const Color darkSurface = Color(0xFF1A1A1A); // Koyu gri
+  static const Color darkSurfaceVariant = Color(0xFF262626); // Orta koyu gri
+  static const Color darkText = Color(0xFFF5F5F5); // Beyaza yakın
+  static const Color darkTextSecondary = Color(0xFFB4B4B4); // Açık gri
+  static const Color darkBorder = Color(0xFF404040); // Kenarlık rengi
+  static const Color darkAccent = Color(0xFF8B5CF6); // Violet accent
   
   // Splash & Icon
   static const Color splashColor = Color(0xFF667eea); // Ana tema mavi-mor
@@ -43,6 +50,13 @@ class AppTheme {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [cardPurple, cardPurpleDark, gradientPurple],
+  );
+
+  // Dark mode için yeni gradient
+  static const LinearGradient darkCardGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF4C1D95), Color(0xFF6366F1), Color(0xFF8B5CF6)],
   );
 
   static ThemeData get lightTheme {
@@ -136,73 +150,135 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: ColorScheme.dark(
-        primary: darkTint,
-        secondary: orange400,
-        surface: gray900,
-        onPrimary: gray900,
-        onSecondary: gray900,
+        primary: darkPrimary,
+        secondary: darkSecondary,
+        surface: darkSurface,
+        onPrimary: white,
+        onSecondary: darkBackground,
         onSurface: darkText,
-        error: gradientPink,
+        error: Color(0xFFEF4444), // Red-500
         background: darkBackground,
         onBackground: darkText,
+        outline: darkBorder,
+        surfaceVariant: darkSurfaceVariant,
+        onSurfaceVariant: darkTextSecondary,
       ),
       scaffoldBackgroundColor: darkBackground,
-      textTheme: textTheme,
+      textTheme: textTheme.copyWith(
+        headlineLarge: textTheme.headlineLarge?.copyWith(color: darkText),
+        headlineMedium: textTheme.headlineMedium?.copyWith(color: darkText),
+        headlineSmall: textTheme.headlineSmall?.copyWith(color: darkText),
+        titleLarge: textTheme.titleLarge?.copyWith(color: darkText),
+        titleMedium: textTheme.titleMedium?.copyWith(color: darkText),
+        titleSmall: textTheme.titleSmall?.copyWith(color: darkText),
+        bodyLarge: textTheme.bodyLarge?.copyWith(color: darkText),
+        bodyMedium: textTheme.bodyMedium?.copyWith(color: darkText),
+        bodySmall: textTheme.bodySmall?.copyWith(color: darkTextSecondary),
+        labelLarge: textTheme.labelLarge?.copyWith(color: darkText),
+        labelMedium: textTheme.labelMedium?.copyWith(color: darkTextSecondary),
+        labelSmall: textTheme.labelSmall?.copyWith(color: darkTextSecondary),
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: darkBackground,
         foregroundColor: darkText,
         elevation: 0,
         centerTitle: true,
+        surfaceTintColor: Colors.transparent,
         titleTextStyle: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
           color: darkText,
         ),
+        iconTheme: IconThemeData(color: darkText),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: darkTint,
-        unselectedItemColor: gray500,
-        backgroundColor: gray900,
+        selectedItemColor: darkPrimary,
+        unselectedItemColor: darkTextSecondary,
+        backgroundColor: darkSurface,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: orange400,
+          backgroundColor: darkPrimary,
           foregroundColor: white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          elevation: 2,
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
-          foregroundColor: gray500,
+          foregroundColor: darkText,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: gray900,
+        fillColor: darkSurface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: darkBorder),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: darkBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: darkTint),
+          borderSide: BorderSide(color: darkPrimary, width: 2),
         ),
-        hintStyle: TextStyle(color: gray500),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        hintStyle: TextStyle(color: darkTextSecondary),
+        labelStyle: TextStyle(color: darkTextSecondary),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       cardTheme: CardThemeData(
-        color: gray900,
-        elevation: 2,
+        color: darkSurface,
+        elevation: 4,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.black.withOpacity(0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      listTileTheme: const ListTileThemeData(
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      listTileTheme: ListTileThemeData(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        textColor: darkText,
+        iconColor: darkText,
+        tileColor: darkSurface,
+      ),
+      dividerTheme: DividerThemeData(
+        color: darkBorder,
+        thickness: 1,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return darkPrimary;
+          }
+          return darkTextSecondary;
+        }),
+        trackColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return darkPrimary.withOpacity(0.3);
+          }
+          return darkBorder;
+        }),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: darkSurface,
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: textTheme.titleLarge?.copyWith(color: darkText),
+        contentTextStyle: textTheme.bodyMedium?.copyWith(color: darkText),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: darkSurface,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
       ),
     );
   }
