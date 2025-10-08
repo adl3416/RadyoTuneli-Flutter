@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/banner_ad_widget.dart';
 import '../../stations/domain/station_model.dart';
 import '../data/player_provider.dart';
 import '../data/audio_service_handler.dart';
@@ -156,7 +157,30 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                 ),
               ),
               
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
+              
+              // Test Reklam Alanı - Çok Basit
+              Container(
+                width: double.infinity,
+                height: 80,
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(
+                  child: Text(
+                    'REKLAM BURASI - TEST',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 20),
               
               // Large Control Buttons
               Row(
@@ -593,6 +617,14 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
+                  ),
+                ),
+                
+                // Banner Reklam
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: SmallBannerAdWidget(
+                    padding: EdgeInsets.all(0),
                   ),
                 ),
               ],

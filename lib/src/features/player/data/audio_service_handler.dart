@@ -245,11 +245,13 @@ class RadioAudioHandler extends BaseAudioHandler
       controls = [
         MediaControl.stop,
       ];
+      print("🔄 Yükleniyor - Kilit ekranı kontrolleri aktif");
     } else if (processingState != ProcessingState.completed) {
       controls = [
         if (isPlaying) MediaControl.pause else MediaControl.play,
         MediaControl.stop,
       ];
+      print("🎵 Oynatılıyor - Kilit ekranı kontrolleri aktif");
     }
 
     playbackState.add(PlaybackState(

@@ -7,6 +7,8 @@ import '../../player/data/player_provider.dart';
 import '../../player/ui/automotive_player_screen.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/vintage_radio_logo.dart';
+import '../../../core/widgets/banner_ad_widget.dart';
+import '../../../core/widgets/interstitial_ad_manager.dart';
 import '../../favorites/data/favorites_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -16,7 +18,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixin {
   late TextEditingController _searchController;
   late FocusNode _searchFocusNode;
   bool _isSearchActive = false; // Arama modunu kontrol eder
@@ -75,6 +77,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             
             const SizedBox(height: 2),
+            
+            // Banner reklam
+            const SmallBannerAdWidget(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              showCloseButton: true,
+            ),
             
             // Scroll edilebilir içerik - CustomScrollView içinde
             Expanded(
@@ -205,6 +213,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         SliverList(
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
+                              if (index >= filteredStations.length) return const SizedBox.shrink();
+                              
                               final station = filteredStations[index];
                               return Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),

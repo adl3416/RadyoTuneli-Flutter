@@ -46,6 +46,10 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	
+	<!-- AdMob App ID -->
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+	
 	<!-- CarPlay Support -->
 	<key>MKDirectionsApplicationSupportedModes</key>
 	<array>

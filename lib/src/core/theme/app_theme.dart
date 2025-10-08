@@ -32,15 +32,15 @@ class AppTheme {
   static const Color lightText = Color(0xFF000000); // Light Text
   
   // Dark Theme Renkleri - Yeni modern dark konsept
-  static const Color darkPrimary = Color(0xFF6366F1); // İndigo-500
-  static const Color darkSecondary = Color(0xFFF59E0B); // Amber-500
-  static const Color darkBackground = Color(0xFF0F0F0F); // Çok koyu siyah
-  static const Color darkSurface = Color(0xFF1A1A1A); // Koyu gri
-  static const Color darkSurfaceVariant = Color(0xFF262626); // Orta koyu gri
-  static const Color darkText = Color(0xFFF5F5F5); // Beyaza yakın
-  static const Color darkTextSecondary = Color(0xFFB4B4B4); // Açık gri
-  static const Color darkBorder = Color(0xFF404040); // Kenarlık rengi
-  static const Color darkAccent = Color(0xFF8B5CF6); // Violet accent
+  static const Color darkPrimary = Color(0xFF8B5CF6); // Violet-500 - daha belirgin
+  static const Color darkSecondary = Color(0xFFFF6B35); // Orange-red - dikkat çekici  
+  static const Color darkBackground = Color(0xFF000000); // Tam siyah
+  static const Color darkSurface = Color(0xFF121212); // Çok koyu gri
+  static const Color darkSurfaceVariant = Color(0xFF1E1E1E); // Koyu gri variant
+  static const Color darkText = Color(0xFFFFFFFF); // Tam beyaz
+  static const Color darkTextSecondary = Color(0xFFCCCCCC); // Açık gri
+  static const Color darkBorder = Color(0xFF333333); // Kenarlık rengi
+  static const Color darkAccent = Color(0xFFEF4444); // Kırmızı accent
   
   // Splash & Icon
   static const Color splashColor = Color(0xFF667eea); // Ana tema mavi-mor
@@ -179,37 +179,47 @@ class AppTheme {
         labelSmall: textTheme.labelSmall?.copyWith(color: darkTextSecondary),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: darkBackground,
+        backgroundColor: darkSurface, // Siyah yerine koyu gri
         foregroundColor: darkText,
-        elevation: 0,
+        elevation: 4, // Gölge ekle
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
+        shadowColor: darkPrimary.withOpacity(0.3), // Mor gölge
         titleTextStyle: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
           color: darkText,
+          fontSize: 20,
         ),
-        iconTheme: IconThemeData(color: darkText),
+        iconTheme: IconThemeData(color: darkPrimary), // İkonlar mor
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: darkPrimary,
+        selectedItemColor: darkPrimary, // Mor seçili
         unselectedItemColor: darkTextSecondary,
-        backgroundColor: darkSurface,
+        backgroundColor: darkSurface, // Koyu gri arka plan
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 12, // Daha yüksek gölge
+        selectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: darkPrimary,
+        ),
+        unselectedLabelStyle: TextStyle(
+          color: darkTextSecondary,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: darkPrimary,
+          backgroundColor: darkPrimary, // Mor buton
           foregroundColor: white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          elevation: 2,
+          elevation: 4,
+          shadowColor: darkPrimary.withOpacity(0.4),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
-          foregroundColor: darkText,
+          foregroundColor: darkPrimary, // İkonlar mor
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -233,11 +243,15 @@ class AppTheme {
       ),
       cardTheme: CardThemeData(
         color: darkSurface,
-        elevation: 4,
+        elevation: 6, // Daha yüksek gölge
         surfaceTintColor: Colors.transparent,
-        shadowColor: Colors.black.withOpacity(0.3),
+        shadowColor: darkPrimary.withOpacity(0.2), // Mor gölge
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16), // Daha yuvarlak
+          side: BorderSide(
+            color: darkBorder,
+            width: 1,
+          ),
         ),
       ),
       listTileTheme: ListTileThemeData(

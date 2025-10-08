@@ -6,34 +6,44 @@ class ThemeNotifier extends StateNotifier<ThemeMode> {
   ThemeNotifier() : super(ThemeMode.light);
 
   Future<void> init() async {
+    print('🎨 Theme Provider: Init called');
     await _loadTheme();
   }
 
   Future<void> _loadTheme() async {
     try {
+      print('🎨 Theme Provider: Loading theme...');
       final prefs = await SharedPreferences.getInstance();
       final themeIndex = prefs.getInt('theme_mode') ?? 1; // Default to light mode
+      
+      print('🎨 Theme Provider: Loaded theme index: $themeIndex');
       
       switch (themeIndex) {
         case 0:
           state = ThemeMode.system;
+          print('🎨 Theme Provider: Set to System mode');
           break;
         case 1:
           state = ThemeMode.light;
+          print('🎨 Theme Provider: Set to Light mode');
           break;
         case 2:
           state = ThemeMode.dark;
+          print('🎨 Theme Provider: Set to Dark mode');
           break;
         default:
           state = ThemeMode.light; // Default to light
+          print('🎨 Theme Provider: Default to Light mode');
       }
     } catch (e) {
+      print('🎨 Theme Provider: Error loading theme: $e');
       state = ThemeMode.light; // Default to light
     }
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
     try {
+      print('🎨 Theme Provider: Setting theme to $mode');
       state = mode;
       final prefs = await SharedPreferences.getInstance();
       
@@ -51,8 +61,9 @@ class ThemeNotifier extends StateNotifier<ThemeMode> {
       }
       
       await prefs.setInt('theme_mode', themeIndex);
+      print('🎨 Theme Provider: Saved theme index: $themeIndex');
     } catch (e) {
-      // Silent error handling
+      print('🎨 Theme Provider: Error setting theme: $e');
     }
   }
 

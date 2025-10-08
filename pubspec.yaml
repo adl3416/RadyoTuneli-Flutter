@@ -19,6 +19,9 @@ dependencies:
   just_audio: ^0.9.36
   audio_service: ^0.18.12
 
+  # Ads
+  google_mobile_ads: ^5.1.0
+
   # UI & Styling
   google_fonts: ^6.1.0
   cached_network_image: ^3.3.0

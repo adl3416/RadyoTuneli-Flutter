@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:audio_service/audio_service.dart';
 import 'src/features/splash/ui/splash_app.dart';
 import 'src/features/player/data/audio_service_handler.dart';
+import 'src/core/services/admob_service.dart';
 
 // Global audio handler for fallback
 RadioAudioHandler? globalAudioHandler;
@@ -16,6 +17,9 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  // Initialize AdMob
+  await AdMobService.instance.initialize();
 
   // Initialize audio service before starting app
   await _initializeAudioService();

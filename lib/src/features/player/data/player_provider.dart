@@ -5,6 +5,7 @@ import '../data/audio_service_handler.dart';
 import '../data/recently_played_provider.dart';
 import '../../stations/domain/station_model.dart';
 import '../../stations/data/stations_provider.dart';
+import '../../settings/data/app_settings_provider.dart';
 import '../../../../main.dart' show globalAudioHandler;
 
 // Audio Handler Provider - uses the global audio handler as AudioHandler (base type)
@@ -40,6 +41,58 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
     if (_audioHandler == null || globalAudioHandler == null) {
       _waitForAudioHandler();
     }
+
+    // Otomatik oynat özelliğini gecikme ile kontrol et
+    Future.delayed(const Duration(seconds: 2), () {
+      _checkAutoPlay();
+    });
+  }
+
+  Future<void> _checkAutoPlay() async {
+    try {
+      print("🔄 Otomatik oynat kontrolü başlıyor...");
+      
+      // Ayarlar yüklenene kadar bekle
+      await Future.delayed(const Duration(milliseconds: 1000));
+      
+      final appSettings = _ref.read(appSettingsProvider);
+      print("🔄 Uygulama ayarları: autoPlay=${appSettings.autoPlay}");
+      
+      if (appSettings.autoPlay) {
+        // Son çalınan istasyonları al
+        final recentlyPlayed = _ref.read(recentlyPlayedProvider);
+        print("📜 Son çalınanlar sayısı: ${recentlyPlayed.length}");
+        
+        if (recentlyPlayed.isNotEmpty) {
+          final lastStation = recentlyPlayed.first;
+          print("🎯 Otomatik oynat başlatılıyor: ${lastStation.name}");
+          
+          // Audio handler'ın hazır olmasını bekle
+          await _waitForAudioHandlerReady();
+          
+          // Otomatik başlat
+          await playStation(lastStation);
+          print("✅ Otomatik oynat tamamlandı: ${lastStation.name}");
+        } else {
+          print("⚠️ Otomatik oynat: Son çalınan istasyon bulunamadı");
+        }
+      } else {
+        print("ℹ️ Otomatik oynat kapalı");
+      }
+    } catch (e) {
+      print("❌ Otomatik oynat hatası: $e");
+    }
+  }
+
+  Future<void> _waitForAudioHandlerReady() async {
+    for (int i = 0; i < 50; i++) {
+      if (globalAudioHandler != null) {
+        print("✅ Audio handler hazır");
+        return;
+      }
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+    throw Exception("Audio handler hazır değil");
   }
 
   void _init() {

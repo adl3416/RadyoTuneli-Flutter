@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/banner_ad_widget.dart';
 import '../data/player_provider.dart';
 
 class MiniPlayer extends ConsumerWidget {
@@ -386,7 +387,12 @@ class FullScreenPlayer extends ConsumerWidget {
             overflow: TextOverflow.ellipsis,
           ),
 
-          const Spacer(),
+          const SizedBox(height: 24),
+
+          // Small Banner Ad below station info
+          const SmallBannerAdWidget(),
+
+          const SizedBox(height: 40),
 
           // Control Buttons with modern styling
           Row(
