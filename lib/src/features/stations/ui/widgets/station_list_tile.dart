@@ -39,7 +39,7 @@ class StationListTile extends ConsumerWidget {
     });
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 8),
       child: RadioStationCard(
         title: station.name,
         subtitle: station.genre ?? 'Radio',
