@@ -72,6 +72,7 @@ flutter:
   assets:
     - assets/images/
     - assets/data/
+    - assets/logos/
 
 # Splash Screen Configuration
 flutter_native_splash:

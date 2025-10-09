@@ -77,7 +77,7 @@ class RadioBrowserService {
       streamUrl: (apiStation.urlResolved?.isNotEmpty ?? false)
           ? apiStation.urlResolved!
           : apiStation.url,
-      logoUrl: apiStation.favicon ?? _getDefaultLogo(),
+      logoUrl: _getCustomLogo(apiStation.name, apiStation.favicon),
       bitrate: '${apiStation.bitrate ?? 128} kbps',
       description: _generateDescription(apiStation),
       genre: apiStation.tags?.split(',').first ?? 'Müzik',
@@ -120,5 +120,45 @@ class RadioBrowserService {
   /// Provides a default logo URL
   String _getDefaultLogo() {
     return 'https://via.placeholder.com/200x200/3B82F6/FFFFFF?text=📻';
+  }
+
+  /// Custom logo mapping for specific stations
+  String _getCustomLogo(String stationName, String? originalLogo) {
+    final name = stationName.toLowerCase().trim();
+    
+        // Custom logo mappings - istediğiniz radyolar için logo URL'leri ekleyin
+    final logoMappings = {
+      'trt radyo 1': 'assets/logos/trt_radyo1.png',
+      'trt radyo kurdî': 'assets/logos/trt_radyokurdi_log.png',
+      'trt türkü': 'assets/logos/trt türkü.png',
+      'trt fm': 'assets/logos/trt fm.png',
+      'trt memleketim': 'assets/logos/trt memleketim.png',
+      'trt memleketim fm': 'assets/logos/trt memleketim.png',
+      'trt trabzon': 'assets/logos/trt trabzon.png',
+      // Çalışan URL'lerle devam edelim
+      'power fm': 'https://powergroup.com.tr/assets/images/power-fm-logo.png',
+      'süper fm': 'https://i.pinimg.com/474x/b5/3e/13/b53e132b4edf8b9b6e8a2a7e2d1c4c7f.jpg',
+      // Daha fazla ekleyebilirsiniz...
+    };
+    
+    print('🔍 Logo kontrol: "$name" için mapping kontrol ediliyor...');
+    
+    // Önce özel mapping'leri kontrol et
+    for (final entry in logoMappings.entries) {
+      if (name.contains(entry.key)) {
+        print('✅ Logo bulundu: $name -> ${entry.value}');
+        return entry.value;
+      }
+    }
+    
+    // Eğer original logo varsa onu kullan
+    if (originalLogo?.isNotEmpty == true && originalLogo != 'null' && originalLogo!.trim().isNotEmpty) {
+      print('📷 Original logo kullanılıyor: $originalLogo');
+      return originalLogo!;
+    }
+    
+    print('🔧 Default logo kullanılıyor');
+    // Son çare olarak default logo
+    return _getDefaultLogo();
   }
 }

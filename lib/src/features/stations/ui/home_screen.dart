@@ -226,7 +226,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                                             ref.watch(playerStateProvider).isPlaying,
                                   isFavorite: ref.watch(favoritesProvider).contains(station.id),
                                   onTap: () {
-                                    ref.read(playerStateProvider.notifier).playStation(station);
+                                    final playerState = ref.read(playerStateProvider);
+                                    final isCurrentStation = playerState.currentStation?.id == station.id;
+                                    final isPlaying = isCurrentStation && playerState.isPlaying;
+                                    final isLoading = isCurrentStation && playerState.isLoading;
+                                    
+                                    if (isLoading) return;
+                                    
+                                    if (isCurrentStation && isPlaying) {
+                                      ref.read(playerStateProvider.notifier).pause();
+                                    } else {
+                                      ref.read(playerStateProvider.notifier).playStation(station);
+                                    }
                                   },
                                   onFavoriteToggle: () {
                                     ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
@@ -504,15 +515,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                       builder: (context) => const AutomotivePlayerScreen(),
                     ),
                   );
-                },
-              ),
-              _buildDrawerItem(
-                context,
-                icon: Icons.settings_outlined,
-                title: 'Ayarlar',
-                onTap: () {
-                  Navigator.pop(context);
-                  // Navigate to settings
                 },
               ),
               _buildDrawerItem(

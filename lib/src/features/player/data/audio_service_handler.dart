@@ -15,7 +15,7 @@ class RadioAudioHandler extends BaseAudioHandler
         artist: 'Haber ve Güncel',
         genre: 'Haber',
         artUri: Uri.parse('https://example.com/trt_haber_logo.png'),
-        extras: {'streamUrl': 'https://nmgvodsgemstts1.mediatriple.net/trt_haber', 'category': 'haber'},
+  extras: {'streamUrl': 'https://radio-trtradyohaber.live.trt.com.tr/master.m3u8', 'category': 'haber'},
       ),
       MediaItem(
         id: 'cnn_turk',

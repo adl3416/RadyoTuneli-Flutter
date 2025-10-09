@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class AppTheme {
   // Ana Renk Paleti
@@ -346,15 +347,33 @@ class RadioStationCard extends StatelessWidget {
                       color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: imageUrl != null
+                    child: imageUrl != null && imageUrl!.isNotEmpty
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              imageUrl!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.radio, color: Colors.white),
-                            ),
+                            child: imageUrl!.startsWith('assets/')
+                                ? Image.asset(
+                                    imageUrl!,
+                                    width: 56,
+                                    height: 56,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        const Icon(Icons.radio, color: Colors.white, size: 30),
+                                  )
+                                : CachedNetworkImage(
+                                    imageUrl: imageUrl!,
+                                    width: 56,
+                                    height: 56,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Icon(Icons.radio, color: Colors.white, size: 30),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.radio, color: Colors.white, size: 30),
+                                  ),
                           )
                         : const Icon(Icons.radio, color: Colors.white, size: 30),
                   ),

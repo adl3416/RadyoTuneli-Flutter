@@ -126,7 +126,18 @@ class FavoritesScreen extends ConsumerWidget {
                           isFavorite: true, // Favori sayfasında hepsi favori
                           onTap: () {
                             HapticFeedback.mediumImpact();
-                            ref.read(playerStateProvider.notifier).playStation(station);
+                            final playerState = ref.read(playerStateProvider);
+                            final isCurrentStation = playerState.currentStation?.id == station.id;
+                            final isPlaying = isCurrentStation && playerState.isPlaying;
+                            final isLoading = isCurrentStation && playerState.isLoading;
+                            
+                            if (isLoading) return;
+                            
+                            if (isCurrentStation && isPlaying) {
+                              ref.read(playerStateProvider.notifier).pause();
+                            } else {
+                              ref.read(playerStateProvider.notifier).playStation(station);
+                            }
                           },
                           onFavoriteToggle: () {
                             ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
