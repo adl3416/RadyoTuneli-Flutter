@@ -278,7 +278,7 @@ class FullScreenPlayer extends ConsumerWidget {
     final station = playerState.currentStation!;
 
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16), // 24'ten 16'ya azaltıldı
       child: Column(
         children: [
           // Drag Handle with modern styling
@@ -539,7 +539,7 @@ class FullScreenPlayer extends ConsumerWidget {
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 8), // 24'ten 8'e azaltıldı
         ],
       ),
     );

@@ -484,15 +484,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                   ref.read(selectedCategoryProvider.notifier).state = null;
                 },
               ),
-              _buildDrawerItem(
-                context,
-                icon: Icons.history_outlined,
-                title: 'Son Çalınanlar',
-                onTap: () {
-                  Navigator.pop(context);
-                  // Show recently played
-                },
-              ),
               // Divider
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
