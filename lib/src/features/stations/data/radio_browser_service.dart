@@ -117,28 +117,21 @@ class RadioBrowserService {
     return 1000;
   }
 
-  /// Provides a default logo URL
-  String _getDefaultLogo() {
-    return 'https://via.placeholder.com/200x200/3B82F6/FFFFFF?text=📻';
-  }
-
   /// Custom logo mapping for specific stations
   String _getCustomLogo(String stationName, String? originalLogo) {
     final name = stationName.toLowerCase().trim();
     
-        // Custom logo mappings - istediğiniz radyolar için logo URL'leri ekleyin
+    // TRT Radyoları için özel logo mappings
     final logoMappings = {
-      'trt radyo 1': 'assets/logos/trt_radyo1.png',
-      'trt radyo kurdî': 'assets/logos/trt_radyokurdi_log.png',
-      'trt türkü': 'assets/logos/trt türkü.png',
       'trt fm': 'assets/logos/trt fm.png',
       'trt memleketim': 'assets/logos/trt memleketim.png',
       'trt memleketim fm': 'assets/logos/trt memleketim.png',
       'trt trabzon': 'assets/logos/trt trabzon.png',
-      // Çalışan URL'lerle devam edelim
-      'power fm': 'https://powergroup.com.tr/assets/images/power-fm-logo.png',
-      'süper fm': 'https://i.pinimg.com/474x/b5/3e/13/b53e132b4edf8b9b6e8a2a7e2d1c4c7f.jpg',
-      // Daha fazla ekleyebilirsiniz...
+      'trt tsr': 'assets/logos/trt tsr.png',
+      'trt türkü': 'assets/logos/trt türkü.png',
+      'trt radyo 1': 'assets/logos/trt_radyo1.png',
+      'trt radyo kurdî': 'assets/logos/trt_radyokurdi_log.png',
+      'trt radyo kurdi': 'assets/logos/trt_radyokurdi_log.png', // Alternatif yazım
     };
     
     print('🔍 Logo kontrol: "$name" için mapping kontrol ediliyor...');
@@ -157,8 +150,49 @@ class RadioBrowserService {
       return originalLogo!;
     }
     
-    print('🔧 Default logo kullanılıyor');
-    // Son çare olarak default logo
-    return _getDefaultLogo();
+    print('� Baş harf logosu oluşturuluyor: ${stationName.substring(0, 1).toUpperCase()}');
+    // Son çare olarak baş harf logosu
+    return _generateInitialLogo(stationName);
+  }
+
+  /// Generates a logo based on the first letter of station name
+  String _generateInitialLogo(String stationName) {
+    // İlk harfi al ve büyük harfe çevir
+    String initial = stationName.trim().isNotEmpty 
+        ? stationName.trim().substring(0, 1).toUpperCase() 
+        : 'R';
+    
+    // Türkçe karakterleri İngilizce eşdeğerlerine çevir
+    final turkishToEnglish = {
+      'Ç': 'C', 'Ğ': 'G', 'İ': 'I', 'Ö': 'O', 'Ş': 'S', 'Ü': 'U',
+      'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u'
+    };
+    
+    if (turkishToEnglish.containsKey(initial)) {
+      initial = turkishToEnglish[initial]!;
+    }
+    
+    // Renk seçimi - radyo adına göre sabit renk
+    final colors = [
+      '3B82F6', // Blue
+      'EF4444', // Red  
+      '10B981', // Green
+      'F59E0B', // Yellow
+      '8B5CF6', // Purple
+      'F97316', // Orange
+      '06B6D4', // Cyan
+      'EC4899', // Pink
+    ];
+    
+    int colorIndex = stationName.hashCode.abs() % colors.length;
+    String color = colors[colorIndex];
+    
+    // Özel protokol ile baş harf bilgisini gönder
+    return 'initial://$initial/$color';
+  }
+
+  /// Provides a default logo URL
+  String _getDefaultLogo() {
+    return 'assets/images/vintage_radio_logo.png';
   }
 }

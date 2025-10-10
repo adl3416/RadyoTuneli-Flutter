@@ -359,6 +359,8 @@ class RadioStationCard extends StatelessWidget {
                                     errorBuilder: (context, error, stackTrace) =>
                                         const Icon(Icons.radio, color: Colors.white, size: 30),
                                   )
+                                : imageUrl!.startsWith('initial://')
+                                ? _buildInitialLogo(imageUrl!)
                                 : CachedNetworkImage(
                                     imageUrl: imageUrl!,
                                     width: 56,
@@ -450,6 +452,46 @@ class RadioStationCard extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInitialLogo(String initialUrl) {
+    // Parse the initial:// URL format: initial://letter/color
+    final uri = Uri.parse(initialUrl);
+    final segments = uri.pathSegments;
+    
+    if (segments.length < 2) {
+      return const Icon(Icons.radio, color: Colors.white, size: 30);
+    }
+    
+    final initial = segments[0];
+    final colorHex = segments[1];
+    
+    // Convert hex color to Color object
+    Color backgroundColor;
+    try {
+      backgroundColor = Color(int.parse('0xFF$colorHex'));
+    } catch (e) {
+      backgroundColor = Colors.blue; // Fallback color
+    }
+    
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Center(
+        child: Text(
+          initial.toUpperCase(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
