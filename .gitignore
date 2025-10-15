@@ -43,3 +43,33 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Android/Flutter build ve anahtar dosyaları
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/key.properties
+android/app/key.jks
+android/app/upload-keystore.jks
+*.apk
+*.aab
+
+# iOS build
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/ephemeral/
+ios/Pods/
+ios/Runner.xcworkspace/
+ios/build/
+ios/.symlinks/
+ios/.flutter-plugins
+ios/.flutter-plugins-dependencies
+
+# Web, Linux, Windows, macOS build
+web/.dart_tool/
+web/build/
+linux/build/
+windows/build/
+macos/build/
