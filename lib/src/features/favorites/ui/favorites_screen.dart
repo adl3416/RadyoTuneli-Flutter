@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/vintage_radio_logo.dart';
+import '../../../core/widgets/banner_ad_widget.dart';
 import '../data/favorites_provider.dart';
 import '../../stations/data/stations_provider.dart';
 import '../../player/data/player_provider.dart';
@@ -99,6 +100,9 @@ class FavoritesScreen extends ConsumerWidget {
                 ],
               ),
             ),
+            
+            // Banner Ad
+            const SmallBannerAdWidget(),
             
             const SizedBox(height: 16),
             

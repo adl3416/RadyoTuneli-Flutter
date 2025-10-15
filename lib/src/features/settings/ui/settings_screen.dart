@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/providers/theme_provider.dart';
+import '../../../core/widgets/banner_ad_widget.dart';
 import '../data/app_settings_provider.dart';
 import '../../../core/utils/snackbar_helper.dart';
 
@@ -23,6 +24,11 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 32),
           _buildAppSettingsSection(context, ref, appSettings),
           const Divider(height: 32),
+          
+          // Banner Ad
+          const SmallBannerAdWidget(),
+          const SizedBox(height: 16),
+          
           _buildSettingsTile(
             context,
             'Hakkında',

@@ -22,11 +22,21 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
   BannerAd? _bannerAd;
   bool _isAdLoaded = false;
   bool _isAdClosed = false;
+  bool _hasAdFailed = false;
 
   @override
   void initState() {
     super.initState();
     _loadBannerAd();
+    
+    // 5 saniye sonra reklam yüklenmediyse gizle
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted && !_isAdLoaded) {
+        setState(() {
+          _hasAdFailed = true;
+        });
+      }
+    });
   }
 
   void _loadBannerAd() {
@@ -47,6 +57,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
           if (mounted) {
             setState(() {
               _isAdLoaded = false;
+              _hasAdFailed = true;
             });
           }
         },
@@ -82,42 +93,43 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // Eğer reklam kapatıldıysa hiçbir şey gösterme
-    if (_isAdClosed) {
+    // Eğer reklam kapatıldıysa veya başarısız olduysa hiçbir şey gösterme
+    if (_isAdClosed || _hasAdFailed) {
       return const SizedBox.shrink();
     }
 
-    // Eğer reklam yüklenmediyse loading indicator göster
+    // Eğer reklam yüklenmediyse küçük bir loading indicator göster
     if (!_isAdLoaded || _bannerAd == null) {
       return Container(
         padding: widget.padding,
         child: Container(
           width: widget.adSize.width.toDouble(),
-          height: widget.adSize.height.toDouble(),
+          height: 60, // Daha küçük height
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: Theme.of(context).dividerColor.withOpacity(0.5),
+              color: Theme.of(context).dividerColor.withOpacity(0.3),
             ),
           ),
           child: Center(
-            child: Column(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: 20,
-                  height: 20,
+                  width: 16,
+                  height: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Theme.of(context).primaryColor.withOpacity(0.7),
+                    color: Theme.of(context).primaryColor.withOpacity(0.5),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(width: 8),
                 Text(
                   'Reklam yükleniyor...',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
+                    color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5),
+                    fontSize: 12,
                   ),
                 ),
               ],

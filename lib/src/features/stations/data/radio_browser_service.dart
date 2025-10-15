@@ -38,10 +38,13 @@ class RadioBrowserService {
           // Convert to our Station model
           final stations = radioBrowserStations.map(_toStation).toList();
 
-          // Sort by votes (popularity) descending
-          stations.sort((a, b) => _getVotes(b).compareTo(_getVotes(a)));
+          // Remove duplicates based on station names
+          final uniqueStations = _removeDuplicateStations(stations);
 
-          return stations; // Return all stations
+          // Sort by votes (popularity) descending
+          uniqueStations.sort((a, b) => _getVotes(b).compareTo(_getVotes(a)));
+
+          return uniqueStations; // Return unique stations only
         }
       } catch (e) {
         print('Failed to fetch from $url: $e');
@@ -62,7 +65,12 @@ class RadioBrowserService {
       final radioBrowserStations =
           jsonList.map((json) => RadioBrowserStation.fromJson(json)).toList();
 
-      return radioBrowserStations.map(_toStation).toList();
+      final stations = radioBrowserStations.map(_toStation).toList();
+      
+      // Remove duplicates from fallback stations as well
+      final uniqueStations = _removeDuplicateStations(stations);
+      
+      return uniqueStations;
     } catch (e) {
       print('Failed to load fallback stations: $e');
       return [];
@@ -89,17 +97,19 @@ class RadioBrowserService {
   String _generateDescription(RadioBrowserStation station) {
     final parts = <String>[];
 
+    // Only show genre/tags, hide technical information (bitrate, codec)
     if (station.tags?.isNotEmpty == true) {
       parts.add(station.tags!.split(',').take(2).join(', '));
     }
 
-    if (station.bitrate != null) {
-      parts.add('${station.bitrate} kbps');
-    }
+    // Commented out technical information as requested
+    // if (station.bitrate != null) {
+    //   parts.add('${station.bitrate} kbps');
+    // }
 
-    if (station.codec?.isNotEmpty == true) {
-      parts.add(station.codec!);
-    }
+    // if (station.codec?.isNotEmpty == true) {
+    //   parts.add(station.codec!);
+    // }
 
     return parts.isNotEmpty ? parts.join(' • ') : 'Türk Radyosu';
   }
@@ -115,6 +125,46 @@ class RadioBrowserService {
     if (name.contains('power')) return 3000;
     if (name.contains('kral')) return 2500;
     return 1000;
+  }
+
+  /// Removes duplicate stations based on normalized names
+  List<Station> _removeDuplicateStations(List<Station> stations) {
+    final Map<String, Station> uniqueStations = {};
+    
+    for (final station in stations) {
+      final normalizedName = _normalizeStationName(station.name);
+      
+      // If we haven't seen this normalized name before, or if this station
+      // has higher quality (better votes), keep it
+      if (!uniqueStations.containsKey(normalizedName) ||
+          _getVotes(station) > _getVotes(uniqueStations[normalizedName]!)) {
+        uniqueStations[normalizedName] = station;
+      }
+    }
+    
+    return uniqueStations.values.toList();
+  }
+
+  /// Normalizes station name for duplicate detection
+  String _normalizeStationName(String name) {
+    // Convert to lowercase and remove common patterns that create duplicates
+    String normalized = name.toLowerCase().trim();
+    
+    // Remove leading/trailing spaces and special characters
+    normalized = normalized.replaceAll(RegExp(r'^[\s\-_\.]+|[\s\-_\.]+$'), '');
+    
+    // Remove common prefixes/suffixes that cause duplicates
+    normalized = normalized.replaceAll(RegExp(r'\s*(radyo|radio|fm|am)\s*'), ' ');
+    normalized = normalized.replaceAll(RegExp(r'\s*(türkiye|turkey|tr)\s*'), ' ');
+    normalized = normalized.replaceAll(RegExp(r'\s*\d+[\.,]?\d*\s*(mhz|khz|fm|am)\s*'), ' ');
+    
+    // Remove multiple spaces
+    normalized = normalized.replaceAll(RegExp(r'\s+'), ' ').trim();
+    
+    // Remove special characters that might differ between duplicates
+    normalized = normalized.replaceAll(RegExp(r'[^\w\s]'), '');
+    
+    return normalized;
   }
 
   /// Custom logo mapping for specific stations

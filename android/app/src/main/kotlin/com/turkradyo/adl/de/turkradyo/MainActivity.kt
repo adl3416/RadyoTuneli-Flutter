@@ -1,4 +1,4 @@
-package com.turkradyo.bsr.de.turkradyo
+package com.turkradyo.adl.de.turkradyo
 
 import io.flutter.embedding.android.FlutterActivity
 import com.ryanheise.audioservice.AudioServiceActivity
