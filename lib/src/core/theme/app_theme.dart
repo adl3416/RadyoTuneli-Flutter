@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../features/stations/ui/widgets/radio_logo.dart';
 
 class AppTheme {
   // Ana Renk Paleti
@@ -339,45 +340,12 @@ class RadioStationCard extends StatelessWidget {
               padding: const EdgeInsets.all(14),
               child: Row(
                 children: [
-                  // Station Image/Icon
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: imageUrl != null && imageUrl!.isNotEmpty
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: imageUrl!.startsWith('assets/')
-                                ? Image.asset(
-                                    imageUrl!,
-                                    width: 56,
-                                    height: 56,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) =>
-                                        const Icon(Icons.radio, color: Colors.white, size: 30),
-                                  )
-                                : imageUrl!.startsWith('initial://')
-                                ? _buildInitialLogo(imageUrl!)
-                                : CachedNetworkImage(
-                                    imageUrl: imageUrl!,
-                                    width: 56,
-                                    height: 56,
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: const Icon(Icons.radio, color: Colors.white, size: 30),
-                                    ),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.radio, color: Colors.white, size: 30),
-                                  ),
-                          )
-                        : const Icon(Icons.radio, color: Colors.white, size: 30),
+                  // Station Image/Icon - Modern logo with initials
+                  RadioLogo(
+                    radioName: title,
+                    logoUrl: imageUrl,
+                    size: 56,
+                    showBorder: true,
                   ),
                   const SizedBox(width: 16),
                   // Station Info
@@ -452,46 +420,6 @@ class RadioStationCard extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInitialLogo(String initialUrl) {
-    // Parse the initial:// URL format: initial://letter/color
-    final uri = Uri.parse(initialUrl);
-    final segments = uri.pathSegments;
-    
-    if (segments.length < 2) {
-      return const Icon(Icons.radio, color: Colors.white, size: 30);
-    }
-    
-    final initial = segments[0];
-    final colorHex = segments[1];
-    
-    // Convert hex color to Color object
-    Color backgroundColor;
-    try {
-      backgroundColor = Color(int.parse('0xFF$colorHex'));
-    } catch (e) {
-      backgroundColor = Colors.blue; // Fallback color
-    }
-    
-    return Container(
-      width: 56,
-      height: 56,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Center(
-        child: Text(
-          initial.toUpperCase(),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
           ),
         ),
       ),

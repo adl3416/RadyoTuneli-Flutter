@@ -6,180 +6,45 @@ class RadioAudioHandler extends BaseAudioHandler
     with SeekHandler, QueueHandler {
   final AudioPlayer _player = AudioPlayer();
   
-  // Android Auto / CarPlay için kategorize edilmiş radyo istasyonları
-  final Map<String, List<MediaItem>> _radioCategories = {
-    'haber': [
-      MediaItem(
-        id: 'trt_haber',
-        title: 'TRT Haber',
-        artist: 'Haber ve Güncel',
-        genre: 'Haber',
-        artUri: Uri.parse('https://example.com/trt_haber_logo.png'),
-  extras: {'streamUrl': 'https://radio-trtradyohaber.live.trt.com.tr/master.m3u8', 'category': 'haber'},
-      ),
-      MediaItem(
-        id: 'cnn_turk',
-        title: 'CNN Türk Radyo',
-        artist: 'Haber ve Güncel',
-        genre: 'Haber',
-        artUri: Uri.parse('https://example.com/cnn_turk_logo.png'),
-        extras: {'streamUrl': 'https://cnnturk.radyotvonline.com/listen/cnnturk/radio.mp3', 'category': 'haber'},
-      ),
-      MediaItem(
-        id: 'ntvradyo',
-        title: 'NTV Radyo',
-        artist: 'Haber ve Güncel',
-        genre: 'Haber',
-        artUri: Uri.parse('https://example.com/ntv_logo.png'),
-        extras: {'streamUrl': 'https://ntvradyo.radyotvonline.com/listen/ntvradyo/radio.mp3', 'category': 'haber'},
-      ),
-    ],
-    'muzik': [
-      MediaItem(
-        id: 'trt_fm',
-        title: 'TRT FM',
-        artist: 'Pop ve Rock',
-        genre: 'Müzik',
-        artUri: Uri.parse('https://example.com/trt_fm_logo.png'),
-        extras: {'streamUrl': 'https://nmgvodsgemstts1.mediatriple.net/trt_fm', 'category': 'muzik'},
-      ),
-      MediaItem(
-        id: 'radyo_viva',
-        title: 'Radyo Viva',
-        artist: 'Pop Müzik',
-        genre: 'Müzik',
-        artUri: Uri.parse('https://example.com/viva_logo.png'),
-        extras: {'streamUrl': 'https://radyoviva.radyotvonline.com/listen/radyoviva/radio.mp3', 'category': 'muzik'},
-      ),
-      MediaItem(
-        id: 'power_fm',
-        title: 'Power FM',
-        artist: 'Pop ve Dance',
-        genre: 'Müzik',
-        artUri: Uri.parse('https://example.com/power_fm_logo.png'),
-        extras: {'streamUrl': 'https://powerfm.radyotvonline.com/listen/powerfm/radio.mp3', 'category': 'muzik'},
-      ),
-    ],
-    'turkce_pop': [
-      MediaItem(
-        id: 'kral_pop',
-        title: 'Kral Pop',
-        artist: 'Türkçe Pop',
-        genre: 'Türkçe Pop',
-        artUri: Uri.parse('https://example.com/kral_pop_logo.png'),
-        extras: {'streamUrl': 'https://kralpop.radyotvonline.com/listen/kralpop/radio.mp3', 'category': 'turkce_pop'},
-      ),
-      MediaItem(
-        id: 'number1_fm',
-        title: 'Number One FM',
-        artist: 'Türkçe Pop',
-        genre: 'Türkçe Pop',
-        artUri: Uri.parse('https://example.com/number1_logo.png'),
-        extras: {'streamUrl': 'https://number1fm.radyotvonline.com/listen/number1fm/radio.mp3', 'category': 'turkce_pop'},
-      ),
-    ],
-    'turku': [
-      MediaItem(
-        id: 'trt_turku',
-        title: 'TRT Türkü',
-        artist: 'Türk Halk Müziği',
-        genre: 'Türkü',
-        artUri: Uri.parse('https://example.com/trt_turku_logo.png'),
-        extras: {'streamUrl': 'https://nmgvodsgemstts1.mediatriple.net/trt_turku', 'category': 'turku'},
-      ),
-      MediaItem(
-        id: 'turku_radyo',
-        title: 'Türkü Radyo',
-        artist: 'Türk Halk Müziği',
-        genre: 'Türkü',
-        artUri: Uri.parse('https://example.com/turku_radyo_logo.png'),
-        extras: {'streamUrl': 'https://turkuradyo.radyotvonline.com/listen/turkuradyo/radio.mp3', 'category': 'turku'},
-      ),
-    ],
-    'spor': [
-      MediaItem(
-        id: 'trt_spor',
-        title: 'TRT Spor',
-        artist: 'Spor Haberleri',
-        genre: 'Spor',
-        artUri: Uri.parse('https://example.com/trt_spor_logo.png'),
-        extras: {'streamUrl': 'https://nmgvodsgemstts1.mediatriple.net/trt_spor', 'category': 'spor'},
-      ),
-      MediaItem(
-        id: 'spor_fm',
-        title: 'Spor FM',
-        artist: 'Spor ve Müzik',
-        genre: 'Spor',
-        artUri: Uri.parse('https://example.com/spor_fm_logo.png'),
-        extras: {'streamUrl': 'https://sporfm.radyotvonline.com/listen/sporfm/radio.mp3', 'category': 'spor'},
-      ),
-    ],
-    'dini': [
-      MediaItem(
-        id: 'diyanet_radyo',
-        title: 'Diyanet Radyo',
-        artist: 'Dini İçerik',
-        genre: 'Dini',
-        artUri: Uri.parse('https://example.com/diyanet_logo.png'),
-        extras: {'streamUrl': 'https://diyanetradyo.radyotvonline.com/listen/diyanetradyo/radio.mp3', 'category': 'dini'},
-      ),
-      MediaItem(
-        id: 'kuran_radyo',
-        title: 'Kuran Radyo',
-        artist: 'Kuran-ı Kerim',
-        genre: 'Dini',
-        artUri: Uri.parse('https://example.com/kuran_logo.png'),
-        extras: {'streamUrl': 'https://kuranradyo.radyotvonline.com/listen/kuranradyo/radio.mp3', 'category': 'dini'},
-      ),
-    ],
-    'klasik': [
-      MediaItem(
-        id: 'trt_radyo3',
-        title: 'TRT Radyo 3',
-        artist: 'Klasik Müzik',
-        genre: 'Klasik',
-        artUri: Uri.parse('https://example.com/trt_radyo3_logo.png'),
-        extras: {'streamUrl': 'https://nmgvodsgemstts1.mediatriple.net/trt_radyo3', 'category': 'klasik'},
-      ),
-    ],
-  };
+  // Dinamik radyo kategorileri - uygulama çalışırken doldurulacak
+  Map<String, List<MediaItem>> _radioCategories = {};
 
-  // Kategori isimleri ve açıklamaları
+  // Kategori isimleri ve açıklamaları (modern Android Auto tasarımı için)
   final Map<String, Map<String, String>> _categoryInfo = {
+    'populer': {
+      'title': '⭐ Popüler',
+      'description': 'En çok dinlenen 50 radyo',
+      'icon': 'star',
+    },
+    'tum_radyolar': {
+      'title': '📻 Tüm İstasyonlar',
+      'description': 'Tüm radyo kanalları',
+      'icon': 'radio',
+    },
     'haber': {
-      'title': 'Haber ve Güncel',
-      'description': 'Güncel haberler ve yorumlar',
+      'title': '📰 Haber',
+      'description': 'Güncel haberler',
       'icon': 'newspaper',
     },
     'muzik': {
-      'title': 'Pop ve Rock',
-      'description': 'Güncel pop ve rock müzik',
-      'icon': 'music_note',
-    },
-    'turkce_pop': {
-      'title': 'Türkçe Pop',
-      'description': 'Türkçe pop şarkılar',
+      'title': '🎵 Müzik',
+      'description': 'Pop, Rock & Eğlence',
       'icon': 'music_note',
     },
     'turku': {
-      'title': 'Türkü ve Halk Müziği',
-      'description': 'Türk halk müziği ve türküler',
+      'title': '🎻 Türkü',
+      'description': 'Halk Müziği & Türküler',
       'icon': 'piano',
     },
     'spor': {
-      'title': 'Spor',
-      'description': 'Spor haberleri ve yorumları',
+      'title': '⚽ Spor',
+      'description': 'Spor yayınları',
       'icon': 'sports_soccer',
     },
     'dini': {
-      'title': 'Dini İçerik',
-      'description': 'Dini yayınlar ve Kuran-ı Kerim',
+      'title': '🕌 Dini',
+      'description': 'Dini içerikler',
       'icon': 'mosque',
-    },
-    'klasik': {
-      'title': 'Klasik Müzik',
-      'description': 'Klasik müzik eserleri',
-      'icon': 'library_music',
     },
   };
 
@@ -195,6 +60,76 @@ class RadioAudioHandler extends BaseAudioHandler
     // Force MediaBrowserService to be ready
     Future.delayed(Duration(seconds: 1), () {
       print("🚗🚗🚗 ANDROID AUTO: MediaBrowserService ready for discovery");
+    });
+  }
+
+  // Radyo listesini dışarıdan yükle (player_provider tarafından çağrılır)
+  void loadRadioStations(List<dynamic> stations) {
+    print("🚗 Loading ${stations.length} stations for Android Auto");
+    
+    // Kategorilere göre radyoları ayır
+    _radioCategories.clear();
+    
+    // Tüm radyoları işle (maksimum 200 radyo)
+    final allStations = stations.take(200).toList();
+    final List<MediaItem> allMediaItems = [];
+    
+    for (int i = 0; i < allStations.length; i++) {
+      final station = allStations[i];
+      final name = station['name'] ?? '';
+      final stationId = station['stationuuid'] ?? station['id'] ?? name;
+      final streamUrl = station['url_resolved'] ?? station['streamUrl'] ?? station['url'] ?? '';
+      final genre = station['tags']?.toString().split(',').first ?? station['genre'] ?? 'Genel';
+      final favicon = station['favicon'] ?? station['logoUrl'] ?? '';
+      
+      if (streamUrl.isEmpty) continue; // URL yoksa atla
+      
+      // Kategori belirle
+      String category = 'muzik'; // varsayılan
+      final lowerName = name.toLowerCase();
+      final lowerGenre = genre.toLowerCase();
+      
+      if (lowerName.contains('haber') || lowerName.contains('news') || lowerGenre.contains('news') || lowerGenre.contains('haber')) {
+        category = 'haber';
+      } else if (lowerName.contains('spor') || lowerName.contains('sport') || lowerGenre.contains('sport') || lowerGenre.contains('spor')) {
+        category = 'spor';
+      } else if (lowerName.contains('türkü') || lowerName.contains('turku') || lowerGenre.contains('folk') || lowerGenre.contains('türkü')) {
+        category = 'turku';
+      } else if (lowerName.contains('dini') || lowerName.contains('kuran') || lowerName.contains('diyanet') || lowerGenre.contains('islamic') || lowerGenre.contains('dini')) {
+        category = 'dini';
+      }
+      
+      final mediaItem = MediaItem(
+        id: stationId,
+        title: name,
+        artist: genre,
+        genre: genre,
+        artUri: favicon.isNotEmpty ? Uri.tryParse(favicon) : null,
+        playable: true,
+        extras: {
+          'streamUrl': streamUrl,
+          'category': category,
+          'isLive': true,
+        },
+      );
+      
+      allMediaItems.add(mediaItem);
+      
+      // Kategoriye ekle
+      _radioCategories.putIfAbsent(category, () => []).add(mediaItem);
+      
+      // İlk 50 radyoyu popüler kategorisine ekle
+      if (i < 50) {
+        _radioCategories.putIfAbsent('populer', () => []).add(mediaItem);
+      }
+    }
+    
+    // Tüm radyoları "tum_radyolar" kategorisine ekle
+    _radioCategories['tum_radyolar'] = allMediaItems;
+    
+    print("🚗 Loaded ${allMediaItems.length} stations into ${_radioCategories.length} categories");
+    _radioCategories.forEach((key, value) {
+      print("  - $key: ${value.length} stations");
     });
   }
 
@@ -339,19 +274,27 @@ class RadioAudioHandler extends BaseAudioHandler
     try {
       print("📻 Setting up radio station: $title (ID: ${stationId ?? 'none'})");
 
-      // Set media item for system UI first
+      // Set media item for system UI - Modern Android Auto tasarımı
       final mediaItem = MediaItem(
-        id: stationId ?? streamUrl, // Use station ID if provided, fallback to streamUrl
-        album: 'Turkish Radio',
+        id: stationId ?? streamUrl,
         title: title,
         artist: artist,
-        artUri: artUri != null && artUri.isNotEmpty ? Uri.parse(artUri) : null,
+        album: 'Radyo Tüneli',
+        displayTitle: title,
+        displaySubtitle: '🔴 CANLI YAYIN',
+        displayDescription: artist,
+        artUri: artUri != null && artUri.isNotEmpty ? Uri.parse(artUri) : Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
         playable: true,
         duration: Duration.zero, // Radio streams don't have duration
+        rating: Rating.newHeartRating(true), // Favorilere eklenebilir göster
         extras: {
           'isLive': true,
           'streamUrl': streamUrl,
-          'stationId': stationId, // Store original station ID
+          'stationId': stationId,
+          // Android Auto için ek metadata
+          'android.media.metadata.CONTENT_TYPE': 'audio/mpeg',
+          'android.media.metadata.ADVERTISEMENT': 0, // Reklam değil
+          'android.media.metadata.DOWNLOAD_STATUS': 0, // İndirilebilir değil (canlı yayın)
         },
       );
 
@@ -458,7 +401,7 @@ class RadioAudioHandler extends BaseAudioHandler
         id: AudioService.browsableRootId,
         title: 'Radyo Tüneli',
         artist: 'Türk Radyo İstasyonları',
-        artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+        artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
         playable: false,
         extras: {
           'browsable': true,
@@ -476,7 +419,7 @@ class RadioAudioHandler extends BaseAudioHandler
         id: mediaId,
         title: categoryData['title']!,
         artist: categoryData['description']!,
-        artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+        artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
         playable: false,
         extras: {
           'browsable': true,
@@ -505,44 +448,84 @@ class RadioAudioHandler extends BaseAudioHandler
     print("🚗🚗🚗 Android Auto: getChildren called with parentMediaId: $parentMediaId");
     
     if (parentMediaId == AudioService.browsableRootId) {
-      // Root level - return categories
+      // Root level - return ALL categories (always visible)
       print("🚗🚗🚗 Returning ROOT level categories");
+      print("🚗🚗🚗 Total categories defined: ${_categoryInfo.length}");
+      print("🚗🚗🚗 Categories with stations: ${_radioCategories.keys.length}");
       
-      return _categoryInfo.entries.map((entry) {
+      // TÜM kategorileri döndür - Modern Grid görünümü
+      final categories = _categoryInfo.entries.map((entry) {
         final categoryId = entry.key;
         final categoryData = entry.value;
+        final stationCount = _radioCategories[categoryId]?.length ?? 0;
+        
+        print("🚗 Category: $categoryId - ${categoryData['title']} ($stationCount stations)");
         
         return MediaItem(
           id: categoryId,
           title: categoryData['title']!,
-          artist: categoryData['description']!,
-          album: 'Radyo Kategorileri',
-          artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+          artist: stationCount > 0 
+              ? '$stationCount radyo istasyonu' 
+              : 'Yakında...',
+          album: categoryData['description'],
+          artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
           playable: false,
           extras: {
             'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
-            'android.media.browse.CONTENT_STYLE_BROWSABLE_HINT': 2,
+            'android.media.browse.CONTENT_STYLE_BROWSABLE_HINT': 2, // Grid görünüm
             'android.media.browse.CONTENT_STYLE_PLAYABLE_HINT': 1,
-            'android.media.browse.CONTENT_STYLE_LIST_ITEM_HINT_VALUE': 2,
-            'android.media.browse.CONTENT_STYLE_GRID_ITEM_HINT_VALUE': 2,
+            'android.media.browse.CONTENT_STYLE_LIST_ITEM_HINT_VALUE': 2, // Büyük liste öğeleri
+            'android.media.browse.CONTENT_STYLE_GRID_ITEM_HINT_VALUE': 2, // 2x2 Grid
+            'android.media.extras.CONTENT_STYLE_GROUP_TITLE_HINT': 'Kategoriler',
           },
         );
       }).toList();
+      
+      print("🚗🚗🚗 Returning ${categories.length} categories to Android Auto");
+      return categories;
     }
     
     // Kategori seviyesi - o kategorideki istasyonları döndür
-    if (_radioCategories.containsKey(parentMediaId)) {
+    if (_categoryInfo.containsKey(parentMediaId)) {
       print("🚗🚗🚗 Returning stations for category: $parentMediaId");
       
-      final stations = _radioCategories[parentMediaId]!;
-      return stations.map((station) {
+      final stations = _radioCategories[parentMediaId] ?? [];
+      
+      if (stations.isEmpty) {
+        print("⚠️ Category $parentMediaId is empty, returning placeholder");
+        final categoryName = _categoryInfo[parentMediaId]?['title'] ?? 'Bu kategori';
+        // Boş kategori için kullanıcı dostu mesaj
+        return [
+          MediaItem(
+            id: 'empty_$parentMediaId',
+            title: '📭 Radyo Bulunamadı',
+            artist: '$categoryName kategorisinde henüz radyo yok',
+            displaySubtitle: 'Diğer kategorilere göz atın',
+            artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
+            playable: false,
+            extras: {
+              'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
+              'isEmpty': true,
+            },
+          )
+        ];
+      }
+      
+      print("🚗 Returning ${stations.length} stations");
+      return stations.asMap().entries.map((entry) {
+        final index = entry.key;
+        final station = entry.value;
+        
         return MediaItem(
           id: station.id,
           title: station.title,
-          artist: station.artist ?? 'Radyo İstasyonu',
-          album: station.album ?? 'Türk Radyo',
+          artist: '🔴 CANLI  •  ${station.artist ?? 'Radyo'}',
+          album: 'Radyo Tüneli',
           genre: station.genre,
-          artUri: station.artUri ?? Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+          displayTitle: station.title,
+          displaySubtitle: station.artist ?? 'Türk Radyosu',
+          displayDescription: '🎧 Canlı yayın',
+          artUri: station.artUri ?? Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
           playable: true,
           duration: null, // Live stream
           extras: {
@@ -551,7 +534,10 @@ class RadioAudioHandler extends BaseAudioHandler
             'android.media.metadata.CONTENT_TYPE': 'audio/mpeg',
             'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
             'android.media.browse.CONTENT_STYLE_PLAYABLE_HINT': 1,
-            'android.media.browse.CONTENT_STYLE_LIST_ITEM_HINT_VALUE': 1,
+            'android.media.browse.CONTENT_STYLE_LIST_ITEM_HINT_VALUE': 2, // Büyük liste öğeleri
+            'android.media.extras.CONTENT_STYLE_SINGLE_ITEM': false,
+            'android.media.extras.CONTENT_STYLE_SUPPORTED': true,
+            'com.google.android.gms.car.media.CONTENT_STYLE_QUEUE_POSITION': index,
           },
         );
       }).toList();
@@ -565,8 +551,16 @@ class RadioAudioHandler extends BaseAudioHandler
   Future<void> playMediaItem(MediaItem mediaItem) async {
     print("🚗 Android Auto: Playing ${mediaItem.title}");
     
-    final streamUrl = mediaItem.extras?['streamUrl'] as String?;
-    if (streamUrl != null) {
+    try {
+      final streamUrl = mediaItem.extras?['streamUrl'] as String?;
+      
+      if (streamUrl == null || streamUrl.isEmpty) {
+        print("❌ Android Auto: Stream URL is null or empty for ${mediaItem.title}");
+        throw Exception('Stream URL not found for ${mediaItem.title}');
+      }
+      
+      print("🚗 Android Auto: Stream URL: $streamUrl");
+      
       await playStation(
         streamUrl,
         mediaItem.title,
@@ -574,6 +568,26 @@ class RadioAudioHandler extends BaseAudioHandler
         mediaItem.artUri?.toString(),
         stationId: mediaItem.id, // Use mediaItem.id as station ID
       );
+      
+      print("✅ Android Auto: Successfully started playing ${mediaItem.title}");
+    } catch (e, stackTrace) {
+      print("❌ Android Auto: Error playing ${mediaItem.title}: $e");
+      print("Stack trace: $stackTrace");
+      
+      // Set error state
+      playbackState.add(PlaybackState(
+        controls: [MediaControl.play],
+        systemActions: const {
+          MediaAction.play,
+        },
+        androidCompactActionIndices: const [0],
+        processingState: AudioProcessingState.error,
+        playing: false,
+        updatePosition: Duration.zero,
+        errorMessage: 'Radyo istasyonu çalınamadı: ${e.toString()}',
+      ));
+      
+      rethrow;
     }
   }
 

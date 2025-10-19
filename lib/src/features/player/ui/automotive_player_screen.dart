@@ -28,24 +28,28 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                   Icon(
                     Icons.radio,
                     color: AppTheme.orange400,
-                    size: 32,
+                    size: 28,
                   ),
-                  const SizedBox(width: 16),
-                  Text(
-                    'Radyo Tüneli',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(width: 12),
+                  Flexible(
+                    child: Text(
+                      'Radyo Tüneli',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 12),
                   Text(
                     'ARABA MODU',
                     style: TextStyle(
                       color: AppTheme.orange400,
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ],

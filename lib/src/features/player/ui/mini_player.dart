@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/banner_ad_widget.dart';
 import '../data/player_provider.dart';
+import '../../stations/ui/widgets/radio_logo.dart';
 
 class MiniPlayer extends ConsumerWidget {
   const MiniPlayer({super.key});
@@ -51,69 +52,12 @@ class MiniPlayer extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
-                // Station Logo with modern styling
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        offset: const Offset(0, 2),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: station.logoUrl != null
-                        ? CachedNetworkImage(
-                            imageUrl: station.logoUrl!,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.radio,
-                                color: Colors.white70,
-                                size: 28,
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.radio,
-                                color: Colors.white70,
-                                size: 28,
-                              ),
-                            ),
-                          )
-                        : Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.radio,
-                              color: Colors.white70,
-                              size: 28,
-                            ),
-                          ),
-                  ),
+                // Station Logo with colorful initials
+                RadioLogo(
+                  radioName: station.name,
+                  logoUrl: station.logoUrl,
+                  size: 50,
+                  showBorder: true,
                 ),
 
                 const SizedBox(width: 16),
@@ -308,54 +252,11 @@ class FullScreenPlayer extends ConsumerWidget {
                 ),
               ],
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: station.logoUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: station.logoUrl!,
-                      width: 220,
-                      height: 220,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        width: 220,
-                        height: 220,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: const Icon(
-                          Icons.radio,
-                          color: Colors.white70,
-                          size: 80,
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        width: 220,
-                        height: 220,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: const Icon(
-                          Icons.radio,
-                          color: Colors.white70,
-                          size: 80,
-                        ),
-                      ),
-                    )
-                  : Container(
-                      width: 220,
-                      height: 220,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: const Icon(
-                        Icons.radio,
-                        color: Colors.white70,
-                        size: 80,
-                      ),
-                    ),
+            child: RadioLogo(
+              radioName: station.name,
+              logoUrl: station.logoUrl,
+              size: 220,
+              showBorder: true,
             ),
           ),
 

@@ -134,6 +134,45 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
     });
 
     print("✅ Audio handler listeners set up successfully");
+    
+    // Android Auto için radyo listesini yükle
+    _loadStationsForAndroidAuto();
+  }
+  
+  Future<void> _loadStationsForAndroidAuto() async {
+    try {
+      print("🚗 Loading stations for Android Auto...");
+      
+      // Stations provider'dan radyo listesini al
+      final stations = await _ref.read(stationsProvider.future);
+      
+      if (stations.isEmpty) {
+        print("⚠️ No stations available for Android Auto");
+        return;
+      }
+      
+      // Audio handler'a radyo listesini yükle
+      final audioHandler = _audioHandler ?? globalAudioHandler;
+      if (audioHandler is RadioAudioHandler) {
+        // Station modellerini map'e çevir
+        final stationsData = stations.map((station) => {
+          'name': station.name,
+          'stationuuid': station.id,
+          'url_resolved': station.streamUrl,
+          'url': station.streamUrl,
+          'streamUrl': station.streamUrl,
+          'tags': station.genre,
+          'genre': station.genre,
+          'favicon': station.logoUrl,
+          'logoUrl': station.logoUrl,
+        }).toList();
+        
+        audioHandler.loadRadioStations(stationsData);
+        print("✅ Stations loaded for Android Auto");
+      }
+    } catch (e) {
+      print("❌ Error loading stations for Android Auto: $e");
+    }
   }
 
   Future<void> _waitForAudioHandler() async {
