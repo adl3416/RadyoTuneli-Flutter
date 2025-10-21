@@ -167,7 +167,7 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
           'logoUrl': station.logoUrl,
         }).toList();
         
-        audioHandler.loadRadioStations(stationsData);
+        await audioHandler.loadRadioStations(stationsData);
         print("✅ Stations loaded for Android Auto");
       }
     } catch (e) {

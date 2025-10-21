@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../domain/player_state_model.dart';
 
 class RadioAudioHandler extends BaseAudioHandler
@@ -8,9 +9,25 @@ class RadioAudioHandler extends BaseAudioHandler
   
   // Dinamik radyo kategorileri - uygulama çalışırken doldurulacak
   Map<String, List<MediaItem>> _radioCategories = {};
+  
+  // Favori radyo ID'leri
+  Set<String> _favoriteIds = {};
+  
+  // Son dinlenen radyolar (maksimum 20)
+  List<MediaItem> _recentlyPlayed = [];
 
   // Kategori isimleri ve açıklamaları (modern Android Auto tasarımı için)
   final Map<String, Map<String, String>> _categoryInfo = {
+    'son_dinlenenler': {
+      'title': '🕐 Son Dinlenenler',
+      'description': 'Yakın zamanda dinlediğiniz radyolar',
+      'icon': 'history',
+    },
+    'favoriler': {
+      'title': '❤️ Favoriler',
+      'description': 'Favori radyolarınız',
+      'icon': 'favorite',
+    },
     'populer': {
       'title': '⭐ Popüler',
       'description': 'En çok dinlenen 50 radyo',
@@ -52,6 +69,7 @@ class RadioAudioHandler extends BaseAudioHandler
     print("🚗🚗🚗 ANDROID AUTO: RadioAudioHandler CONSTRUCTOR called");
     _init();
     _setupAndroidAutoSupport();
+    _loadFavorites();
   }
 
   void _setupAndroidAutoSupport() {
@@ -63,8 +81,133 @@ class RadioAudioHandler extends BaseAudioHandler
     });
   }
 
+  // Favorileri SharedPreferences'dan yükle
+  Future<void> _loadFavorites() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final favorites = prefs.getStringList('favorite_stations') ?? [];
+      _favoriteIds = favorites.toSet();
+      print("❤️ Loaded ${_favoriteIds.length} favorites for Android Auto");
+      
+      // Favoriler kategorisini güncelle
+      _updateFavoritesCategory();
+    } catch (e) {
+      print('❌ Error loading favorites: $e');
+      _favoriteIds = <String>{};
+    }
+  }
+
+  // Favoriler kategorisini güncelle
+  void _updateFavoritesCategory() {
+    if (_radioCategories.isEmpty) return;
+    
+    // Tüm radyolardan favorileri filtrele
+    final favoriteStations = <MediaItem>[];
+    
+    for (var categoryStations in _radioCategories.values) {
+      for (var station in categoryStations) {
+        if (_favoriteIds.contains(station.id)) {
+          // Favori işareti ekle
+          final updatedStation = station.copyWith(
+            artist: '❤️ ${station.artist}',
+            extras: {
+              ...?station.extras,
+              'isFavorite': true,
+            },
+          );
+          favoriteStations.add(updatedStation);
+        }
+      }
+    }
+    
+    _radioCategories['favoriler'] = favoriteStations;
+    print("❤️ Updated favorites category with ${favoriteStations.length} stations");
+  }
+
+  // Son dinlenenleri SharedPreferences'dan yükle
+  Future<void> _loadRecentlyPlayed() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final recentIds = prefs.getStringList('recently_played_stations') ?? [];
+      
+      // Son dinlenen ID'leri kullanarak MediaItem'ları bul
+      _recentlyPlayed.clear();
+      for (var stationId in recentIds.take(20)) {
+        // Tüm kategorilerde radyoyu ara
+        for (var categoryStations in _radioCategories.values) {
+          final station = categoryStations.firstWhere(
+            (s) => s.id == stationId,
+            orElse: () => MediaItem(id: '', title: ''),
+          );
+          if (station.id.isNotEmpty && !_recentlyPlayed.any((s) => s.id == station.id)) {
+            _recentlyPlayed.add(station);
+            break;
+          }
+        }
+      }
+      
+      print("🕐 Loaded ${_recentlyPlayed.length} recently played stations");
+      _radioCategories['son_dinlenenler'] = _recentlyPlayed;
+    } catch (e) {
+      print('❌ Error loading recently played: $e');
+      _recentlyPlayed = [];
+    }
+  }
+
+  // Son dinlenenlere ekle
+  Future<void> _addToRecentlyPlayed(MediaItem station) async {
+    try {
+      // Aynı radyo varsa önce çıkar (en üste gelsin)
+      _recentlyPlayed.removeWhere((s) => s.id == station.id);
+      
+      // Başa ekle
+      _recentlyPlayed.insert(0, station);
+      
+      // Maksimum 20 radyo tut
+      if (_recentlyPlayed.length > 20) {
+        _recentlyPlayed = _recentlyPlayed.take(20).toList();
+      }
+      
+      // SharedPreferences'a kaydet
+      final prefs = await SharedPreferences.getInstance();
+      final recentIds = _recentlyPlayed.map((s) => s.id).toList();
+      await prefs.setStringList('recently_played_stations', recentIds);
+      
+      // Kategoriyi güncelle
+      _radioCategories['son_dinlenenler'] = _recentlyPlayed;
+      
+      print("🕐 Added to recently played: ${station.title} (Total: ${_recentlyPlayed.length})");
+      
+    } catch (e) {
+      print('❌ Error adding to recently played: $e');
+    }
+  }
+
+  // Favoriye ekle/çıkar
+  Future<void> toggleFavorite(String stationId) async {
+    try {
+      if (_favoriteIds.contains(stationId)) {
+        _favoriteIds.remove(stationId);
+        print("💔 Removed from favorites: $stationId");
+      } else {
+        _favoriteIds.add(stationId);
+        print("❤️ Added to favorites: $stationId");
+      }
+      
+      // SharedPreferences'a kaydet
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('favorite_stations', _favoriteIds.toList());
+      
+      // Favoriler kategorisini güncelle
+      _updateFavoritesCategory();
+      
+    } catch (e) {
+      print('❌ Error toggling favorite: $e');
+    }
+  }
+
   // Radyo listesini dışarıdan yükle (player_provider tarafından çağrılır)
-  void loadRadioStations(List<dynamic> stations) {
+  Future<void> loadRadioStations(List<dynamic> stations) async {
     print("🚗 Loading ${stations.length} stations for Android Auto");
     
     // Kategorilere göre radyoları ayır
@@ -126,6 +269,12 @@ class RadioAudioHandler extends BaseAudioHandler
     
     // Tüm radyoları "tum_radyolar" kategorisine ekle
     _radioCategories['tum_radyolar'] = allMediaItems;
+    
+    // Favoriler kategorisini güncelle
+    _updateFavoritesCategory();
+    
+    // Son dinlenenleri yükle
+    await _loadRecentlyPlayed();
     
     print("🚗 Loaded ${allMediaItems.length} stations into ${_radioCategories.length} categories");
     _radioCategories.forEach((key, value) {
@@ -196,6 +345,7 @@ class RadioAudioHandler extends BaseAudioHandler
         MediaAction.pause,
         MediaAction.stop,
         MediaAction.playPause,
+        MediaAction.setRating, // Favori için rating kullan
       },
       androidCompactActionIndices: controls.length >= 2 ? const [0, 1] : const [0],
       processingState: const {
@@ -261,6 +411,27 @@ class RadioAudioHandler extends BaseAudioHandler
     }
   }
 
+  // Android Auto favorileme desteği (Rating API)
+  @override
+  Future<void> onSetRating(Rating rating, Map<String, dynamic>? extras) async {
+    print('⭐ onSetRating called with rating: $rating');
+    
+    final currentStation = mediaItem.value;
+    if (currentStation != null) {
+      await toggleFavorite(currentStation.id);
+      final isFavorite = _favoriteIds.contains(currentStation.id);
+      
+      // MediaItem'ı güncelle - rating değişti
+      final updatedMediaItem = currentStation.copyWith(
+        rating: Rating.newHeartRating(isFavorite),
+        artist: isFavorite ? '❤️ ${currentStation.artist}' : currentStation.artist?.replaceFirst('❤️ ', ''),
+      );
+      
+      this.mediaItem.add(updatedMediaItem);
+      print('❤️ Rating updated for ${currentStation.title}: $isFavorite');
+    }
+  }
+
   Future<void> playPause() async {
     if (_player.playing) {
       await pause();
@@ -274,11 +445,14 @@ class RadioAudioHandler extends BaseAudioHandler
     try {
       print("📻 Setting up radio station: $title (ID: ${stationId ?? 'none'})");
 
+      // Favori durumunu kontrol et
+      final isFavorite = stationId != null && _favoriteIds.contains(stationId);
+      
       // Set media item for system UI - Modern Android Auto tasarımı
       final mediaItem = MediaItem(
         id: stationId ?? streamUrl,
         title: title,
-        artist: artist,
+        artist: isFavorite ? '❤️ $artist' : artist,
         album: 'Radyo Tüneli',
         displayTitle: title,
         displaySubtitle: '🔴 CANLI YAYIN',
@@ -286,7 +460,7 @@ class RadioAudioHandler extends BaseAudioHandler
         artUri: artUri != null && artUri.isNotEmpty ? Uri.parse(artUri) : Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
         playable: true,
         duration: Duration.zero, // Radio streams don't have duration
-        rating: Rating.newHeartRating(true), // Favorilere eklenebilir göster
+        rating: Rating.newHeartRating(isFavorite), // Favori durumuna göre
         extras: {
           'isLive': true,
           'streamUrl': streamUrl,
@@ -300,6 +474,9 @@ class RadioAudioHandler extends BaseAudioHandler
 
       // Update media item
       this.mediaItem.add(mediaItem);
+      
+      // Son dinlenenlere ekle
+      await _addToRecentlyPlayed(mediaItem);
 
       // Set loading state
       playbackState.add(PlaybackState(
@@ -515,22 +692,26 @@ class RadioAudioHandler extends BaseAudioHandler
       return stations.asMap().entries.map((entry) {
         final index = entry.key;
         final station = entry.value;
+        final isFav = _favoriteIds.contains(station.id);
         
         return MediaItem(
           id: station.id,
           title: station.title,
-          artist: '🔴 CANLI  •  ${station.artist ?? 'Radyo'}',
+          artist: isFav 
+              ? '❤️ CANLI  •  ${station.artist ?? 'Radyo'}' 
+              : '🔴 CANLI  •  ${station.artist ?? 'Radyo'}',
           album: 'Radyo Tüneli',
           genre: station.genre,
           displayTitle: station.title,
           displaySubtitle: station.artist ?? 'Türk Radyosu',
-          displayDescription: '🎧 Canlı yayın',
+          displayDescription: isFav ? '❤️ Favori  •  🎧 Canlı yayın' : '🎧 Canlı yayın',
           artUri: station.artUri ?? Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
           playable: true,
           duration: null, // Live stream
           extras: {
             'streamUrl': station.extras?['streamUrl'],
             'isLive': true,
+            'isFavorite': isFav,
             'android.media.metadata.CONTENT_TYPE': 'audio/mpeg',
             'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
             'android.media.browse.CONTENT_STYLE_PLAYABLE_HINT': 1,
@@ -589,27 +770,6 @@ class RadioAudioHandler extends BaseAudioHandler
       
       rethrow;
     }
-  }
-
-  @override
-  Future<List<MediaItem>> search(String query, [Map<String, dynamic>? extras]) async {
-    print("🚗 Android Auto: Search query: $query");
-    
-    // Tüm kategorilerdeki istasyonları tek listede topla
-    final allStations = <MediaItem>[];
-    for (final stations in _radioCategories.values) {
-      allStations.addAll(stations);
-    }
-    
-    // Search in radio station titles, artists and genres
-    final results = allStations
-        .where((station) => 
-            station.title.toLowerCase().contains(query.toLowerCase()) ||
-            (station.artist?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
-            (station.genre?.toLowerCase().contains(query.toLowerCase()) ?? false))
-        .toList();
-    
-    return results;
   }
 
   // CarPlay support
@@ -722,6 +882,8 @@ class RadioAudioHandler extends BaseAudioHandler
   // Handle custom actions (like volume control)
   @override
   Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) async {
+    print('🎬 Custom action called: $name with extras: $extras');
+    
     switch (name) {
       case 'setVolume':
         if (extras != null && extras.containsKey('volume')) {
@@ -730,9 +892,78 @@ class RadioAudioHandler extends BaseAudioHandler
           print('🔊 Volume set to: $volume');
         }
         break;
+      case 'toggleFavorite':
+        // Şu anda çalan radyonun ID'sini al
+        final currentStation = mediaItem.value;
+        if (currentStation != null) {
+          await toggleFavorite(currentStation.id);
+          final isFavorite = _favoriteIds.contains(currentStation.id);
+          print('❤️ Favorite toggled for ${currentStation.title}: $isFavorite');
+          
+          // Durumu güncelle (favori butonu yenilenir)
+          _broadcastState(_player.playerState);
+          
+          return {'isFavorite': isFavorite, 'stationId': currentStation.id};
+        } else {
+          print('⚠️ No station currently playing');
+        }
+        break;
       default:
         print('⚠️ Unknown custom action: $name');
     }
     return super.customAction(name, extras);
+  }
+
+  // Android Auto arama callback metodu
+  @override
+  Future<void> onSearch(String query, [Map<String, dynamic>? extras]) async {
+    print("🔍🔍🔍 onSearch CALLED with query: '$query'");
+    // search() metodu otomatik olarak çağrılır, super çağrısı gerekli değil
+  }
+
+  // Android Auto arama desteği
+  @override
+  Future<List<MediaItem>> search(String query, [Map<String, dynamic>? extras]) async {
+    print("🔍 Android Auto: Searching for '$query'");
+    
+    if (query.isEmpty) {
+      return [];
+    }
+    
+    final searchResults = <MediaItem>[];
+    final lowerQuery = query.toLowerCase();
+    
+    // Tüm radyolarda ara
+    for (var categoryStations in _radioCategories.values) {
+      for (var station in categoryStations) {
+        final matchesTitle = station.title.toLowerCase().contains(lowerQuery);
+        final matchesArtist = station.artist?.toLowerCase().contains(lowerQuery) ?? false;
+        final matchesGenre = station.genre?.toLowerCase().contains(lowerQuery) ?? false;
+        
+        if (matchesTitle || matchesArtist || matchesGenre) {
+          // Tekrar eklenmesini önle
+          if (!searchResults.any((s) => s.id == station.id)) {
+            // Favori durumunu ekle
+            final isFavorite = _favoriteIds.contains(station.id);
+            final updatedStation = station.copyWith(
+              artist: isFavorite ? '❤️ ${station.artist}' : station.artist,
+              extras: {
+                ...?station.extras,
+                'isFavorite': isFavorite,
+              },
+            );
+            searchResults.add(updatedStation);
+          }
+        }
+      }
+    }
+    
+    print("🔍 Found ${searchResults.length} results for '$query'");
+    return searchResults.take(20).toList(); // İlk 20 sonucu döndür
+  }
+
+  // Favori durumunu kontrol et
+  bool isFavorite(String stationId) {
+    return _favoriteIds.contains(stationId);
   }
 }
