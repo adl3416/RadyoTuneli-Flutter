@@ -2,7 +2,7 @@ name: turkradyo
 description: "A modern Flutter radio streaming application with dark theme."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 2.0.2+2003
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -36,7 +36,7 @@ dependencies:
   path_provider: ^2.1.1
 
   # HTTP
-  http: ^1.1.0
+  http: ^1.1.1
 
   # Icons
   cupertino_icons: ^1.0.6
@@ -61,7 +61,7 @@ flutter_icons:
   image_path: "assets/images/vintage_radio_logo.png"
   adaptive_icon_background: "#2D1B69"  # Deep purple background
   adaptive_icon_foreground: "assets/images/vintage_radio_logo.png"
-  min_sdk_android: 21
+  min_sdk_android: 21  # Android 5.0 (API Level 21) - Samsung S9 uyumluluğu
   remove_alpha_ios: true
   # Logo boyutunu ayarla ve merkeze al
   adaptive_icon_padding: 40  # Reduced padding for better visibility
