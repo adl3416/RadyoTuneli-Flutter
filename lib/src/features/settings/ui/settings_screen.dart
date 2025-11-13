@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/providers/theme_provider.dart';
+import '../../../shared/providers/color_scheme_provider.dart';
 import '../../../core/widgets/banner_ad_widget.dart';
 import '../data/app_settings_provider.dart';
 import '../../../core/utils/snackbar_helper.dart';
@@ -23,6 +24,8 @@ class SettingsScreen extends ConsumerWidget {
           _buildThemeSection(context, ref, themeMode),
           const Divider(height: 32),
           _buildAppSettingsSection(context, ref, appSettings),
+          const Divider(height: 32),
+          _buildColorSchemeSection(context, ref),
           const Divider(height: 32),
           
           // Banner Ad
@@ -243,6 +246,272 @@ class SettingsScreen extends ConsumerWidget {
             (value) {
               _handleLockScreenToggle(ref, context, value);
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildColorSchemeSection(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withOpacity(0.5),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.palette_outlined,
+                color: Theme.of(context).primaryColor,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Farklı Temalar',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Takım Temasını Seç',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Kanarya Teması seçimi
+          InkWell(
+            onTap: () {
+              _showKanaryaThemeOptions(context, ref);
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: _buildColorSchemeOption(
+              context,
+              'Kanarya',
+              '🟡 Sarı-Lacivert',
+              const Color(0xFFFFD700),
+              const Color(0xFF001F3F),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showKanaryaThemeOptions(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '🟡 Kanarya Teması Ayarları',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+            _buildThemeOptionTile(
+              context,
+              'Sarı Yoğunluğu',
+              'Navigation bar sarı tonu seç',
+              Icons.brightness_high,
+              ['Açık', 'Normal', 'Koyu'],
+              0,
+            ),
+            const SizedBox(height: 16),
+            _buildThemeOptionTile(
+              context,
+              'Lacivert Yoğunluğu',
+              'Tab bar lacivert tonu seç',
+              Icons.brightness_4,
+              ['Açık', 'Normal', 'Koyu'],
+              0,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Kanarya temasını aktif et
+                  ref.read(colorSchemeProvider.notifier).setColorScheme('kanarya');
+                  SnackbarHelper.showSuccess(context, '🟡 Kanarya Teması Aktif!');
+                  Navigator.pop(context);
+                },
+                child: const Text('Tamam'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeOptionTile(
+    BuildContext context,
+    String title,
+    String subtitle,
+    IconData icon,
+    List<String> options,
+    int selectedIndex,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withOpacity(0.3),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 36,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: options.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final isSelected = index == selectedIndex;
+                return InkWell(
+                  onTap: () {
+                    print('Selected: ${options[index]}');
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Theme.of(context).primaryColor
+                          : Theme.of(context).colorScheme.surface,
+                      border: Border.all(
+                        color: isSelected
+                            ? Theme.of(context).primaryColor
+                            : Theme.of(context).dividerColor,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        options[index],
+                        style: TextStyle(
+                          color: isSelected
+                              ? Colors.white
+                              : Theme.of(context).textTheme.bodySmall?.color,
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildColorSchemeOption(
+    BuildContext context,
+    String name,
+    String displayName,
+    Color primaryColor,
+    Color secondaryColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: primaryColor.withOpacity(0.3),
+          width: 2,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              gradient: LinearGradient(
+                colors: [primaryColor, secondaryColor],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  displayName,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  'Primary: ${primaryColor.value.toRadixString(16)} | Secondary: ${secondaryColor.value.toRadixString(16)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: Theme.of(context).primaryColor,
           ),
         ],
       ),

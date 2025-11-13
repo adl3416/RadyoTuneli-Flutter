@@ -298,6 +298,169 @@ class AppTheme {
       ),
     );
   }
+
+  // 🟡 KANARYA TEMASI - Sarı (#FFD700) + Lacivert (#001F3F)
+  static const Color kanaryaPrimary = Color(0xFFFFD700); // Sarı
+  static const Color kanaryaSecondary = Color(0xFF001F3F); // Lacivert
+  static const Color kanaryaLight = Color(0xFFFFF8DC); // Açık sarı arka plan
+  static const Color kanaryaDark = Color(0xFF0B1929); // Çok koyu lacivert
+
+  static ThemeData get kanarayaTheme {
+    final textTheme = GoogleFonts.interTextTheme().apply(
+      bodyColor: darkText,
+      displayColor: darkText,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.dark(
+        primary: kanaryaPrimary, // Sarı
+        secondary: kanaryaSecondary, // Lacivert
+        surface: darkSurface,
+        onPrimary: kanaryaSecondary, // Lacivert yazı sarı üzerinde
+        onSecondary: kanaryaPrimary, // Sarı yazı lacivert üzerinde
+        onSurface: darkText,
+        error: Color(0xFFEF4444),
+        background: darkBackground,
+        onBackground: darkText,
+        outline: darkBorder,
+        surfaceVariant: darkSurfaceVariant,
+        onSurfaceVariant: darkTextSecondary,
+      ),
+      scaffoldBackgroundColor: darkBackground,
+      textTheme: textTheme.copyWith(
+        headlineLarge: textTheme.headlineLarge?.copyWith(color: darkText),
+        headlineMedium: textTheme.headlineMedium?.copyWith(color: darkText),
+        headlineSmall: textTheme.headlineSmall?.copyWith(color: darkText),
+        titleLarge: textTheme.titleLarge?.copyWith(color: darkText),
+        titleMedium: textTheme.titleMedium?.copyWith(color: darkText),
+        titleSmall: textTheme.titleSmall?.copyWith(color: darkText),
+        bodyLarge: textTheme.bodyLarge?.copyWith(color: darkText),
+        bodyMedium: textTheme.bodyMedium?.copyWith(color: darkText),
+        bodySmall: textTheme.bodySmall?.copyWith(color: darkTextSecondary),
+        labelLarge: textTheme.labelLarge?.copyWith(color: darkText),
+        labelMedium: textTheme.labelMedium?.copyWith(color: darkTextSecondary),
+        labelSmall: textTheme.labelSmall?.copyWith(color: darkTextSecondary),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: kanaryaSecondary, // 🟡 AppBar = Koyu Lacivert
+        foregroundColor: kanaryaPrimary, // 🟡 Yazı = Sarı
+        elevation: 4,
+        centerTitle: true,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: kanaryaSecondary.withOpacity(0.5),
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: kanaryaPrimary, // Başlık sarı
+          fontSize: 20,
+        ),
+        iconTheme: IconThemeData(color: kanaryaPrimary), // İkonlar sarı
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        selectedItemColor: kanaryaPrimary, // Sarı seçili
+        unselectedItemColor: darkTextSecondary,
+        backgroundColor: darkSurface,
+        type: BottomNavigationBarType.fixed,
+        elevation: 12,
+        selectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: kanaryaPrimary,
+        ),
+        unselectedLabelStyle: TextStyle(
+          color: darkTextSecondary,
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: kanaryaPrimary, // Sarı buton
+          foregroundColor: kanaryaSecondary, // Lacivert yazı
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 4,
+          shadowColor: kanaryaPrimary.withOpacity(0.4),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          foregroundColor: kanaryaPrimary, // İkonlar sarı
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: darkSurface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: darkBorder),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: darkBorder),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: kanaryaPrimary, width: 2), // Sarı border
+        ),
+        hintStyle: TextStyle(color: darkTextSecondary),
+        labelStyle: TextStyle(color: darkTextSecondary),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      ),
+      cardTheme: CardThemeData(
+        color: darkSurface,
+        elevation: 6,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: kanaryaPrimary.withOpacity(0.2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: darkBorder,
+            width: 1,
+          ),
+        ),
+      ),
+      listTileTheme: ListTileThemeData(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        textColor: darkText,
+        iconColor: kanaryaPrimary, // İkonlar sarı
+        tileColor: darkSurface,
+      ),
+      dividerTheme: DividerThemeData(
+        color: darkBorder,
+        thickness: 1,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return kanaryaPrimary; // Sarı switch
+          }
+          return darkTextSecondary;
+        }),
+        trackColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return kanaryaPrimary.withOpacity(0.3);
+          }
+          return darkBorder;
+        }),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: darkSurface,
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: textTheme.titleLarge?.copyWith(color: darkText),
+        contentTextStyle: textTheme.bodyMedium?.copyWith(color: darkText),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: darkSurface,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+      ),
+    );
+  }
 }
 
 // Radio Card Widget için özel gradient kartı
