@@ -24,12 +24,11 @@ class SettingsScreen extends ConsumerWidget {
           _buildThemeSection(context, ref, themeMode),
           const Divider(height: 32),
           _buildAppSettingsSection(context, ref, appSettings),
-          const Divider(height: 32),
+          const SizedBox(height: 32),
           _buildColorSchemeSection(context, ref),
           const Divider(height: 32),
-          
-          // Banner Ad
-          const SmallBannerAdWidget(),
+                                                                                         
+
           const SizedBox(height: 16),
           
           _buildSettingsTile(
@@ -253,6 +252,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildColorSchemeSection(BuildContext context, WidgetRef ref) {
+    print('🎨 SETTINGS: _buildColorSchemeSection çağrıldı');
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -282,7 +282,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             'Takım Temasını Seç',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -290,230 +290,142 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
-          // Kanarya Teması seçimi
-          InkWell(
-            onTap: () {
-              _showKanaryaThemeOptions(context, ref);
-            },
-            borderRadius: BorderRadius.circular(12),
-            child: _buildColorSchemeOption(
-              context,
-              'Kanarya',
-              '🟡 Sarı-Lacivert',
-              const Color(0xFFFFD700),
-              const Color(0xFF001F3F),
-            ),
+          // 💜 Orijinal (Varsayılan) Tema
+          _buildThemeCard(
+            context,
+            ref,
+            'varsayilan',
+            '💜 Orijinal',
+            'Varsayılan Mor Tema',
+            const Color(0xFF9C27B0),
+            const Color(0xFF6A1B9A),
+          ),
+          const SizedBox(height: 12),
+          // 🟡 Kanarya Teması
+          _buildThemeCard(
+            context,
+            ref,
+            'kanarya',
+            '🟡 Kanarya',
+            'Sarı-Lacivert',
+            const Color(0xFFFFD700),
+            const Color(0xFF001F3F),
+          ),
+          const SizedBox(height: 12),
+          // 🦁 Aslan Teması
+          _buildThemeCard(
+            context,
+            ref,
+            'aslan',
+            '🦁 Aslan',
+            'Sarı-Kırmızı',
+            const Color(0xFFFFD700),
+            const Color(0xFFDC143C),
+          ),
+          const SizedBox(height: 12),
+          // 🌊 Karadeniz Fırtınası Teması
+          _buildThemeCard(
+            context,
+            ref,
+            'karadeniz',
+            '🌊 Karadeniz Fırtınası',
+            'Bordo-Mavi',
+            const Color(0xFF800000),
+            const Color(0xFF4169E1),
+          ),
+          const SizedBox(height: 12),
+          // 🦅 Kartal Teması
+          _buildThemeCard(
+            context,
+            ref,
+            'kartal',
+            '🦅 Kartal',
+            'Siyah-Beyaz',
+            const Color(0xFF000000),
+            const Color(0xFFFFFFFF),
+          ),
+          const SizedBox(height: 12),
+          // 🐊 Timsah Teması
+          _buildThemeCard(
+            context,
+            ref,
+            'timsah',
+            '🐊 Timsah',
+            'Yeşil-Beyaz',
+            const Color(0xFF228B22),
+            const Color(0xFFFFFFFF),
           ),
         ],
       ),
     );
   }
 
-  void _showKanaryaThemeOptions(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildThemeCard(
+    BuildContext context,
+    WidgetRef ref,
+    String themeId,
+    String title,
+    String subtitle,
+    Color color1,
+    Color color2,
+  ) {
+    return InkWell(
+      onTap: () {
+        print('🎨 TAPPED: $themeId -> $title');
+        ref.read(colorSchemeProvider.notifier).setColorScheme(themeId);
+        SnackbarHelper.showSuccess(context, '$title Teması Aktif!');
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: color1.withOpacity(0.3),
+            width: 2,
+          ),
+        ),
+        child: Row(
           children: [
-            Text(
-              '🟡 Kanarya Teması Ayarları',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                gradient: LinearGradient(
+                  colors: [color1, color2],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
             ),
-            const SizedBox(height: 24),
-            _buildThemeOptionTile(
-              context,
-              'Sarı Yoğunluğu',
-              'Navigation bar sarı tonu seç',
-              Icons.brightness_high,
-              ['Açık', 'Normal', 'Koyu'],
-              0,
-            ),
-            const SizedBox(height: 16),
-            _buildThemeOptionTile(
-              context,
-              'Lacivert Yoğunluğu',
-              'Tab bar lacivert tonu seç',
-              Icons.brightness_4,
-              ['Açık', 'Normal', 'Koyu'],
-              0,
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Kanarya temasını aktif et
-                  ref.read(colorSchemeProvider.notifier).setColorScheme('kanarya');
-                  SnackbarHelper.showSuccess(context, '🟡 Kanarya Teması Aktif!');
-                  Navigator.pop(context);
-                },
-                child: const Text('Tamam'),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
+                    ),
+                  ),
+                ],
               ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Theme.of(context).primaryColor,
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildThemeOptionTile(
-    BuildContext context,
-    String title,
-    String subtitle,
-    IconData icon,
-    List<String> options,
-    int selectedIndex,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).dividerColor.withOpacity(0.3),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 20),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 36,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: options.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                final isSelected = index == selectedIndex;
-                return InkWell(
-                  onTap: () {
-                    print('Selected: ${options[index]}');
-                  },
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? Theme.of(context).primaryColor
-                          : Theme.of(context).colorScheme.surface,
-                      border: Border.all(
-                        color: isSelected
-                            ? Theme.of(context).primaryColor
-                            : Theme.of(context).dividerColor,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(
-                        options[index],
-                        style: TextStyle(
-                          color: isSelected
-                              ? Colors.white
-                              : Theme.of(context).textTheme.bodySmall?.color,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildColorSchemeOption(
-    BuildContext context,
-    String name,
-    String displayName,
-    Color primaryColor,
-    Color secondaryColor,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: primaryColor.withOpacity(0.3),
-          width: 2,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              gradient: LinearGradient(
-                colors: [primaryColor, secondaryColor],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  displayName,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  'Primary: ${primaryColor.value.toRadixString(16)} | Secondary: ${secondaryColor.value.toRadixString(16)}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
-                    fontSize: 10,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: Theme.of(context).primaryColor,
-          ),
-        ],
       ),
     );
   }

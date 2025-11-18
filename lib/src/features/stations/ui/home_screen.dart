@@ -6,6 +6,7 @@ import 'widgets/recently_played_item.dart';
 import '../../player/data/player_provider.dart';
 import '../../player/ui/automotive_player_screen.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/providers/color_scheme_provider.dart';
 import '../../../core/widgets/vintage_radio_logo.dart';
 import '../../../core/widgets/banner_ad_widget.dart';
 import '../../../core/widgets/interstitial_ad_manager.dart';
@@ -48,34 +49,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = ref.watch(colorSchemeProvider);
     final filteredStationsAsync = ref.watch(filteredStationsProvider);
     final recentlyPlayedAsync = ref.watch(actualRecentlyPlayedStationsProvider);
     final searchQuery = ref.watch(searchQueryProvider);
     final sortAtoZ = ref.watch(sortAtoZProvider);
     final selectedCategory = ref.watch(selectedCategoryProvider);
 
+    // Get AppBar color based on colorScheme
+    Color getAppBarColor() {
+      switch (colorScheme) {
+        case 'kanarya':
+          return const Color(0xFFFFD700); // Sarı
+        case 'aslan':
+          return const Color(0xFFFFD700); // Sarı
+        case 'karadeniz':
+          return const Color(0xFF800000); // Bordo
+        case 'kartal':
+          return const Color(0xFF000000); // Siyah
+        case 'timsah':
+          return const Color(0xFF228B22); // Yeşil
+        case 'varsayilan':
+        default:
+          return const Color(0xFF8B5CF6); // Mor (Orijinal)
+      }
+    }
+
     return Scaffold(
-      drawer: _buildDrawer(context, ref),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header - sabit olarak üstte kalacak
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppTheme.headerPurple,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
+      drawer: _buildDrawer(context),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: SafeArea(
+          bottom: false,
+          child: Container(
+            decoration: BoxDecoration(
+              color: getAppBarColor(),
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
               ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
               child: _isSearchActive 
                 ? _buildSearchHeader() 
                 : _buildNormalHeader(),
             ),
-            
+          ),
+        ),
+      ),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             const SizedBox(height: 2),
             
             // Banner reklam
@@ -344,7 +371,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
     );
   }
 
-  Widget _buildDrawer(BuildContext context, WidgetRef ref) {
+  Widget _buildDrawer(BuildContext context) {
     // Tek bir "Kategori Seç" başlığı altında tüm kategoriler ve alt kategoriler açılır olarak gösterilecek
     return Drawer(
       child: Container(
@@ -355,7 +382,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
             colors: [
               AppTheme.headerPurple,
               AppTheme.cardPurple,
-              AppTheme.cardPurpleDark,
+              AppTheme.cardPurple.withOpacity(0.8),
             ],
           ),
         ),
@@ -662,140 +689,146 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
 
   // Normal header (arama aktif değilken)
   Widget _buildNormalHeader() {
-    return Row(
-      children: [
-        // Drawer Button
-        Builder(
-          builder: (context) => IconButton(
-            onPressed: () {
-              HapticFeedback.lightImpact();
-              Scaffold.of(context).openDrawer();
-            },
-            icon: const Icon(
-              Icons.menu,
-              color: Colors.white,
-              size: 28,
-            ),
-          ),
-        ),
-        // Title - sola hizalandı
-        Expanded(
-          child: Text(
-            'Radyo Tüneli',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.left,
-          ),
-        ),
-        // Search Button
-        IconButton(
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            setState(() {
-              _isSearchActive = true;
-            });
-            // Focus'u sonraki frame'de yap ki widget build tamamlansın
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _searchFocusNode.requestFocus();
-            });
-          },
-          icon: const Icon(
-            Icons.search,
-            color: Colors.white,
-            size: 28,
-          ),
-          tooltip: 'Ara',
-        ),
-        // A-Z Sort Button
-        Consumer(
-          builder: (context, ref, child) {
-            final sortAtoZ = ref.watch(sortAtoZProvider);
-            return IconButton(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        children: [
+          // Drawer Button
+          Builder(
+            builder: (context) => IconButton(
               onPressed: () {
-                HapticFeedback.mediumImpact();
-                ref.read(sortAtoZProvider.notifier).state = !sortAtoZ;
+                HapticFeedback.lightImpact();
+                Scaffold.of(context).openDrawer();
               },
               icon: Icon(
-                sortAtoZ ? Icons.sort_by_alpha : Icons.sort,
-                color: sortAtoZ ? Colors.white : Colors.white70,
+                Icons.menu,
+                color: Theme.of(context).colorScheme.onPrimary,
                 size: 28,
               ),
-              tooltip: sortAtoZ ? 'Normal Sıralama' : 'A-Z Sıralama',
-            );
-          },
-        ),
-      ],
+            ),
+          ),
+          // Title - sola hizalandı
+          Expanded(
+            child: Text(
+              'Radyo Tüneli',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+              textAlign: TextAlign.left,
+            ),
+          ),
+          // Search Button
+          IconButton(
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              setState(() {
+                _isSearchActive = true;
+              });
+              // Focus'u sonraki frame'de yap ki widget build tamamlansın
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _searchFocusNode.requestFocus();
+              });
+            },
+            icon: Icon(
+              Icons.search,
+              color: Theme.of(context).colorScheme.onPrimary,
+              size: 28,
+            ),
+            tooltip: 'Ara',
+          ),
+          // A-Z Sort Button
+          Consumer(
+            builder: (context, ref, child) {
+              final sortAtoZ = ref.watch(sortAtoZProvider);
+              return IconButton(
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  ref.read(sortAtoZProvider.notifier).state = !sortAtoZ;
+                },
+                icon: Icon(
+                  sortAtoZ ? Icons.sort_by_alpha : Icons.sort,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  size: 28,
+                ),
+                tooltip: sortAtoZ ? 'Normal Sıralama' : 'A-Z Sıralama',
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
   // Arama header (arama aktifken)
   Widget _buildSearchHeader() {
     final searchQuery = ref.watch(searchQueryProvider);
-    return Row(
-      children: [
-        // Back Button
-        IconButton(
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            setState(() {
-              _isSearchActive = false;
-            });
-            _searchController.clear();
-            ref.read(searchQueryProvider.notifier).state = '';
-            _searchFocusNode.unfocus();
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-            size: 28,
-          ),
-        ),
-        // Search TextField
-        Expanded(
-          child: TextField(
-            controller: _searchController,
-            focusNode: _searchFocusNode,
-            onChanged: (value) {
-              ref.read(searchQueryProvider.notifier).state = value;
-            },
-            textInputAction: TextInputAction.search,
-            style: const TextStyle(color: Colors.black87), // Beyazdan siyaha değiştirildi
-            decoration: InputDecoration(
-              hintText: 'İstasyon, türü ara...',
-              hintStyle: TextStyle(color: Colors.black54), // Beyaz opacity'den siyah opacity'e
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.9), // Beyaz arkaplan eklendi
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-        ),
-        // Clear Button
-        if (searchQuery.isNotEmpty)
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        children: [
+          // Back Button
           IconButton(
             onPressed: () {
               HapticFeedback.lightImpact();
+              setState(() {
+                _isSearchActive = false;
+              });
               _searchController.clear();
               ref.read(searchQueryProvider.notifier).state = '';
-              _searchFocusNode.requestFocus();
+              _searchFocusNode.unfocus();
             },
-            icon: const Icon(
-              Icons.clear,
-              color: Colors.white,
-              size: 24,
+            icon: Icon(
+              Icons.arrow_back,
+              color: Theme.of(context).colorScheme.onPrimary,
+              size: 28,
             ),
           ),
-      ],
+          // Search TextField
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              onChanged: (value) {
+                ref.read(searchQueryProvider.notifier).state = value;
+              },
+              textInputAction: TextInputAction.search,
+              style: const TextStyle(color: Colors.black87),
+              decoration: InputDecoration(
+                hintText: 'İstasyon, türü ara...',
+                hintStyle: TextStyle(color: Colors.black54),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.9),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+          // Clear Button
+          if (searchQuery.isNotEmpty)
+            IconButton(
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                _searchController.clear();
+                ref.read(searchQueryProvider.notifier).state = '';
+                _searchFocusNode.requestFocus();
+              },
+              icon: Icon(
+                Icons.clear,
+                color: Theme.of(context).colorScheme.onPrimary,
+                size: 24,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

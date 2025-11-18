@@ -71,7 +71,7 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.light(
-        primary: lightTint,
+        primary: headerPurple, // Orijinal mor renk
         secondary: orange400,
         surface: white,
         onPrimary: white,
@@ -305,7 +305,7 @@ class AppTheme {
   static const Color kanaryaLight = Color(0xFFFFF8DC); // Açık sarı arka plan
   static const Color kanaryaDark = Color(0xFF0B1929); // Çok koyu lacivert
 
-  static ThemeData get kanarayaTheme {
+  static ThemeData get kanarayaThemeDark {
     final textTheme = GoogleFonts.interTextTheme().apply(
       bodyColor: darkText,
       displayColor: darkText,
@@ -344,8 +344,8 @@ class AppTheme {
         labelSmall: textTheme.labelSmall?.copyWith(color: darkTextSecondary),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: kanaryaSecondary, // 🟡 AppBar = Koyu Lacivert
-        foregroundColor: kanaryaPrimary, // 🟡 Yazı = Sarı
+        backgroundColor: kanaryaSecondary, // 🟡 AppBar = Komple Lacivert
+        foregroundColor: kanaryaPrimary, // 🟡 Yazı/İkonlar = Sarı
         elevation: 4,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
@@ -458,6 +458,428 @@ class AppTheme {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
+      ),
+    );
+  }
+
+  static ThemeData get kanarayaThemeLight {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.light(
+        primary: kanaryaPrimary,
+        secondary: kanaryaSecondary,
+        surface: Colors.white,
+        onPrimary: kanaryaSecondary,
+        onSecondary: kanaryaPrimary,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: kanaryaSecondary, // 🟡 AppBar = Lacivert
+        foregroundColor: kanaryaPrimary, // Yazılar = Sarı
+        elevation: 0,
+        centerTitle: true,
+      ),
+    );
+  }
+
+  // 🦁 ASLAN TEMASI - Sarı (#FFD700) + Kırmızı (#DC143C)
+  static const Color aslanYellow = Color(0xFFFFD700);
+  static const Color aslanRed = Color(0xFFDC143C);
+
+  static ThemeData get aslanThemeDark {
+    final textTheme = GoogleFonts.interTextTheme().apply(
+      bodyColor: darkText,
+      displayColor: darkText,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.dark(
+        primary: aslanYellow,
+        secondary: aslanRed,
+        surface: darkSurface,
+        onPrimary: aslanRed,
+        onSecondary: aslanYellow,
+        onSurface: darkText,
+        error: Color(0xFFEF4444),
+        background: darkBackground,
+        onBackground: darkText,
+        outline: darkBorder,
+        surfaceVariant: darkSurfaceVariant,
+        onSurfaceVariant: darkTextSecondary,
+      ),
+      scaffoldBackgroundColor: darkBackground,
+      textTheme: textTheme,
+      appBarTheme: AppBarTheme(
+        backgroundColor: aslanRed, // 🦁 AppBar = Kırmızı
+        foregroundColor: aslanYellow, // Yazılar/İkonlar = Sarı
+        elevation: 4,
+        centerTitle: true,
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: aslanYellow,
+          fontSize: 20,
+        ),
+        iconTheme: IconThemeData(color: aslanYellow),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        selectedItemColor: aslanYellow,
+        unselectedItemColor: darkTextSecondary,
+        backgroundColor: darkSurface,
+        type: BottomNavigationBarType.fixed,
+        elevation: 12,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: aslanYellow,
+          foregroundColor: aslanRed,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(foregroundColor: aslanYellow),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: darkSurface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: darkBorder),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: aslanYellow, width: 2),
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) return aslanYellow;
+          return darkTextSecondary;
+        }),
+        trackColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return aslanYellow.withOpacity(0.3);
+          }
+          return darkBorder;
+        }),
+      ),
+    );
+  }
+
+  static ThemeData get aslanThemeLight {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.light(
+        primary: aslanYellow,
+        secondary: aslanRed,
+        surface: Colors.white,
+        onPrimary: aslanRed,
+        onSecondary: aslanYellow,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: aslanRed,
+        foregroundColor: aslanYellow,
+        elevation: 0,
+        centerTitle: true,
+      ),
+    );
+  }
+
+  // 🌊 KARADENIZ FIRTINASI TEMASI - Bordo (#800000) + Mavi (#4169E1)
+  static const Color karadenizBordo = Color(0xFF800000);
+  static const Color karadenizMavi = Color(0xFF4169E1);
+
+  static ThemeData get karadenizThemeDark {
+    final textTheme = GoogleFonts.interTextTheme().apply(
+      bodyColor: darkText,
+      displayColor: darkText,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.dark(
+        primary: karadenizMavi,
+        secondary: karadenizBordo,
+        surface: darkSurface,
+        onPrimary: karadenizBordo,
+        onSecondary: karadenizMavi,
+        onSurface: darkText,
+      ),
+      scaffoldBackgroundColor: darkBackground,
+      textTheme: textTheme,
+      appBarTheme: AppBarTheme(
+        backgroundColor: karadenizBordo, // 🌊 AppBar = Bordo
+        foregroundColor: karadenizMavi, // Yazılar = Mavi
+        elevation: 4,
+        centerTitle: true,
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: karadenizMavi,
+          fontSize: 20,
+        ),
+        iconTheme: IconThemeData(color: karadenizMavi),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        selectedItemColor: karadenizMavi,
+        unselectedItemColor: darkTextSecondary,
+        backgroundColor: darkSurface,
+        type: BottomNavigationBarType.fixed,
+        elevation: 12,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: karadenizMavi,
+          foregroundColor: karadenizBordo,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(foregroundColor: karadenizMavi),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: darkSurface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: darkBorder),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: karadenizMavi, width: 2),
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) return karadenizMavi;
+          return darkTextSecondary;
+        }),
+        trackColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return karadenizMavi.withOpacity(0.3);
+          }
+          return darkBorder;
+        }),
+      ),
+    );
+  }
+
+  static ThemeData get karadenizThemeLight {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.light(
+        primary: karadenizMavi,
+        secondary: karadenizBordo,
+        surface: Colors.white,
+        onPrimary: karadenizBordo,
+        onSecondary: karadenizMavi,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: karadenizBordo,
+        foregroundColor: karadenizMavi,
+        elevation: 0,
+        centerTitle: true,
+      ),
+    );
+  }
+
+  // 🦅 KARTAL TEMASI - Siyah (#000000) + Beyaz (#FFFFFF)
+  static const Color kartalBlack = Color(0xFF000000);
+  static const Color kartalWhite = Color(0xFFFFFFFF);
+
+  static ThemeData get kartalThemeDark {
+    final textTheme = GoogleFonts.interTextTheme().apply(
+      bodyColor: kartalWhite,
+      displayColor: kartalWhite,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.dark(
+        primary: kartalWhite,
+        secondary: kartalBlack,
+        surface: Color(0xFF1A1A1A),
+        onPrimary: kartalBlack,
+        onSecondary: kartalWhite,
+        onSurface: kartalWhite,
+      ),
+      scaffoldBackgroundColor: kartalBlack,
+      textTheme: textTheme,
+      appBarTheme: AppBarTheme(
+        backgroundColor: kartalBlack, // 🦅 AppBar = Siyah
+        foregroundColor: kartalWhite, // Yazılar = Beyaz
+        elevation: 4,
+        centerTitle: true,
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: kartalWhite,
+          fontSize: 20,
+        ),
+        iconTheme: IconThemeData(color: kartalWhite),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        selectedItemColor: kartalWhite,
+        unselectedItemColor: Color(0xFF666666),
+        backgroundColor: Color(0xFF1A1A1A),
+        type: BottomNavigationBarType.fixed,
+        elevation: 12,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: kartalWhite,
+          foregroundColor: kartalBlack,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(foregroundColor: kartalWhite),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Color(0xFF1A1A1A),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Color(0xFF333333)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: kartalWhite, width: 2),
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) return kartalWhite;
+          return Color(0xFF666666);
+        }),
+        trackColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return kartalWhite.withOpacity(0.3);
+          }
+          return Color(0xFF333333);
+        }),
+      ),
+    );
+  }
+
+  static ThemeData get kartalThemeLight {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.light(
+        primary: kartalBlack,
+        secondary: kartalWhite,
+        surface: kartalWhite,
+        onPrimary: kartalWhite,
+        onSecondary: kartalBlack,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: kartalBlack,
+        foregroundColor: kartalWhite,
+        elevation: 0,
+        centerTitle: true,
+      ),
+    );
+  }
+
+  // 🐊 TIMSAH TEMASI - Yeşil (#228B22) + Beyaz (#FFFFFF)
+  static const Color timsahGreen = Color(0xFF228B22);
+  static const Color timsahWhite = Color(0xFFFFFFFF);
+
+  static ThemeData get timsahThemeDark {
+    final textTheme = GoogleFonts.interTextTheme().apply(
+      bodyColor: darkText,
+      displayColor: darkText,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.dark(
+        primary: timsahGreen,
+        secondary: Color(0xFF1B5E20),
+        surface: darkSurface,
+        onPrimary: timsahWhite,
+        onSecondary: timsahGreen,
+        onSurface: darkText,
+      ),
+      scaffoldBackgroundColor: darkBackground,
+      textTheme: textTheme,
+      appBarTheme: AppBarTheme(
+        backgroundColor: timsahGreen, // 🐊 AppBar = Yeşil
+        foregroundColor: timsahWhite, // Yazılar = Beyaz
+        elevation: 4,
+        centerTitle: true,
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: timsahWhite,
+          fontSize: 20,
+        ),
+        iconTheme: IconThemeData(color: timsahWhite),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        selectedItemColor: timsahGreen,
+        unselectedItemColor: darkTextSecondary,
+        backgroundColor: darkSurface,
+        type: BottomNavigationBarType.fixed,
+        elevation: 12,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: timsahGreen,
+          foregroundColor: timsahWhite,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(foregroundColor: timsahGreen),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: darkSurface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: darkBorder),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: timsahGreen, width: 2),
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) return timsahGreen;
+          return darkTextSecondary;
+        }),
+        trackColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return timsahGreen.withOpacity(0.3);
+          }
+          return darkBorder;
+        }),
+      ),
+    );
+  }
+
+  static ThemeData get timsahThemeLight {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.light(
+        primary: timsahGreen,
+        secondary: Color(0xFF1B5E20),
+        surface: Colors.white,
+        onPrimary: timsahWhite,
+        onSecondary: timsahGreen,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: timsahGreen,
+        foregroundColor: timsahWhite,
+        elevation: 0,
+        centerTitle: true,
       ),
     );
   }

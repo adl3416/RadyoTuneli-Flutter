@@ -8,15 +8,27 @@ class ColorSchemeNotifier extends StateNotifier<String> {
   }
 
   Future<void> _loadColorScheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString('color_scheme') ?? 'varsayilan';
-    state = saved;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final saved = prefs.getString('color_scheme') ?? 'varsayilan';
+      print('🎨 ColorScheme loaded: $saved');
+      state = saved;
+    } catch (e) {
+      print('🎨 ColorScheme load error: $e');
+      state = 'varsayilan';
+    }
   }
 
   Future<void> setColorScheme(String scheme) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('color_scheme', scheme);
-    state = scheme;
+    try {
+      print('🎨 ColorScheme setting to: $scheme');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('color_scheme', scheme);
+      state = scheme;
+      print('🎨 ColorScheme updated: $scheme');
+    } catch (e) {
+      print('🎨 ColorScheme set error: $e');
+    }
   }
 }
 

@@ -13,20 +13,32 @@ class SplashApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
     final colorScheme = ref.watch(colorSchemeProvider);
     
-    // Renk şemasına göre tema seç
-    ThemeData getTheme() {
+    // Renk şemasına göre tema seç (Light + Dark)
+    ThemeData getSelectedTheme(bool isDark) {
       if (colorScheme == 'kanarya') {
-        return AppTheme.kanarayaTheme;
+        return isDark ? AppTheme.kanarayaThemeDark : AppTheme.kanarayaThemeLight;
+      } else if (colorScheme == 'aslan') {
+        return isDark ? AppTheme.aslanThemeDark : AppTheme.aslanThemeLight;
+      } else if (colorScheme == 'karadeniz') {
+        return isDark ? AppTheme.karadenizThemeDark : AppTheme.karadenizThemeLight;
+      } else if (colorScheme == 'kartal') {
+        return isDark ? AppTheme.kartalThemeDark : AppTheme.kartalThemeLight;
+      } else if (colorScheme == 'timsah') {
+        return isDark ? AppTheme.timsahThemeDark : AppTheme.timsahThemeLight;
+      } else if (colorScheme == 'varsayilan' || colorScheme.isEmpty) {
+        // Orijinal (Varsayılan) mor tema
+        return isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
       }
-      return AppTheme.darkTheme;
+      // Fallback: Varsayılan mor tema
+      return isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
     }
 
     print('🎨 SplashApp - Theme mode: $themeMode, Color scheme: $colorScheme');
     
     return MaterialApp(
       title: 'Radyo Tüneli',
-      theme: AppTheme.lightTheme,
-      darkTheme: getTheme(), // Kanarya veya normal dark tema
+      theme: getSelectedTheme(false), // Light theme
+      darkTheme: getSelectedTheme(true), // Dark theme
       themeMode: themeMode,
       debugShowCheckedModeBanner: false,
       home: const SplashNavigation(),
