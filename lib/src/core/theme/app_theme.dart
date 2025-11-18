@@ -139,6 +139,14 @@ class AppTheme {
       listTileTheme: const ListTileThemeData(
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
+      tabBarTheme: TabBarTheme(
+        labelColor: headerPurple, // Seçili tab = Mor
+        unselectedLabelColor: gray500, // Seçili olmayan = Gri
+        indicatorColor: headerPurple, // Alt çizgi = Mor
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: headerPurple, width: 3),
+        ),
+      ),
     );
   }
 
@@ -294,6 +302,14 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+      ),
+      tabBarTheme: TabBarTheme(
+        labelColor: darkPrimary, // Seçili tab = Mor
+        unselectedLabelColor: darkTextSecondary, // Seçili olmayan = Açık gri
+        indicatorColor: darkPrimary, // Alt çizgi = Mor
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: darkPrimary, width: 3),
         ),
       ),
     );
@@ -459,6 +475,14 @@ class AppTheme {
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
       ),
+      tabBarTheme: TabBarTheme(
+        labelColor: kanaryaPrimary, // Seçili tab = Sarı
+        unselectedLabelColor: kanaryaSecondary.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Lacivert
+        indicatorColor: kanaryaPrimary, // Alt çizgi = Sarı
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: kanaryaPrimary, width: 3),
+        ),
+      ),
     );
   }
 
@@ -478,6 +502,14 @@ class AppTheme {
         foregroundColor: kanaryaPrimary, // Yazılar = Sarı
         elevation: 0,
         centerTitle: true,
+      ),
+      tabBarTheme: TabBarTheme(
+        labelColor: kanaryaPrimary, // Seçili tab = Sarı
+        unselectedLabelColor: kanaryaSecondary.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Lacivert
+        indicatorColor: kanaryaPrimary, // Alt çizgi = Sarı
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: kanaryaPrimary, width: 3),
+        ),
       ),
     );
   }
@@ -564,6 +596,14 @@ class AppTheme {
           return darkBorder;
         }),
       ),
+      tabBarTheme: TabBarTheme(
+        labelColor: aslanYellow, // Seçili tab = Sarı
+        unselectedLabelColor: aslanRed.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Kırmızı
+        indicatorColor: aslanYellow, // Alt çizgi = Sarı
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: aslanYellow, width: 3),
+        ),
+      ),
     );
   }
 
@@ -583,6 +623,14 @@ class AppTheme {
         foregroundColor: aslanYellow,
         elevation: 0,
         centerTitle: true,
+      ),
+      tabBarTheme: TabBarTheme(
+        labelColor: aslanYellow, // Seçili tab = Sarı
+        unselectedLabelColor: aslanRed.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Kırmızı
+        indicatorColor: aslanYellow, // Alt çizgi = Sarı
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: aslanYellow, width: 3),
+        ),
       ),
     );
   }
@@ -663,6 +711,14 @@ class AppTheme {
           return darkBorder;
         }),
       ),
+      tabBarTheme: TabBarTheme(
+        labelColor: karadenizMavi, // Seçili tab = Mavi
+        unselectedLabelColor: karadenizBordo.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Bordo
+        indicatorColor: karadenizMavi, // Alt çizgi = Mavi
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: karadenizMavi, width: 3),
+        ),
+      ),
     );
   }
 
@@ -682,6 +738,14 @@ class AppTheme {
         foregroundColor: karadenizMavi,
         elevation: 0,
         centerTitle: true,
+      ),
+      tabBarTheme: TabBarTheme(
+        labelColor: karadenizMavi, // Seçili tab = Mavi
+        unselectedLabelColor: karadenizBordo.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Bordo
+        indicatorColor: karadenizMavi, // Alt çizgi = Mavi
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: karadenizMavi, width: 3),
+        ),
       ),
     );
   }
@@ -762,6 +826,14 @@ class AppTheme {
           return Color(0xFF333333);
         }),
       ),
+      tabBarTheme: TabBarTheme(
+        labelColor: kartalWhite, // Seçili tab = Beyaz
+        unselectedLabelColor: kartalBlack.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Siyah
+        indicatorColor: kartalWhite, // Alt çizgi = Beyaz
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: kartalWhite, width: 3),
+        ),
+      ),
     );
   }
 
@@ -781,6 +853,14 @@ class AppTheme {
         foregroundColor: kartalWhite,
         elevation: 0,
         centerTitle: true,
+      ),
+      tabBarTheme: TabBarTheme(
+        labelColor: kartalWhite, // Seçili tab = Beyaz
+        unselectedLabelColor: kartalBlack.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Siyah
+        indicatorColor: kartalWhite, // Alt çizgi = Beyaz
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: kartalWhite, width: 3),
+        ),
       ),
     );
   }
@@ -861,6 +941,14 @@ class AppTheme {
           return darkBorder;
         }),
       ),
+      tabBarTheme: TabBarTheme(
+        labelColor: timsahGreen, // Seçili tab = Yeşil
+        unselectedLabelColor: timsahWhite.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Beyaz
+        indicatorColor: timsahGreen, // Alt çizgi = Yeşil
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: timsahGreen, width: 3),
+        ),
+      ),
     );
   }
 
@@ -880,6 +968,14 @@ class AppTheme {
         foregroundColor: timsahWhite,
         elevation: 0,
         centerTitle: true,
+      ),
+      tabBarTheme: TabBarTheme(
+        labelColor: timsahGreen, // Seçili tab = Yeşil
+        unselectedLabelColor: timsahWhite.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Beyaz
+        indicatorColor: timsahGreen, // Alt çizgi = Yeşil
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: timsahGreen, width: 3),
+        ),
       ),
     );
   }
