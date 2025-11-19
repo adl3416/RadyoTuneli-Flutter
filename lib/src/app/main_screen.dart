@@ -114,7 +114,7 @@ class MainScreen extends ConsumerWidget {
                 ref.read(selectedTabProvider.notifier).state = index;
               },
               type: BottomNavigationBarType.fixed,
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
               selectedItemColor: getSelectedItemColor(),
               unselectedItemColor: getUnselectedItemColor(),
               selectedLabelStyle:
