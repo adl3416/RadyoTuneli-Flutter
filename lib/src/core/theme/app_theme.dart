@@ -84,13 +84,13 @@ class AppTheme {
       scaffoldBackgroundColor: lightBackground,
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: lightBackground,
-        foregroundColor: lightText,
+        backgroundColor: headerPurple,
+        foregroundColor: white,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
-          color: lightText,
+          color: white,
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -139,11 +139,11 @@ class AppTheme {
       listTileTheme: const ListTileThemeData(
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: headerPurple, // Seçili tab = Mor
         unselectedLabelColor: gray500, // Seçili olmayan = Gri
         indicatorColor: headerPurple, // Alt çizgi = Mor
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: headerPurple, width: 3),
         ),
       ),
@@ -304,11 +304,11 @@ class AppTheme {
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: darkPrimary, // Seçili tab = Mor
         unselectedLabelColor: darkTextSecondary, // Seçili olmayan = Açık gri
         indicatorColor: darkPrimary, // Alt çizgi = Mor
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: darkPrimary, width: 3),
         ),
       ),
@@ -476,11 +476,11 @@ class AppTheme {
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: kanaryaPrimary, // Seçili tab = Sarı
         unselectedLabelColor: kanaryaSecondary.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Lacivert
         indicatorColor: kanaryaPrimary, // Alt çizgi = Sarı
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: kanaryaPrimary, width: 3),
         ),
       ),
@@ -504,11 +504,11 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: kanaryaPrimary, // Seçili tab = Sarı
         unselectedLabelColor: kanaryaSecondary.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Lacivert
         indicatorColor: kanaryaPrimary, // Alt çizgi = Sarı
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: kanaryaPrimary, width: 3),
         ),
       ),
@@ -656,11 +656,11 @@ class AppTheme {
           return Colors.grey.shade300;
         }),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: aslanYellow, // Seçili tab = Sarı
         unselectedLabelColor: aslanRed.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Kırmızı
         indicatorColor: aslanYellow, // Alt çizgi = Sarı
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: aslanYellow, width: 3),
         ),
       ),
@@ -684,11 +684,11 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: aslanYellow, // Seçili tab = Sarı
         unselectedLabelColor: aslanRed.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Kırmızı
         indicatorColor: aslanYellow, // Alt çizgi = Sarı
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: aslanYellow, width: 3),
         ),
       ),
@@ -771,11 +771,11 @@ class AppTheme {
           return darkBorder;
         }),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: karadenizMavi, // Seçili tab = Mavi
         unselectedLabelColor: karadenizBordo.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Bordo
         indicatorColor: karadenizMavi, // Alt çizgi = Mavi
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: karadenizMavi, width: 3),
         ),
       ),
@@ -799,11 +799,11 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: karadenizMavi, // Seçili tab = Mavi
         unselectedLabelColor: karadenizBordo.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Bordo
         indicatorColor: karadenizMavi, // Alt çizgi = Mavi
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: karadenizMavi, width: 3),
         ),
       ),
@@ -847,8 +847,8 @@ class AppTheme {
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         selectedItemColor: kartalWhite,
-        unselectedItemColor: Color(0xFF666666),
-        backgroundColor: Color(0xFF1A1A1A),
+        unselectedItemColor: kartalWhite.withOpacity(0.7),
+        backgroundColor: kartalBlack,
         type: BottomNavigationBarType.fixed,
         elevation: 12,
       ),
@@ -886,13 +886,24 @@ class AppTheme {
           return Color(0xFF333333);
         }),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: kartalWhite, // Seçili tab = Beyaz
-        unselectedLabelColor: kartalBlack.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Siyah
+        unselectedLabelColor: kartalWhite.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Beyaz
         indicatorColor: kartalWhite, // Alt çizgi = Beyaz
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: kartalWhite, width: 3),
         ),
+      ),
+      cardTheme: CardThemeData(
+        color: kartalBlack,
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      listTileTheme: ListTileThemeData(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        textColor: kartalWhite,
+        iconColor: kartalWhite,
+        tileColor: kartalBlack,
       ),
     );
   }
@@ -914,11 +925,11 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: kartalWhite, // Seçili tab = Beyaz
         unselectedLabelColor: kartalBlack.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Siyah
         indicatorColor: kartalWhite, // Alt çizgi = Beyaz
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: kartalWhite, width: 3),
         ),
       ),
@@ -1001,11 +1012,11 @@ class AppTheme {
           return darkBorder;
         }),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: timsahGreen, // Seçili tab = Yeşil
         unselectedLabelColor: timsahWhite.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Beyaz
         indicatorColor: timsahGreen, // Alt çizgi = Yeşil
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: timsahGreen, width: 3),
         ),
       ),
@@ -1029,11 +1040,11 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: timsahGreen, // Seçili tab = Yeşil
         unselectedLabelColor: timsahWhite.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Beyaz
         indicatorColor: timsahGreen, // Alt çizgi = Yeşil
-        indicator: UnderlineTabIndicator(
+        indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: timsahGreen, width: 3),
         ),
       ),
@@ -1041,108 +1052,4 @@ class AppTheme {
   }
 }
 
-// Radio Card Widget için özel gradient kartı
-class RadioStationCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String? imageUrl;
-  final VoidCallback? onTap;
-  final VoidCallback? onFavoriteToggle;
-  final bool isPlaying;
-  final bool isFavorite;
 
-  const RadioStationCard({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    this.imageUrl,
-    this.onTap,
-    this.onFavoriteToggle,
-    this.isPlaying = false,
-    this.isFavorite = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            children: [
-              // Station Image/Icon - Modern logo with initials
-              RadioLogo(
-                radioName: title,
-                logoUrl: imageUrl,
-                size: 56,
-                showBorder: true,
-              ),
-              const SizedBox(width: 16),
-              // Station Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              // Buttons Row
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Favorite Button
-                  IconButton(
-                    onPressed: () {
-                      if (onFavoriteToggle != null) {
-                        HapticFeedback.lightImpact();
-                        onFavoriteToggle!();
-                      }
-                    },
-                    icon: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_outline,
-                      color: isFavorite ? Colors.red : Theme.of(context).iconTheme.color,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Play/Pause Button
-                  IconButton(
-                    style: IconButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                    ),
-                    onPressed: onTap,
-                    icon: Icon(
-                      isPlaying ? Icons.pause : Icons.play_arrow,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    ),
-                  ),
-                ],
-              ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

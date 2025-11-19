@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Seçilen tema adı (varsayılan, kanarya, vs)
 class ColorSchemeNotifier extends StateNotifier<String> {
   ColorSchemeNotifier() : super('varsayilan') {
+    // On startup, load persisted color scheme. Default to protected original 'varsayilan'.
     _loadColorScheme();
   }
 

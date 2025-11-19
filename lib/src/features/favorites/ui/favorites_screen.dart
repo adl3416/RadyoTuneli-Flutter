@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/vintage_radio_logo.dart';
+import '../../stations/ui/widgets/radio_station_card.dart';
 import '../../../core/widgets/banner_ad_widget.dart';
 import '../data/favorites_provider.dart';
-import '../../stations/data/stations_provider.dart';
 import '../../player/data/player_provider.dart';
 import '../../stations/ui/widgets/station_list_tile.dart';
+import '../../../shared/providers/color_scheme_provider.dart';
+import '../../../core/theme/app_theme.dart';
 
 class FavoritesScreen extends ConsumerWidget {
   const FavoritesScreen({super.key});
@@ -16,6 +16,9 @@ class FavoritesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final favorites = ref.watch(favoritesProvider);
     final sortedFavoriteStationsAsync = ref.watch(sortedFavoriteStationsProvider);
+
+    final colorScheme = Theme.of(context).colorScheme;
+    final activeScheme = ref.watch(colorSchemeProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -26,8 +29,8 @@ class FavoritesScreen extends ConsumerWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppTheme.headerPurple,
+                decoration: BoxDecoration(
+                color: colorScheme.primary,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -37,7 +40,7 @@ class FavoritesScreen extends ConsumerWidget {
                     width: 45,
                     height: 45,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: colorScheme.onPrimary.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(22),
                     ),
                     child: const Icon(
@@ -56,13 +59,13 @@ class FavoritesScreen extends ConsumerWidget {
                           'Favori Radyolarım',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: colorScheme.onPrimary,
                           ),
                         ),
                         Text(
                           '${favorites.length} istasyon',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.white.withOpacity(0.8),
+                            color: colorScheme.onPrimary.withOpacity(0.8),
                           ),
                         ),
                       ],
@@ -79,7 +82,7 @@ class FavoritesScreen extends ConsumerWidget {
                         },
                         icon: Icon(
                           sortAtoZ ? Icons.sort_by_alpha : Icons.sort,
-                          color: sortAtoZ ? Colors.white : Colors.white70,
+                          color: sortAtoZ ? colorScheme.onPrimary : colorScheme.onPrimary.withOpacity(0.7),
                           size: 22,
                         ),
                         tooltip: sortAtoZ ? 'Normal Sıralama' : 'A-Z Sıralama',
@@ -125,6 +128,10 @@ class FavoritesScreen extends ConsumerWidget {
                           title: station.name,
                           subtitle: station.genre ?? 'Radio',
                           imageUrl: station.logoUrl,
+                          // If the active scheme is 'kanarya', force navy background + yellow text
+                          backgroundColor: activeScheme == 'kanarya' ? AppTheme.kanaryaSecondary : null,
+                          titleColor: activeScheme == 'kanarya' ? AppTheme.kanaryaPrimary : null,
+                          subtitleColor: activeScheme == 'kanarya' ? AppTheme.kanaryaPrimary.withOpacity(0.9) : null,
                           isPlaying: ref.watch(playerStateProvider).currentStation?.id == station.id &&
                                     ref.watch(playerStateProvider).isPlaying,
                           isFavorite: true, // Favori sayfasında hepsi favori
@@ -151,9 +158,9 @@ class FavoritesScreen extends ConsumerWidget {
                     },
                   );
                 },
-                loading: () => const Center(
+                loading: () => Center(
                   child: CircularProgressIndicator(
-                    color: AppTheme.headerPurple,
+                    color: colorScheme.primary,
                   ),
                 ),
                 error: (error, stack) => _buildErrorState(context, error.toString()),
@@ -166,6 +173,8 @@ class FavoritesScreen extends ConsumerWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -175,7 +184,7 @@ class FavoritesScreen extends ConsumerWidget {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: AppTheme.headerPurple.withOpacity(0.1),
+              color: colorScheme.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Padding(
@@ -196,7 +205,7 @@ class FavoritesScreen extends ConsumerWidget {
             'Henüz Favori Yok',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: AppTheme.gray500,
+              color: colorScheme.onBackground,
             ),
           ),
           const SizedBox(height: 8),
@@ -204,7 +213,7 @@ class FavoritesScreen extends ConsumerWidget {
             'Radyo istasyonlarının yanındaki kalp simgesine\ntıklayarak favorilerinize ekleyebilirsiniz',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.gray500,
+              color: colorScheme.onBackground.withOpacity(0.8),
             ),
           ),
           const SizedBox(height: 24),
@@ -216,8 +225,8 @@ class FavoritesScreen extends ConsumerWidget {
             icon: const Icon(Icons.explore),
             label: const Text('Radyoları Keşfet'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.headerPurple,
-              foregroundColor: Colors.white,
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
           ),
@@ -227,6 +236,8 @@ class FavoritesScreen extends ConsumerWidget {
   }
 
   Widget _buildErrorState(BuildContext context, String error) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -234,14 +245,14 @@ class FavoritesScreen extends ConsumerWidget {
           Icon(
             Icons.error_outline,
             size: 64,
-            color: AppTheme.gray500,
+            color: colorScheme.onBackground,
           ),
           const SizedBox(height: 16),
           Text(
             'Bir Hata Oluştu',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: AppTheme.gray500,
+              color: colorScheme.onBackground,
             ),
           ),
           const SizedBox(height: 8),
@@ -249,7 +260,7 @@ class FavoritesScreen extends ConsumerWidget {
             error,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.gray500,
+              color: colorScheme.onBackground.withOpacity(0.9),
             ),
           ),
         ],
@@ -258,15 +269,17 @@ class FavoritesScreen extends ConsumerWidget {
   }
 
   void _showClearAllDialog(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.cardPurple,
+        backgroundColor: colorScheme.surface,
         title: Row(
           children: [
             Icon(
               Icons.warning_amber,
-              color: AppTheme.orange400,
+              color: colorScheme.error,
               size: 24,
             ),
             const SizedBox(width: 8),
@@ -274,7 +287,7 @@ class FavoritesScreen extends ConsumerWidget {
               child: Text(
                 'Tüm Favorileri Temizle',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: colorScheme.onSurface,
                   fontSize: 18,
                 ),
               ),
@@ -284,7 +297,7 @@ class FavoritesScreen extends ConsumerWidget {
         content: Text(
           'Tüm favori radyo istasyonlarınızı silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz.',
           style: TextStyle(
-            color: Colors.white.withOpacity(0.9),
+            color: colorScheme.onSurface.withOpacity(0.9),
             fontSize: 14,
           ),
         ),
@@ -293,7 +306,7 @@ class FavoritesScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'İptal',
-              style: TextStyle(color: Colors.white.withOpacity(0.8)),
+              style: TextStyle(color: colorScheme.onSurface.withOpacity(0.8)),
             ),
           ),
           ElevatedButton(
@@ -303,8 +316,8 @@ class FavoritesScreen extends ConsumerWidget {
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              backgroundColor: colorScheme.error,
+              foregroundColor: colorScheme.onError,
             ),
             child: const Text('Temizle'),
           ),
