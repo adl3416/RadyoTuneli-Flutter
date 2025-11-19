@@ -1005,99 +1005,78 @@ class RadioStationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: AppTheme.radioCardGradient,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              // Station Image/Icon - Modern logo with initials
+              RadioLogo(
+                radioName: title,
+                logoUrl: imageUrl,
+                size: 56,
+                showBorder: true,
+              ),
+              const SizedBox(width: 16),
+              // Station Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              // Buttons Row
+              Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Station Image/Icon - Modern logo with initials
-                  RadioLogo(
-                    radioName: title,
-                    logoUrl: imageUrl,
-                    size: 56,
-                    showBorder: true,
-                  ),
-                  const SizedBox(width: 16),
-                  // Station Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          subtitle,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
-                            fontSize: 14,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                  // Favorite Button
+                  IconButton(
+                    onPressed: () {
+                      if (onFavoriteToggle != null) {
+                        HapticFeedback.lightImpact();
+                        onFavoriteToggle!();
+                      }
+                    },
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_outline,
+                      color: isFavorite ? Colors.red : Theme.of(context).iconTheme.color,
+                      size: 20,
                     ),
                   ),
-                  // Buttons Row
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Favorite Button
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            if (onFavoriteToggle != null) {
-                              HapticFeedback.lightImpact();
-                              onFavoriteToggle!();
-                            }
-                          },
-                          icon: Icon(
-                            isFavorite ? Icons.favorite : Icons.favorite_outline,
-                            color: isFavorite ? Colors.red.shade300 : Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      // Play/Pause Button
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppTheme.orange400,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: IconButton(
-                          onPressed: onTap,
-                          icon: Icon(
-                            isPlaying ? Icons.pause : Icons.play_arrow,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
+                  const SizedBox(width: 8),
+                  // Play/Pause Button
+                  IconButton(
+                    style: IconButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: onTap,
+                    icon: Icon(
+                      isPlaying ? Icons.pause : Icons.play_arrow,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
                   ),
+                ],
+              ),
                 ],
               ),
             ),

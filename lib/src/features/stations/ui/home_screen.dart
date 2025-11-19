@@ -56,25 +56,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
     final sortAtoZ = ref.watch(sortAtoZProvider);
     final selectedCategory = ref.watch(selectedCategoryProvider);
 
-    // Get AppBar color based on colorScheme
-    Color getAppBarColor() {
-      switch (colorScheme) {
-        case 'kanarya':
-          return const Color(0xFFFFD700); // Sarı
-        case 'aslan':
-          return const Color(0xFFFFD700); // Sarı
-        case 'karadeniz':
-          return const Color(0xFF800000); // Bordo
-        case 'kartal':
-          return const Color(0xFF000000); // Siyah
-        case 'timsah':
-          return const Color(0xFF228B22); // Yeşil
-        case 'varsayilan':
-        default:
-          return const Color(0xFF8B5CF6); // Mor (Orijinal)
-      }
-    }
-
     return Scaffold(
       drawer: _buildDrawer(context),
       appBar: PreferredSize(
@@ -83,7 +64,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
           bottom: false,
           child: Container(
             decoration: BoxDecoration(
-              color: getAppBarColor(),
+              color: Theme.of(context).appBarTheme.backgroundColor,
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(12),
                 bottomRight: Radius.circular(12),
@@ -702,7 +683,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
               },
               icon: Icon(
                 Icons.menu,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).appBarTheme.foregroundColor,
                 size: 28,
               ),
             ),
@@ -713,7 +694,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
               'Radyo Tüneli',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).appBarTheme.foregroundColor,
               ),
               textAlign: TextAlign.left,
             ),
@@ -732,7 +713,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
             },
             icon: Icon(
               Icons.search,
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).appBarTheme.foregroundColor,
               size: 28,
             ),
             tooltip: 'Ara',
@@ -748,7 +729,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                 },
                 icon: Icon(
                   sortAtoZ ? Icons.sort_by_alpha : Icons.sort,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).appBarTheme.foregroundColor,
                   size: 28,
                 ),
                 tooltip: sortAtoZ ? 'Normal Sıralama' : 'A-Z Sıralama',
@@ -780,7 +761,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
             },
             icon: Icon(
               Icons.arrow_back,
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).appBarTheme.foregroundColor,
               size: 28,
             ),
           ),
@@ -823,7 +804,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
               },
               icon: Icon(
                 Icons.clear,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).appBarTheme.foregroundColor,
                 size: 24,
               ),
             ),
