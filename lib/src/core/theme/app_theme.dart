@@ -521,80 +521,139 @@ class AppTheme {
 
   static ThemeData get aslanThemeDark {
     final textTheme = GoogleFonts.interTextTheme().apply(
-      bodyColor: darkText,
-      displayColor: darkText,
+      bodyColor: Colors.black87,
+      displayColor: Colors.black87,
     );
 
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      colorScheme: ColorScheme.dark(
-        primary: aslanYellow,
-        secondary: aslanRed,
-        surface: darkSurface,
-        onPrimary: aslanRed,
-        onSecondary: aslanYellow,
-        onSurface: darkText,
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.light(
+        primary: aslanYellow, // Sarı
+        secondary: aslanRed, // Kırmızı
+        surface: Colors.white,
+        onPrimary: aslanRed, // Kırmızı yazı sarı üzerinde
+        onSecondary: aslanYellow, // Sarı yazı kırmızı üzerinde
+        onSurface: Colors.black87,
         error: Color(0xFFEF4444),
-        background: darkBackground,
-        onBackground: darkText,
-        outline: darkBorder,
-        surfaceVariant: darkSurfaceVariant,
-        onSurfaceVariant: darkTextSecondary,
+        background: Colors.white,
+        onBackground: Colors.black87,
+        outline: Colors.grey.shade300,
+        surfaceVariant: Colors.grey.shade100,
+        onSurfaceVariant: Colors.black87,
       ),
-      scaffoldBackgroundColor: darkBackground,
-      textTheme: textTheme,
+      scaffoldBackgroundColor: Colors.white, // ✅ Beyaz arka plan
+      textTheme: textTheme.copyWith(
+        headlineLarge: textTheme.headlineLarge?.copyWith(color: Colors.black87),
+        headlineMedium: textTheme.headlineMedium?.copyWith(color: Colors.black87),
+        headlineSmall: textTheme.headlineSmall?.copyWith(color: Colors.black87),
+        titleLarge: textTheme.titleLarge?.copyWith(color: Colors.black87),
+        titleMedium: textTheme.titleMedium?.copyWith(color: Colors.black87),
+        titleSmall: textTheme.titleSmall?.copyWith(color: Colors.black87),
+        bodyLarge: textTheme.bodyLarge?.copyWith(color: Colors.black87),
+        bodyMedium: textTheme.bodyMedium?.copyWith(color: Colors.black87),
+        bodySmall: textTheme.bodySmall?.copyWith(color: Colors.black54),
+        labelLarge: textTheme.labelLarge?.copyWith(color: Colors.black87),
+        labelMedium: textTheme.labelMedium?.copyWith(color: Colors.black54),
+        labelSmall: textTheme.labelSmall?.copyWith(color: Colors.black54),
+      ),
       appBarTheme: AppBarTheme(
-        backgroundColor: aslanRed, // 🦁 AppBar = Kırmızı
-        foregroundColor: aslanYellow, // Yazılar/İkonlar = Sarı
+        backgroundColor: aslanRed, // ✅ AppBar = Kırmızı (#DC143C)
+        foregroundColor: aslanYellow, // ✅ Yazı/İkonlar = Sarı (#FFD700)
         elevation: 4,
         centerTitle: true,
+        surfaceTintColor: aslanRed, // Material 3 uyumlu
+        shadowColor: aslanRed.withOpacity(0.5),
         titleTextStyle: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
-          color: aslanYellow,
+          color: aslanYellow, // Başlık sarı
           fontSize: 20,
         ),
-        iconTheme: IconThemeData(color: aslanYellow),
+        iconTheme: IconThemeData(color: aslanYellow), // İkonlar sarı
+        actionsIconTheme: IconThemeData(color: aslanYellow),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: aslanYellow,
-        unselectedItemColor: darkTextSecondary,
-        backgroundColor: darkSurface,
+        selectedItemColor: aslanYellow, // ✅ Seçili = Sarı (#FFD700)
+        unselectedItemColor: aslanYellow.withOpacity(0.5), // Seçili olmayan sarı soluk
+        backgroundColor: aslanRed, // ✅ Arka plan = Kırmızı (#DC143C)
         type: BottomNavigationBarType.fixed,
         elevation: 12,
+        selectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: aslanYellow,
+        ),
+        unselectedLabelStyle: TextStyle(
+          color: Colors.black54,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: aslanYellow,
-          foregroundColor: aslanRed,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          backgroundColor: aslanYellow, // Sarı buton
+          foregroundColor: aslanRed, // Kırmızı yazı
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 4,
+          shadowColor: aslanYellow.withOpacity(0.4),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(foregroundColor: aslanYellow),
+        style: IconButton.styleFrom(
+          foregroundColor: aslanYellow, // İkonlar sarı
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: darkSurface,
+        fillColor: Colors.grey.shade100,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: darkBorder),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: aslanYellow, width: 2),
+          borderSide: BorderSide(color: aslanYellow, width: 2), // Sarı border
         ),
+        hintStyle: TextStyle(color: Colors.black54),
+        labelStyle: TextStyle(color: Colors.black54),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      ),
+      cardTheme: CardThemeData(
+        color: Colors.white,
+        elevation: 6,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.black.withOpacity(0.1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: Colors.grey.shade200,
+            width: 1,
+          ),
+        ),
+      ),
+      listTileTheme: ListTileThemeData(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        textColor: Colors.black87,
+        iconColor: Colors.black87,
+        tileColor: Colors.white,
+      ),
+      dividerTheme: DividerThemeData(
+        color: Colors.grey.shade300,
+        thickness: 1,
       ),
       switchTheme: SwitchThemeData(
         thumbColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.selected)) return aslanYellow;
-          return darkTextSecondary;
+          return Colors.grey.shade400;
         }),
         trackColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.selected)) {
             return aslanYellow.withOpacity(0.3);
           }
-          return darkBorder;
+          return Colors.grey.shade300;
         }),
       ),
       tabBarTheme: TabBarTheme(

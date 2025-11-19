@@ -23,6 +23,13 @@ class SplashApp extends ConsumerWidget {
         print('📱 AppBar color: ${AppTheme.kanarayaThemeDark.appBarTheme.backgroundColor}');
         print('📱 BottomNav color: ${AppTheme.kanarayaThemeDark.bottomNavigationBarTheme.backgroundColor}');
         break;
+      case 'aslan':
+        print('🦁 ASLAN TEMASI SEÇİLDİ!');
+        selectedTheme = AppTheme.aslanThemeDark;
+        print('📱 Scaffold color: ${AppTheme.aslanThemeDark.scaffoldBackgroundColor}');
+        print('📱 AppBar color: ${AppTheme.aslanThemeDark.appBarTheme.backgroundColor}');
+        print('📱 BottomNav color: ${AppTheme.aslanThemeDark.bottomNavigationBarTheme.backgroundColor}');
+        break;
       case 'varsayilan':
       default:
         print('💜 VARSAYILAN TEMA SEÇİLDİ');
