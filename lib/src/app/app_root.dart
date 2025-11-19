@@ -19,10 +19,15 @@ class AppRoot extends ConsumerWidget {
     ThemeData selectedTheme;
     switch (colorScheme) {
       case 'kanarya':
+        print('✅ KANARYA TEMASI SEÇİLDİ!');
         selectedTheme = AppTheme.kanarayaThemeDark;
+        print('📱 Scaffold color: ${AppTheme.kanarayaThemeDark.scaffoldBackgroundColor}');
+        print('📱 AppBar color: ${AppTheme.kanarayaThemeDark.appBarTheme.backgroundColor}');
+        print('📱 BottomNav color: ${AppTheme.kanarayaThemeDark.bottomNavigationBarTheme.backgroundColor}');
         break;
       case 'varsayilan':
       default:
+        print('💜 VARSAYILAN TEMA SEÇİLDİ');
         selectedTheme = themeMode == ThemeMode.dark ? AppTheme.darkTheme : AppTheme.lightTheme;
     }
     
