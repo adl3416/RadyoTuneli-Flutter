@@ -774,14 +774,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                 ref.read(searchQueryProvider.notifier).state = value;
               },
               textInputAction: TextInputAction.search,
-              style: const TextStyle(color: Colors.black87),
+              style: Theme.of(context).textTheme.bodyLarge,
               decoration: InputDecoration(
                 hintText: 'İstasyon, türü ara...',
-                hintStyle: TextStyle(color: Colors.black54),
+                hintStyle: Theme.of(context).inputDecorationTheme.hintStyle,
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.9),
+                fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
