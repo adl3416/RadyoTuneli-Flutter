@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/theme/app_theme.dart';
 import '../shared/providers/theme_provider.dart';
+import '../shared/providers/color_scheme_provider.dart';
 import 'main_screen.dart';
 
 class AppRoot extends ConsumerWidget {
@@ -10,14 +11,26 @@ class AppRoot extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
+    final colorScheme = ref.watch(colorSchemeProvider);
     
-    print('🎨 AppRoot - Current theme mode: $themeMode');
+    print('🎨 AppRoot - Theme mode: $themeMode, Color scheme: $colorScheme');
+    
+    // Tema seçimi
+    ThemeData selectedTheme;
+    switch (colorScheme) {
+      case 'kanarya':
+        selectedTheme = AppTheme.kanarayaThemeDark;
+        break;
+      case 'varsayilan':
+      default:
+        selectedTheme = themeMode == ThemeMode.dark ? AppTheme.darkTheme : AppTheme.lightTheme;
+    }
     
     return MaterialApp(
       title: 'Radyo Tüneli',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: themeMode,
+      theme: selectedTheme,
+      darkTheme: selectedTheme,
+      themeMode: ThemeMode.light, // Her zaman light mode kullan çünkü tema kendisi dark/light belirliyor
       home: const MainScreen(),
       debugShowCheckedModeBanner: false,
     );
