@@ -364,7 +364,7 @@ class AppTheme {
         foregroundColor: kanaryaPrimary, // ✅ Yazı/İkonlar = Sarı (#FFD700)
         elevation: 4,
         centerTitle: true,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: kanaryaSecondary, // Material 3 için gerekli
         shadowColor: kanaryaSecondary.withOpacity(0.5),
         titleTextStyle: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
@@ -372,6 +372,7 @@ class AppTheme {
           fontSize: 20,
         ),
         iconTheme: IconThemeData(color: kanaryaPrimary), // İkonlar sarı
+        actionsIconTheme: IconThemeData(color: kanaryaPrimary), // Action ikonlar sarı
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         selectedItemColor: kanaryaPrimary, // ✅ Seçili = Sarı (#FFD700)
