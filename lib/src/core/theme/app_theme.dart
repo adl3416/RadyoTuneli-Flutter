@@ -323,45 +323,45 @@ class AppTheme {
 
   static ThemeData get kanarayaThemeDark {
     final textTheme = GoogleFonts.interTextTheme().apply(
-      bodyColor: darkText,
-      displayColor: darkText,
+      bodyColor: Colors.black87,
+      displayColor: Colors.black87,
     );
 
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      colorScheme: ColorScheme.dark(
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.light(
         primary: kanaryaPrimary, // Sarı
         secondary: kanaryaSecondary, // Lacivert
-        surface: darkSurface,
+        surface: Colors.white,
         onPrimary: kanaryaSecondary, // Lacivert yazı sarı üzerinde
         onSecondary: kanaryaPrimary, // Sarı yazı lacivert üzerinde
-        onSurface: darkText,
+        onSurface: Colors.black87,
         error: Color(0xFFEF4444),
-        background: darkBackground,
-        onBackground: darkText,
-        outline: darkBorder,
-        surfaceVariant: darkSurfaceVariant,
-        onSurfaceVariant: darkTextSecondary,
+        background: Colors.white,
+        onBackground: Colors.black87,
+        outline: Colors.grey.shade300,
+        surfaceVariant: Colors.grey.shade100,
+        onSurfaceVariant: Colors.black87,
       ),
-      scaffoldBackgroundColor: darkBackground,
+      scaffoldBackgroundColor: Colors.white, // ✅ Beyaz arka plan
       textTheme: textTheme.copyWith(
-        headlineLarge: textTheme.headlineLarge?.copyWith(color: darkText),
-        headlineMedium: textTheme.headlineMedium?.copyWith(color: darkText),
-        headlineSmall: textTheme.headlineSmall?.copyWith(color: darkText),
-        titleLarge: textTheme.titleLarge?.copyWith(color: darkText),
-        titleMedium: textTheme.titleMedium?.copyWith(color: darkText),
-        titleSmall: textTheme.titleSmall?.copyWith(color: darkText),
-        bodyLarge: textTheme.bodyLarge?.copyWith(color: darkText),
-        bodyMedium: textTheme.bodyMedium?.copyWith(color: darkText),
-        bodySmall: textTheme.bodySmall?.copyWith(color: darkTextSecondary),
-        labelLarge: textTheme.labelLarge?.copyWith(color: darkText),
-        labelMedium: textTheme.labelMedium?.copyWith(color: darkTextSecondary),
-        labelSmall: textTheme.labelSmall?.copyWith(color: darkTextSecondary),
+        headlineLarge: textTheme.headlineLarge?.copyWith(color: Colors.black87),
+        headlineMedium: textTheme.headlineMedium?.copyWith(color: Colors.black87),
+        headlineSmall: textTheme.headlineSmall?.copyWith(color: Colors.black87),
+        titleLarge: textTheme.titleLarge?.copyWith(color: Colors.black87),
+        titleMedium: textTheme.titleMedium?.copyWith(color: Colors.black87),
+        titleSmall: textTheme.titleSmall?.copyWith(color: Colors.black87),
+        bodyLarge: textTheme.bodyLarge?.copyWith(color: Colors.black87),
+        bodyMedium: textTheme.bodyMedium?.copyWith(color: Colors.black87),
+        bodySmall: textTheme.bodySmall?.copyWith(color: Colors.black54),
+        labelLarge: textTheme.labelLarge?.copyWith(color: Colors.black87),
+        labelMedium: textTheme.labelMedium?.copyWith(color: Colors.black54),
+        labelSmall: textTheme.labelSmall?.copyWith(color: Colors.black54),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: kanaryaSecondary, // 🟡 AppBar = Komple Lacivert
-        foregroundColor: kanaryaPrimary, // 🟡 Yazı/İkonlar = Sarı
+        backgroundColor: kanaryaSecondary, // ✅ AppBar = Lacivert (#001F3F)
+        foregroundColor: kanaryaPrimary, // ✅ Yazı/İkonlar = Sarı (#FFD700)
         elevation: 4,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
@@ -374,9 +374,9 @@ class AppTheme {
         iconTheme: IconThemeData(color: kanaryaPrimary), // İkonlar sarı
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: kanaryaPrimary, // Sarı seçili
-        unselectedItemColor: darkTextSecondary,
-        backgroundColor: darkSurface,
+        selectedItemColor: kanaryaPrimary, // ✅ Seçili = Sarı (#FFD700)
+        unselectedItemColor: kanaryaPrimary.withOpacity(0.5), // Seçili olmayan sarı soluk
+        backgroundColor: kanaryaSecondary, // ✅ Arka plan = Lacivert (#001F3F)
         type: BottomNavigationBarType.fixed,
         elevation: 12,
         selectedLabelStyle: TextStyle(
@@ -405,41 +405,41 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: darkSurface,
+        fillColor: Colors.grey.shade100,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: darkBorder),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: darkBorder),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: kanaryaPrimary, width: 2), // Sarı border
         ),
-        hintStyle: TextStyle(color: darkTextSecondary),
-        labelStyle: TextStyle(color: darkTextSecondary),
+        hintStyle: TextStyle(color: Colors.black54),
+        labelStyle: TextStyle(color: Colors.black54),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       cardTheme: CardThemeData(
-        color: darkSurface,
+        color: Colors.white,
         elevation: 6,
         surfaceTintColor: Colors.transparent,
-        shadowColor: kanaryaPrimary.withOpacity(0.2),
+        shadowColor: Colors.black.withOpacity(0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: darkBorder,
+            color: Colors.grey.shade200,
             width: 1,
           ),
         ),
       ),
       listTileTheme: ListTileThemeData(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        textColor: darkText,
-        iconColor: kanaryaPrimary, // İkonlar sarı
-        tileColor: darkSurface,
+        textColor: Colors.black87,
+        iconColor: Colors.black87,
+        tileColor: Colors.white,
       ),
       dividerTheme: DividerThemeData(
         color: darkBorder,
