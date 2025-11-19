@@ -13,33 +13,29 @@ class SplashApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
     final colorScheme = ref.watch(colorSchemeProvider);
     
-    // Renk şemasına göre tema seç (Light + Dark)
-    ThemeData getSelectedTheme(bool isDark) {
-      if (colorScheme == 'kanarya') {
-        return isDark ? AppTheme.kanarayaThemeDark : AppTheme.kanarayaThemeLight;
-      } else if (colorScheme == 'aslan') {
-        return isDark ? AppTheme.aslanThemeDark : AppTheme.aslanThemeLight;
-      } else if (colorScheme == 'karadeniz') {
-        return isDark ? AppTheme.karadenizThemeDark : AppTheme.karadenizThemeLight;
-      } else if (colorScheme == 'kartal') {
-        return isDark ? AppTheme.kartalThemeDark : AppTheme.kartalThemeLight;
-      } else if (colorScheme == 'timsah') {
-        return isDark ? AppTheme.timsahThemeDark : AppTheme.timsahThemeLight;
-      } else if (colorScheme == 'varsayilan' || colorScheme.isEmpty) {
-        // Orijinal (Varsayılan) mor tema
-        return isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
-      }
-      // Fallback: Varsayılan mor tema
-      return isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
+    // Tema seçimi
+    ThemeData selectedTheme;
+    switch (colorScheme) {
+      case 'kanarya':
+        print('✅ KANARYA TEMASI SEÇİLDİ!');
+        selectedTheme = AppTheme.kanarayaThemeDark;
+        print('📱 Scaffold color: ${AppTheme.kanarayaThemeDark.scaffoldBackgroundColor}');
+        print('📱 AppBar color: ${AppTheme.kanarayaThemeDark.appBarTheme.backgroundColor}');
+        print('📱 BottomNav color: ${AppTheme.kanarayaThemeDark.bottomNavigationBarTheme.backgroundColor}');
+        break;
+      case 'varsayilan':
+      default:
+        print('💜 VARSAYILAN TEMA SEÇİLDİ');
+        selectedTheme = themeMode == ThemeMode.dark ? AppTheme.darkTheme : AppTheme.lightTheme;
     }
 
     print('🎨 SplashApp - Theme mode: $themeMode, Color scheme: $colorScheme');
     
     return MaterialApp(
       title: 'Radyo Tüneli',
-      theme: getSelectedTheme(false), // Light theme
-      darkTheme: getSelectedTheme(true), // Dark theme
-      themeMode: themeMode,
+      theme: selectedTheme,
+      darkTheme: selectedTheme,
+      themeMode: ThemeMode.light, // Her zaman light mode kullan çünkü tema kendisi dark/light belirliyor
       debugShowCheckedModeBanner: false,
       home: const SplashNavigation(),
     );
