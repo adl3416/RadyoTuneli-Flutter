@@ -251,10 +251,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                                   onFavoriteToggle: () {
                                     ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
                                   },
-                                  // When the Kanarya theme is active, force navy background and yellow text
-                                  backgroundColor: colorScheme == 'kanarya' ? AppTheme.kanaryaSecondary : null,
-                                  titleColor: colorScheme == 'kanarya' ? AppTheme.kanaryaPrimary : null,
-                                  subtitleColor: colorScheme == 'kanarya' ? AppTheme.kanaryaPrimary.withOpacity(0.9) : null,
+                                    // When Kanarya or Aslan themes are active, force themed backgrounds/text
+                                    backgroundColor: colorScheme == 'kanarya'
+                                      ? AppTheme.kanaryaSecondary
+                                      : (colorScheme == 'aslan' ? AppTheme.aslanRed : null),
+                                    titleColor: colorScheme == 'kanarya'
+                                      ? AppTheme.kanaryaPrimary
+                                      : (colorScheme == 'aslan' ? Colors.black : null),
+                                      subtitleColor: colorScheme == 'kanarya'
+                                        ? AppTheme.kanaryaPrimary.withOpacity(0.9)
+                                        : (colorScheme == 'aslan' ? Colors.black.withOpacity(0.9) : null),
+                                      // Aslan: yellow play button with black icon
+                                      playButtonBackgroundColor: colorScheme == 'aslan' ? AppTheme.aslanYellow : null,
+                                      playIconColor: colorScheme == 'aslan' ? Colors.black : null,
                                 ),
                               );
                             },

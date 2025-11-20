@@ -14,6 +14,8 @@ class RadioStationCard extends StatelessWidget {
   final Color? backgroundColor;
   final Color? titleColor;
   final Color? subtitleColor;
+  final Color? playButtonBackgroundColor;
+  final Color? playIconColor;
 
   const RadioStationCard({
     Key? key,
@@ -27,6 +29,8 @@ class RadioStationCard extends StatelessWidget {
     this.backgroundColor,
     this.titleColor,
     this.subtitleColor,
+    this.playButtonBackgroundColor,
+    this.playIconColor,
   }) : super(key: key);
 
   @override
@@ -111,12 +115,12 @@ class RadioStationCard extends StatelessWidget {
                     // Play/Pause Button
                     IconButton(
                       style: IconButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        backgroundColor: playButtonBackgroundColor ?? Theme.of(context).colorScheme.primary,
                       ),
                       onPressed: onTap,
                       icon: Icon(
                         isPlaying ? Icons.pause : Icons.play_arrow,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: playIconColor ?? Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                   ],

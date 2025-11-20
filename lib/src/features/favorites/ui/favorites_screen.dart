@@ -31,9 +31,12 @@ class FavoritesScreen extends ConsumerWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                color: isKanarya ? AppTheme.kanaryaSecondary : colorScheme.primary,
-                borderRadius: BorderRadius.circular(12),
+                  decoration: BoxDecoration(
+                  // If Kanarya -> navy, if Aslan -> vivid red, otherwise use theme primary
+                  color: isKanarya
+                      ? AppTheme.kanaryaSecondary
+                      : (activeScheme == 'aslan' ? AppTheme.aslanRed : colorScheme.primary),
+                  borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,10 +49,12 @@ class FavoritesScreen extends ConsumerWidget {
                       color: isKanarya ? AppTheme.kanaryaPrimary.withOpacity(0.12) : colorScheme.onPrimary.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(22),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.favorite,
-                      // For Kanarya use yellow icon; otherwise white
-                      color: null,
+                      // Kanarya -> yellow, Aslan -> yellow, otherwise theme onPrimary
+                      color: isKanarya
+                          ? AppTheme.kanaryaPrimary
+                          : (activeScheme == 'aslan' ? AppTheme.aslanYellow : colorScheme.onPrimary),
                       size: 22,
                     ),
                   ),
@@ -63,13 +68,19 @@ class FavoritesScreen extends ConsumerWidget {
                           'Favori Radyolarım',
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: isKanarya ? AppTheme.kanaryaPrimary : colorScheme.onPrimary,
+                              color: isKanarya
+                                ? AppTheme.kanaryaPrimary
+                                : (activeScheme == 'aslan' ? AppTheme.aslanYellow : colorScheme.onPrimary),
                             ),
                         ),
                         Text(
                           '${favorites.length} istasyon',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: isKanarya ? AppTheme.kanaryaPrimary.withOpacity(0.9) : colorScheme.onPrimary.withOpacity(0.8),
+                                color: isKanarya
+                                    ? AppTheme.kanaryaPrimary.withOpacity(0.9)
+                                    : (activeScheme == 'aslan'
+                                        ? AppTheme.aslanYellow.withOpacity(0.9)
+                                        : colorScheme.onPrimary.withOpacity(0.8)),
                           ),
                         ),
                       ],
@@ -132,10 +143,19 @@ class FavoritesScreen extends ConsumerWidget {
                           title: station.name,
                           subtitle: station.genre ?? 'Radio',
                           imageUrl: station.logoUrl,
-                          // If the active scheme is 'kanarya', force navy background + yellow text
-                          backgroundColor: activeScheme == 'kanarya' ? AppTheme.kanaryaSecondary : null,
-                          titleColor: activeScheme == 'kanarya' ? AppTheme.kanaryaPrimary : null,
-                          subtitleColor: activeScheme == 'kanarya' ? AppTheme.kanaryaPrimary.withOpacity(0.9) : null,
+                            // If the active scheme is 'kanarya' or 'aslan', force themed backgrounds/text
+                            backgroundColor: activeScheme == 'kanarya'
+                              ? AppTheme.kanaryaSecondary
+                              : (activeScheme == 'aslan' ? AppTheme.aslanRed : null),
+                              titleColor: activeScheme == 'kanarya'
+                                ? AppTheme.kanaryaPrimary
+                                : (activeScheme == 'aslan' ? Colors.black : null),
+                              subtitleColor: activeScheme == 'kanarya'
+                                ? AppTheme.kanaryaPrimary.withOpacity(0.9)
+                                : (activeScheme == 'aslan' ? Colors.black.withOpacity(0.9) : null),
+                              // For Aslan theme, force yellow play button with black icon for contrast
+                              playButtonBackgroundColor: activeScheme == 'aslan' ? AppTheme.aslanYellow : null,
+                              playIconColor: activeScheme == 'aslan' ? Colors.black : null,
                           isPlaying: ref.watch(playerStateProvider).currentStation?.id == station.id &&
                                     ref.watch(playerStateProvider).isPlaying,
                           isFavorite: true, // Favori sayfasında hepsi favori

@@ -517,7 +517,8 @@ class AppTheme {
 
   // 🦁 ASLAN TEMASI - Sarı (#FFD700) + Kırmızı (#DC143C)
   static const Color aslanYellow = Color(0xFFFFD700);
-  static const Color aslanRed = Color(0xFFDC143C);
+  // Brighter, more vivid red for Aslan theme
+  static const Color aslanRed = Color(0xFFFF0000);
 
   static ThemeData get aslanThemeDark {
     final textTheme = GoogleFonts.interTextTheme().apply(
@@ -678,6 +679,16 @@ class AppTheme {
         onPrimary: aslanRed,
         onSecondary: aslanYellow,
       ),
+      scaffoldBackgroundColor: Colors.white,
+      // Bottom nav styling for Aslan light theme
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        selectedItemColor: aslanYellow,
+        unselectedItemColor: aslanYellow.withOpacity(0.5),
+        backgroundColor: aslanRed,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+      ),
+      // Ensure AppBar matches the provided colors
       appBarTheme: AppBarTheme(
         backgroundColor: aslanRed,
         foregroundColor: aslanYellow,
