@@ -60,6 +60,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
     } else if (colorScheme == 'kartal') {
       _appBarBg = AppTheme.kartalBlack;
       _appBarFg = AppTheme.kartalWhite;
+    } else if (colorScheme == 'timsah') {
+      // Timsah: green app bar with white text/icons
+      _appBarBg = AppTheme.timsahGreen;
+      _appBarFg = AppTheme.timsahWhite;
     } else {
       _appBarBg = Theme.of(context).appBarTheme.backgroundColor;
       _appBarFg = Theme.of(context).appBarTheme.foregroundColor;
@@ -240,7 +244,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                               final station = filteredStations[index];
                               return Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                                child: RadioStationCard(
+                                  child: RadioStationCard(
                                   title: station.name,
                                   subtitle: station.genre ?? 'Turkish Radio',
                                   imageUrl: station.logoUrl,
@@ -264,30 +268,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                                   onFavoriteToggle: () {
                                     ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
                                   },
-                                    // When Kanarya or Aslan themes are active, force themed backgrounds/text
+                                    // When specific themes are active, force themed backgrounds/text
                                     backgroundColor: colorScheme == 'kanarya'
-                                        ? AppTheme.kanaryaSecondary
-                                        : (colorScheme == 'aslan'
-                                            ? AppTheme.aslanRed
-                                            : (colorScheme == 'karadeniz' ? AppTheme.karadenizBordo : (colorScheme == 'kartal' ? AppTheme.kartalBlack : null))),
-                                      titleColor: colorScheme == 'kanarya'
-                                        ? AppTheme.kanaryaPrimary
-                                        : (colorScheme == 'aslan'
-                                            ? Colors.black
-                                            : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi : (colorScheme == 'kartal' ? AppTheme.kartalWhite : null))),
-                                      subtitleColor: colorScheme == 'kanarya'
-                                          ? AppTheme.kanaryaPrimary.withOpacity(0.9)
-                                          : (colorScheme == 'aslan'
-                                              ? Colors.black.withOpacity(0.9)
-                                              : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : (colorScheme == 'kartal' ? AppTheme.kartalWhite.withOpacity(0.9) : null))),
-                                      // Play button mapping: Kartal uses white background with black icon for contrast
-                                      playButtonBackgroundColor: colorScheme == 'aslan'
-                                        ? AppTheme.aslanYellow
-                                        : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi : (colorScheme == 'kartal' ? AppTheme.kartalWhite : null)),
-                                      // Ensure the play icon contrasts with the background
-                                      playIconColor: colorScheme == 'aslan'
+                                      ? AppTheme.kanaryaSecondary
+                                      : (colorScheme == 'aslan'
+                                        ? AppTheme.aslanRed
+                                        : (colorScheme == 'karadeniz'
+                                          ? AppTheme.karadenizBordo
+                                          : (colorScheme == 'kartal'
+                                            ? AppTheme.kartalBlack
+                                            : (colorScheme == 'timsah' ? AppTheme.timsahGreen : null)))),
+                                    titleColor: colorScheme == 'kanarya'
+                                      ? AppTheme.kanaryaPrimary
+                                      : (colorScheme == 'aslan'
                                         ? Colors.black
-                                        : (colorScheme == 'karadeniz' ? AppTheme.karadenizBordo : (colorScheme == 'kartal' ? AppTheme.kartalBlack : null)),
+                                        : (colorScheme == 'karadeniz'
+                                          ? AppTheme.karadenizMavi
+                                          : (colorScheme == 'kartal'
+                                            ? AppTheme.kartalWhite
+                                            : (colorScheme == 'timsah' ? AppTheme.timsahWhite : null)))),
+                                    subtitleColor: colorScheme == 'kanarya'
+                                      ? AppTheme.kanaryaPrimary.withOpacity(0.9)
+                                      : (colorScheme == 'aslan'
+                                        ? Colors.black.withOpacity(0.9)
+                                        : (colorScheme == 'karadeniz'
+                                          ? AppTheme.karadenizMavi.withOpacity(0.9)
+                                          : (colorScheme == 'kartal'
+                                            ? AppTheme.kartalWhite.withOpacity(0.9)
+                                            : (colorScheme == 'timsah' ? AppTheme.timsahGreen.withOpacity(0.95) : null)))),
+                                    // Play button mapping: map per-theme backgrounds and icon color
+                                    playButtonBackgroundColor: colorScheme == 'aslan'
+                                      ? AppTheme.aslanYellow
+                                      : (colorScheme == 'karadeniz'
+                                        ? AppTheme.karadenizMavi
+                                        : (colorScheme == 'kartal'
+                                          ? AppTheme.kartalWhite
+                                          : (colorScheme == 'timsah' ? AppTheme.timsahWhite : null))),
+                                    // Ensure the play icon contrasts with the background
+                                    playIconColor: colorScheme == 'aslan'
+                                      ? Colors.black
+                                      : (colorScheme == 'karadeniz'
+                                        ? AppTheme.karadenizBordo
+                                        : (colorScheme == 'kartal'
+                                          ? AppTheme.kartalBlack
+                                          : (colorScheme == 'timsah' ? AppTheme.timsahGreen : null))),
                                 ),
                               );
                             },

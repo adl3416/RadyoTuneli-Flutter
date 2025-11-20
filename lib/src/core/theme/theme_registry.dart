@@ -11,6 +11,8 @@ final Map<String, ThemeData> _themeRegistry = {
   'aslan': AppTheme.aslanThemeDark,
   'karadeniz': AppTheme.karadenizThemeDark,
   'kartal': AppTheme.kartalThemeDark,
+  // Use the light Timsah theme by default so backgrounds are white
+  'timsah': AppTheme.timsahThemeLight,
 };
 
 void registerTheme(String name, ThemeData theme) {

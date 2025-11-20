@@ -17,13 +17,17 @@ class SettingsScreen extends ConsumerWidget {
     final colorScheme = ref.watch(colorSchemeProvider);
     final appBarBg = colorScheme == 'karadeniz'
       ? AppTheme.karadenizBordo
-      : (colorScheme == 'kartal' ? AppTheme.kartalBlack : Theme.of(context).appBarTheme.backgroundColor);
+      : (colorScheme == 'kartal'
+          ? AppTheme.kartalBlack
+          : (colorScheme == 'timsah' ? AppTheme.timsahGreen : Theme.of(context).appBarTheme.backgroundColor));
     final appBarFg = colorScheme == 'karadeniz'
       ? AppTheme.karadenizMavi
-      : (colorScheme == 'kartal' ? AppTheme.kartalWhite : Theme.of(context).appBarTheme.foregroundColor);
+      : (colorScheme == 'kartal'
+          ? AppTheme.kartalWhite
+          : (colorScheme == 'timsah' ? AppTheme.timsahWhite : Theme.of(context).appBarTheme.foregroundColor));
     
     return Scaffold(
-      backgroundColor: colorScheme == 'kartal' ? AppTheme.kartalBlack : null,
+      backgroundColor: colorScheme == 'kartal' ? AppTheme.kartalBlack : (colorScheme == 'timsah' ? AppTheme.timsahGreen : null),
       appBar: AppBar(
         title: const Text('Ayarlar'),
         backgroundColor: appBarBg,

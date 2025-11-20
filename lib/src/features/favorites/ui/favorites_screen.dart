@@ -21,30 +21,38 @@ class FavoritesScreen extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final activeScheme = ref.watch(colorSchemeProvider);
     final isKanarya = activeScheme == 'kanarya';
-    // Header colors (reduce nested ternaries to avoid parse issues)
+    // Header colors (use a chained ternary for clarity and balanced parentheses)
     final headerIconColor = isKanarya
-      ? AppTheme.kanaryaPrimary
-      : (activeScheme == 'aslan'
-        ? AppTheme.aslanYellow
-        : (activeScheme == 'karadeniz'
-          ? AppTheme.karadenizMavi
-          : (activeScheme == 'kartal' ? AppTheme.kartalWhite : colorScheme.onPrimary)));
+        ? AppTheme.kanaryaPrimary
+        : (activeScheme == 'aslan'
+            ? AppTheme.aslanYellow
+            : (activeScheme == 'karadeniz'
+                ? AppTheme.karadenizMavi
+                : (activeScheme == 'kartal'
+                    ? AppTheme.kartalWhite
+                    : (activeScheme == 'timsah' ? AppTheme.timsahWhite : colorScheme.onPrimary))));
+
     final headerTitleColor = isKanarya
-      ? AppTheme.kanaryaPrimary
-      : (activeScheme == 'aslan'
-        ? AppTheme.aslanYellow
-        : (activeScheme == 'karadeniz'
-          ? AppTheme.karadenizMavi
-          : (activeScheme == 'kartal' ? AppTheme.kartalWhite : colorScheme.onPrimary)));
+        ? AppTheme.kanaryaPrimary
+        : (activeScheme == 'aslan'
+            ? AppTheme.aslanYellow
+            : (activeScheme == 'karadeniz'
+                ? AppTheme.karadenizMavi
+                : (activeScheme == 'kartal'
+                    ? AppTheme.kartalWhite
+                    : (activeScheme == 'timsah' ? AppTheme.timsahWhite : colorScheme.onPrimary))));
+
     final headerSubtitleColor = isKanarya
-      ? AppTheme.kanaryaPrimary.withOpacity(0.9)
-      : (activeScheme == 'aslan'
-        ? AppTheme.aslanYellow.withOpacity(0.9)
-        : (activeScheme == 'karadeniz'
-          ? AppTheme.karadenizMavi.withOpacity(0.9)
-          : (activeScheme == 'kartal'
-            ? AppTheme.kartalWhite.withOpacity(0.9)
-            : colorScheme.onPrimary.withOpacity(0.8))));
+        ? AppTheme.kanaryaPrimary.withOpacity(0.9)
+        : (activeScheme == 'aslan'
+            ? AppTheme.aslanYellow.withOpacity(0.9)
+            : (activeScheme == 'karadeniz'
+                ? AppTheme.karadenizMavi.withOpacity(0.9)
+                : (activeScheme == 'kartal'
+                    ? AppTheme.kartalWhite.withOpacity(0.9)
+                    : (activeScheme == 'timsah'
+                        ? AppTheme.timsahGreen.withOpacity(0.95)
+                        : colorScheme.onPrimary.withOpacity(0.8)))));
 
     return Scaffold(
       body: SafeArea(
@@ -169,30 +177,50 @@ class FavoritesScreen extends ConsumerWidget {
                           title: station.name,
                           subtitle: station.genre ?? 'Radio',
                           imageUrl: station.logoUrl,
-                            // If the active scheme is 'kanarya', 'aslan' or 'karadeniz', force themed backgrounds/text
+                            // If the active scheme is specific themes, force themed backgrounds/text
                             backgroundColor: activeScheme == 'kanarya'
                               ? AppTheme.kanaryaSecondary
                               : (activeScheme == 'aslan'
                                   ? AppTheme.aslanRed
-                                  : (activeScheme == 'karadeniz' ? AppTheme.karadenizBordo : (activeScheme == 'kartal' ? AppTheme.kartalBlack : null))),
+                                  : (activeScheme == 'karadeniz'
+                                      ? AppTheme.karadenizBordo
+                                      : (activeScheme == 'kartal'
+                                          ? AppTheme.kartalBlack
+                                          : (activeScheme == 'timsah' ? AppTheme.timsahGreen : null)))),
                               titleColor: activeScheme == 'kanarya'
                                 ? AppTheme.kanaryaPrimary
                                 : (activeScheme == 'aslan'
                                     ? Colors.black
-                                    : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : (activeScheme == 'kartal' ? AppTheme.kartalWhite : null))),
+                                    : (activeScheme == 'karadeniz'
+                                        ? AppTheme.karadenizMavi
+                                        : (activeScheme == 'kartal'
+                                            ? AppTheme.kartalWhite
+                                            : (activeScheme == 'timsah' ? AppTheme.timsahWhite : null)))),
                               subtitleColor: activeScheme == 'kanarya'
                                 ? AppTheme.kanaryaPrimary.withOpacity(0.9)
                                 : (activeScheme == 'aslan'
                                     ? Colors.black.withOpacity(0.9)
-                                    : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : (activeScheme == 'kartal' ? AppTheme.kartalWhite.withOpacity(0.9) : null))),
-                              // Themed play button/icon for Aslan, Karadeniz and Kartal
+                                    : (activeScheme == 'karadeniz'
+                                        ? AppTheme.karadenizMavi.withOpacity(0.9)
+                                        : (activeScheme == 'kartal'
+                                            ? AppTheme.kartalWhite.withOpacity(0.9)
+                                            : (activeScheme == 'timsah' ? AppTheme.timsahGreen.withOpacity(0.95) : null)))),
+                              // Themed play button/icon for various themes (Timsah uses white button, white icon per request)
                               playButtonBackgroundColor: activeScheme == 'aslan'
                                 ? AppTheme.aslanYellow
-                                : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : (activeScheme == 'kartal' ? AppTheme.kartalWhite : null)),
-                              // Make the icon contrast when Karadeniz or Kartal is active
+                                : (activeScheme == 'karadeniz'
+                                    ? AppTheme.karadenizMavi
+                                    : (activeScheme == 'kartal'
+                                        ? AppTheme.kartalWhite
+                                        : (activeScheme == 'timsah' ? AppTheme.timsahWhite : null))),
+                              // Make the icon contrast or follow requested mapping
                               playIconColor: activeScheme == 'aslan'
                                 ? Colors.black
-                                : (activeScheme == 'karadeniz' ? AppTheme.karadenizBordo : (activeScheme == 'kartal' ? AppTheme.kartalBlack : null)),
+                                : (activeScheme == 'karadeniz'
+                                    ? AppTheme.karadenizBordo
+                                    : (activeScheme == 'kartal'
+                                        ? AppTheme.kartalBlack
+                                        : (activeScheme == 'timsah' ? AppTheme.timsahGreen : null))),
                           isPlaying: ref.watch(playerStateProvider).currentStation?.id == station.id &&
                                     ref.watch(playerStateProvider).isPlaying,
                           isFavorite: true, // Favori sayfasında hepsi favori
