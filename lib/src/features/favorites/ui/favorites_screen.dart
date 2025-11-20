@@ -8,6 +8,7 @@ import '../../player/data/player_provider.dart';
 import '../../stations/ui/widgets/station_list_tile.dart';
 import '../../../shared/providers/color_scheme_provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../app/main_screen.dart';
 
 class FavoritesScreen extends ConsumerWidget {
   const FavoritesScreen({super.key});
@@ -35,6 +36,7 @@ class FavoritesScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Favorite Icon
                   Container(
@@ -59,7 +61,7 @@ class FavoritesScreen extends ConsumerWidget {
                       children: [
                         Text(
                           'Favori Radyolarım',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: isKanarya ? AppTheme.kanaryaPrimary : colorScheme.onPrimary,
                             ),
@@ -116,7 +118,7 @@ class FavoritesScreen extends ConsumerWidget {
               child: sortedFavoriteStationsAsync.when(
                 data: (favoriteStations) {
                   if (favoriteStations.isEmpty) {
-                    return _buildEmptyState(context);
+                    return _buildEmptyState(context, ref);
                   }
 
                   return ListView.builder(
@@ -174,7 +176,7 @@ class FavoritesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Center(
@@ -221,8 +223,9 @@ class FavoritesScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () {
-              // Ana sayfaya geç
+              // Ana sayfaya geç (MainScreen'deki Ana Sayfa sekmesine geç)
               HapticFeedback.lightImpact();
+              ref.read(selectedTabProvider.notifier).state = 0;
             },
             icon: const Icon(Icons.explore),
             label: const Text('Radyoları Keşfet'),

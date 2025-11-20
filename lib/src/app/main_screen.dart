@@ -61,18 +61,20 @@ class MainScreen extends ConsumerWidget {
           Color getUnselectedItemColor() {
             switch (colorScheme) {
               case 'kanarya':
-                return const Color(0xFF001F3F).withOpacity(0.5); // Lacivert
+                // Use the theme's text color (yellow) for unselected icons in Kanarya
+                return AppTheme.kanaryaPrimary.withOpacity(0.85);
               case 'aslan':
-                return const Color(0xFFDC143C).withOpacity(0.5); // Kırmızı
+                return AppTheme.aslanYellow.withOpacity(0.85);
               case 'karadeniz':
-                return const Color(0xFF800000).withOpacity(0.5); // Bordo
+                return AppTheme.karadenizMavi.withOpacity(0.85);
               case 'kartal':
-                return const Color(0xFF000000).withOpacity(0.5); // Siyah
+                return AppTheme.kartalWhite.withOpacity(0.85);
               case 'timsah':
-                return const Color(0xFFFFFFFF).withOpacity(0.5); // Beyaz
+                return AppTheme.timsahWhite.withOpacity(0.85);
               case 'varsayilan':
               default:
-                return AppTheme.gray500;
+                // Fallback to a neutral onBackground color
+                return Theme.of(context).colorScheme.onBackground.withOpacity(0.7);
             }
           }
 
