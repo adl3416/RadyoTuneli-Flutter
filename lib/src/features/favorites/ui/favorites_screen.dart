@@ -19,6 +19,7 @@ class FavoritesScreen extends ConsumerWidget {
 
     final colorScheme = Theme.of(context).colorScheme;
     final activeScheme = ref.watch(colorSchemeProvider);
+    final isKanarya = activeScheme == 'kanarya';
 
     return Scaffold(
       body: SafeArea(
@@ -30,7 +31,7 @@ class FavoritesScreen extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                color: colorScheme.primary,
+                color: isKanarya ? AppTheme.kanaryaSecondary : colorScheme.primary,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -40,12 +41,13 @@ class FavoritesScreen extends ConsumerWidget {
                     width: 45,
                     height: 45,
                     decoration: BoxDecoration(
-                      color: colorScheme.onPrimary.withOpacity(0.2),
+                      color: isKanarya ? AppTheme.kanaryaPrimary.withOpacity(0.12) : colorScheme.onPrimary.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(22),
                     ),
                     child: const Icon(
                       Icons.favorite,
-                      color: Colors.white,
+                      // For Kanarya use yellow icon; otherwise white
+                      color: null,
                       size: 22,
                     ),
                   ),
@@ -58,14 +60,14 @@ class FavoritesScreen extends ConsumerWidget {
                         Text(
                           'Favori Radyolarım',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onPrimary,
-                          ),
+                              fontWeight: FontWeight.bold,
+                              color: isKanarya ? AppTheme.kanaryaPrimary : colorScheme.onPrimary,
+                            ),
                         ),
                         Text(
                           '${favorites.length} istasyon',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onPrimary.withOpacity(0.8),
+                              color: isKanarya ? AppTheme.kanaryaPrimary.withOpacity(0.9) : colorScheme.onPrimary.withOpacity(0.8),
                           ),
                         ),
                       ],
@@ -82,7 +84,7 @@ class FavoritesScreen extends ConsumerWidget {
                         },
                         icon: Icon(
                           sortAtoZ ? Icons.sort_by_alpha : Icons.sort,
-                          color: sortAtoZ ? colorScheme.onPrimary : colorScheme.onPrimary.withOpacity(0.7),
+                          color: isKanarya ? AppTheme.kanaryaPrimary : (sortAtoZ ? colorScheme.onPrimary : colorScheme.onPrimary.withOpacity(0.7)),
                           size: 22,
                         ),
                         tooltip: sortAtoZ ? 'Normal Sıralama' : 'A-Z Sıralama',
@@ -91,11 +93,11 @@ class FavoritesScreen extends ConsumerWidget {
                   ),
                   // Clear All Button - Delete All iconuna değiştirdik
                   if (favorites.isNotEmpty)
-                    IconButton(
-                      onPressed: () => _showClearAllDialog(context, ref),
-                      icon: const Icon(
+                      IconButton(
+                      onPressed: () => _showClearAllDialog(context, ref, activeScheme),
+                      icon: Icon(
                         Icons.delete_sweep,
-                        color: Colors.white,
+                        color: isKanarya ? AppTheme.kanaryaPrimary : Colors.white,
                         size: 22,
                       ),
                       tooltip: 'Tümünü Temizle',
@@ -160,10 +162,10 @@ class FavoritesScreen extends ConsumerWidget {
                 },
                 loading: () => Center(
                   child: CircularProgressIndicator(
-                    color: colorScheme.primary,
+                    color: isKanarya ? AppTheme.kanaryaPrimary : colorScheme.primary,
                   ),
                 ),
-                error: (error, stack) => _buildErrorState(context, error.toString()),
+                error: (error, stack) => _buildErrorState(context, error.toString(), activeScheme),
               ),
             ),
           ],
@@ -235,8 +237,9 @@ class FavoritesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String error) {
+  Widget _buildErrorState(BuildContext context, String error, String activeScheme) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isKanarya = activeScheme == 'kanarya';
 
     return Center(
       child: Column(
@@ -245,14 +248,14 @@ class FavoritesScreen extends ConsumerWidget {
           Icon(
             Icons.error_outline,
             size: 64,
-            color: colorScheme.onBackground,
+            color: isKanarya ? AppTheme.kanaryaPrimary : colorScheme.onBackground,
           ),
           const SizedBox(height: 16),
           Text(
             'Bir Hata Oluştu',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: colorScheme.onBackground,
+              color: isKanarya ? AppTheme.kanaryaPrimary : colorScheme.onBackground,
             ),
           ),
           const SizedBox(height: 8),
@@ -260,7 +263,7 @@ class FavoritesScreen extends ConsumerWidget {
             error,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onBackground.withOpacity(0.9),
+              color: isKanarya ? AppTheme.kanaryaPrimary.withOpacity(0.9) : colorScheme.onBackground.withOpacity(0.9),
             ),
           ),
         ],
@@ -268,18 +271,19 @@ class FavoritesScreen extends ConsumerWidget {
     );
   }
 
-  void _showClearAllDialog(BuildContext context, WidgetRef ref) {
+  void _showClearAllDialog(BuildContext context, WidgetRef ref, String activeScheme) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isKanarya = activeScheme == 'kanarya';
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: isKanarya ? AppTheme.kanaryaSecondary : colorScheme.surface,
         title: Row(
           children: [
             Icon(
               Icons.warning_amber,
-              color: colorScheme.error,
+              color: isKanarya ? AppTheme.kanaryaPrimary : colorScheme.error,
               size: 24,
             ),
             const SizedBox(width: 8),
@@ -287,7 +291,7 @@ class FavoritesScreen extends ConsumerWidget {
               child: Text(
                 'Tüm Favorileri Temizle',
                 style: TextStyle(
-                  color: colorScheme.onSurface,
+                  color: isKanarya ? AppTheme.kanaryaPrimary : colorScheme.onSurface,
                   fontSize: 18,
                 ),
               ),
@@ -297,7 +301,7 @@ class FavoritesScreen extends ConsumerWidget {
         content: Text(
           'Tüm favori radyo istasyonlarınızı silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz.',
           style: TextStyle(
-            color: colorScheme.onSurface.withOpacity(0.9),
+            color: isKanarya ? AppTheme.kanaryaPrimary.withOpacity(0.9) : colorScheme.onSurface.withOpacity(0.9),
             fontSize: 14,
           ),
         ),
@@ -306,7 +310,7 @@ class FavoritesScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'İptal',
-              style: TextStyle(color: colorScheme.onSurface.withOpacity(0.8)),
+              style: TextStyle(color: isKanarya ? AppTheme.kanaryaPrimary.withOpacity(0.8) : colorScheme.onSurface.withOpacity(0.8)),
             ),
           ),
           ElevatedButton(
@@ -316,8 +320,8 @@ class FavoritesScreen extends ConsumerWidget {
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.error,
-              foregroundColor: colorScheme.onError,
+              backgroundColor: isKanarya ? AppTheme.kanaryaPrimary : colorScheme.error,
+              foregroundColor: isKanarya ? AppTheme.kanaryaSecondary : colorScheme.onError,
             ),
             child: const Text('Temizle'),
           ),

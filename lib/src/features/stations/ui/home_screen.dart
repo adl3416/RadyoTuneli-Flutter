@@ -251,6 +251,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                                   onFavoriteToggle: () {
                                     ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
                                   },
+                                  // When the Kanarya theme is active, force navy background and yellow text
+                                  backgroundColor: colorScheme == 'kanarya' ? AppTheme.kanaryaSecondary : null,
+                                  titleColor: colorScheme == 'kanarya' ? AppTheme.kanaryaPrimary : null,
+                                  subtitleColor: colorScheme == 'kanarya' ? AppTheme.kanaryaPrimary.withOpacity(0.9) : null,
                                 ),
                               );
                             },
