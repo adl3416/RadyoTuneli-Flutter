@@ -32,14 +32,7 @@ class MiniPlayer extends ConsumerWidget {
             Color(0xFF3B3C5D), // Medium blue-gray
           ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0xFF1E1E2E).withOpacity(0.3),
-            offset: const Offset(0, -4),
-            blurRadius: 12,
-            spreadRadius: 0,
-          ),
-        ],
+        // Removed top boxShadow to avoid thin divider artifact on some devices / Android Auto
       ),
       child: Material(
         color: Colors.transparent,

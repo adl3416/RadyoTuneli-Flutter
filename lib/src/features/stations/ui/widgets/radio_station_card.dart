@@ -39,7 +39,7 @@ class RadioStationCard extends StatelessWidget {
       // keep full available width but add a small horizontal inset so cards
       // appear slightly narrower than the screen edge
       width: double.infinity,
-      height: 64,
+      height: 68,
       margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
       decoration: BoxDecoration(
         // If a concrete backgroundColor is provided (e.g. for Favorites Kanarya), use it.

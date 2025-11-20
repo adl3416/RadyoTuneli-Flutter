@@ -25,6 +25,9 @@ class MainScreen extends ConsumerWidget {
     ];
 
     return Scaffold(
+      // Allow the body to extend behind the BottomNavigationBar.
+      // This helps avoid thin hairline separators on some devices/Android Auto.
+      extendBody: true,
       body: Column(
         children: [
           Expanded(
@@ -130,22 +133,11 @@ class MainScreen extends ConsumerWidget {
           // ignore: avoid_print
           print('🎨 BottomBar colors - scheme: ${ref.watch(colorSchemeProvider)}, bg: $bgColor, selected: $selColor, unselected: $unselColor');
 
+          // Keep BottomNavigationBar container minimal to avoid thin divider/shadow
+          // (some devices show a faint zebra line at the bottom when a shadow/border is present).
+          // Removing the top border and boxShadow prevents that artifact.
           return Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: Theme.of(context).primaryColor.withOpacity(0.2),
-                  width: 0.5,
-                ),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  offset: const Offset(0, -1),
-                  blurRadius: 10,
-                ),
-              ],
-            ),
+            // Intentionally no border/boxShadow here to avoid visual artifacts on some devices (e.g. S9 + Android Auto)
             child: BottomNavigationBar(
               currentIndex: selectedTab,
               onTap: (index) {

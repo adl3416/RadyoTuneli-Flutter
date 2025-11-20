@@ -18,258 +18,244 @@ class AutomotivePlayerScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              // Header
-              Row(
-                children: [
-                  Icon(
-                    Icons.radio,
-                    color: AppTheme.orange400,
-                    size: 28,
-                  ),
-                  const SizedBox(width: 12),
-                  Flexible(
-                    child: Text(
-                      'Radyo Tüneli',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'ARABA MODU',
-                    style: TextStyle(
-                      color: AppTheme.orange400,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // Current Station Display
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.grey[900],
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: AppTheme.orange400.withOpacity(0.3),
-                    width: 2,
-                  ),
-                ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Adaptive paddings and sizes based on available space
+            final horizontalPad = constraints.maxWidth > 600 ? 24.0 : 16.0;
+            final spacingLarge = constraints.maxHeight < 400 ? 12.0 : 20.0;
+            final logoSize = (constraints.maxWidth * 0.25).clamp(64.0, 140.0);
+
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPad, vertical: spacingLarge),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight - MediaQuery.of(context).padding.vertical),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Station Logo
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: AppTheme.orange400.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(
-                        Icons.radio,
-                        color: AppTheme.orange400,
-                        size: 60,
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 20),
-                    
-                    // Station Name
-                    Text(
-                      playerState.currentStation?.name ?? 'Radyo Seçiniz',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    
-                    const SizedBox(height: 8),
-                    
-                    // Station Description
-                    Text(
-                      playerState.currentStation?.artist ?? 'Radyo çalmıyor',
-                      style: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 16,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    
-                    const SizedBox(height: 20),
-                    
-                    // Status Indicator
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: playerState.isPlaying 
-                            ? AppTheme.orange400.withOpacity(0.2)
-                            : Colors.grey[800],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            playerState.isPlaying 
-                                ? Icons.play_arrow
-                                : playerState.isLoading
-                                    ? Icons.sync
-                                    : Icons.pause,
-                            color: playerState.isPlaying 
-                                ? AppTheme.orange400
-                                : Colors.grey[400],
-                            size: 20,
+                    // Header
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.radio,
+                          color: AppTheme.orange400,
+                          size: 28,
+                        ),
+                        const SizedBox(width: 12),
+                        Flexible(
+                          child: Text(
+                            'Radyo Tüneli',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(width: 8),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'ARABA MODU',
+                          style: TextStyle(
+                            color: AppTheme.orange400,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: spacingLarge),
+
+                    // Current Station Display (responsive)
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(spacingLarge),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[900],
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppTheme.orange400.withOpacity(0.3),
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          // Station Logo (responsive size)
+                          Container(
+                            width: logoSize,
+                            height: logoSize,
+                            decoration: BoxDecoration(
+                              color: AppTheme.orange400.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Icon(
+                              Icons.radio,
+                              color: AppTheme.orange400,
+                              size: (logoSize * 0.5).clamp(28.0, 80.0),
+                            ),
+                          ),
+
+                          SizedBox(height: spacingLarge),
+
+                          // Station Name
                           Text(
-                            playerState.isPlaying
-                                ? 'ÇALIYOR'
-                                : playerState.isLoading
-                                    ? 'YÜKLENİYOR'
-                                    : 'DURAKLATILDI',
+                            playerState.currentStation?.name ?? 'Radyo Seçiniz',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          // Station Description
+                          Text(
+                            playerState.currentStation?.artist ?? 'Radyo çalmıyor',
                             style: TextStyle(
-                              color: playerState.isPlaying 
-                                  ? AppTheme.orange400
-                                  : Colors.grey[400],
+                              color: Colors.grey[400],
                               fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+
+                          SizedBox(height: spacingLarge),
+
+                          // Status Indicator
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: playerState.isPlaying ? AppTheme.orange400.withOpacity(0.2) : Colors.grey[800],
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  playerState.isPlaying ? Icons.play_arrow : playerState.isLoading ? Icons.sync : Icons.pause,
+                                  color: playerState.isPlaying ? AppTheme.orange400 : Colors.grey[400],
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  playerState.isPlaying ? 'ÇALIYOR' : playerState.isLoading ? 'YÜKLENİYOR' : 'DURAKLATILDI',
+                                  style: TextStyle(
+                                    color: playerState.isPlaying ? AppTheme.orange400 : Colors.grey[400],
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
+
+                    SizedBox(height: spacingLarge),
+
+                    // Test Reklam Alanı - keep smaller on compact screens
+                    Container(
+                      width: double.infinity,
+                      height: constraints.maxHeight < 420 ? 56 : 80,
+                      margin: EdgeInsets.symmetric(horizontal: constraints.maxWidth < 360 ? 8 : 20),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'REKLAM BURASI - TEST',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: spacingLarge),
+
+                    // Large Control Buttons - make them wrap if space is tight
+                    Wrap(
+                      alignment: WrapAlignment.spaceEvenly,
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: [
+                        _buildLargeButton(
+                          icon: Icons.skip_previous,
+                          label: 'ÖNCEKİ',
+                          onPressed: () async {
+                            HapticFeedback.mediumImpact();
+                            await ref.read(playerStateProvider.notifier).previousStation();
+                          },
+                        ),
+                        _buildLargeButton(
+                          icon: playerState.isPlaying ? Icons.pause : playerState.isLoading ? Icons.sync : Icons.play_arrow,
+                          label: playerState.isPlaying ? 'DURAKLAT' : 'ÇALIŞ',
+                          isPrimary: true,
+                          onPressed: () {
+                            HapticFeedback.heavyImpact();
+                            if (playerState.isPlaying) {
+                              ref.read(playerStateProvider.notifier).pause();
+                            } else {
+                              if (playerState.currentStation != null) {
+                                ref.read(playerStateProvider.notifier).resume();
+                              }
+                            }
+                          },
+                        ),
+                        _buildLargeButton(
+                          icon: Icons.skip_next,
+                          label: 'SONRAKİ',
+                          onPressed: () async {
+                            HapticFeedback.mediumImpact();
+                            await ref.read(playerStateProvider.notifier).nextStation();
+                          },
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: spacingLarge),
+
+                    // Bottom Actions
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildSmallButton(
+                          icon: Icons.list,
+                          label: 'İSTASYONLAR',
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.pop(context);
+                          },
+                        ),
+                        _buildSmallButton(
+                          icon: Icons.favorite,
+                          label: 'FAVORİLER',
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                            _showFavoritesModal(context, ref);
+                          },
+                        ),
+                        _buildSmallButton(
+                          icon: Icons.volume_up,
+                          label: 'SES',
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                            _showVolumeModal(context, ref);
+                          },
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-              
-              const SizedBox(height: 20),
-              
-              // Test Reklam Alanı - Çok Basit
-              Container(
-                width: double.infinity,
-                height: 80,
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Center(
-                  child: Text(
-                    'REKLAM BURASI - TEST',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Large Control Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Previous Button
-                  _buildLargeButton(
-                    icon: Icons.skip_previous,
-                    label: 'ÖNCEKİ',
-                    onPressed: () async {
-                      HapticFeedback.mediumImpact();
-                      await ref.read(playerStateProvider.notifier).previousStation();
-                    },
-                  ),
-                  
-                  // Play/Pause Button
-                  _buildLargeButton(
-                    icon: playerState.isPlaying 
-                        ? Icons.pause
-                        : playerState.isLoading
-                            ? Icons.sync
-                            : Icons.play_arrow,
-                    label: playerState.isPlaying ? 'DURAKLAT' : 'ÇALIŞ',
-                    isPrimary: true,
-                    onPressed: () {
-                      HapticFeedback.heavyImpact();
-                      if (playerState.isPlaying) {
-                        ref.read(playerStateProvider.notifier).pause();
-                      } else {
-                        // Resume if paused, or play first station if none selected
-                        if (playerState.currentStation != null) {
-                          ref.read(playerStateProvider.notifier).resume();
-                        } else {
-                          // TODO: Play first available station
-                        }
-                      }
-                    },
-                  ),
-                  
-                  // Next Button
-                  _buildLargeButton(
-                    icon: Icons.skip_next,
-                    label: 'SONRAKİ',
-                    onPressed: () async {
-                      HapticFeedback.mediumImpact();
-                      await ref.read(playerStateProvider.notifier).nextStation();
-                    },
-                  ),
-                ],
-              ),
-              
-              const Spacer(),
-              
-              // Bottom Actions
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildSmallButton(
-                    icon: Icons.list,
-                    label: 'İSTASYONLAR',
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.pop(context);
-                    },
-                  ),
-                  _buildSmallButton(
-                    icon: Icons.favorite,
-                    label: 'FAVORİLER',
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      _showFavoritesModal(context, ref);
-                    },
-                  ),
-                  _buildSmallButton(
-                    icon: Icons.volume_up,
-                    label: 'SES',
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      _showVolumeModal(context, ref);
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
