@@ -243,7 +243,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                               
                               final station = filteredStations[index];
                               return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                // reduce outer padding so cards sit closer together
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                                   child: RadioStationCard(
                                   title: station.name,
                                   subtitle: station.genre ?? 'Turkish Radio',

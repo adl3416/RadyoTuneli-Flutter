@@ -167,12 +167,13 @@ class FavoritesScreen extends ConsumerWidget {
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    // reduce horizontal padding so cards have less space to edges
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
                     itemCount: favoriteStations.length,
                     itemBuilder: (context, index) {
                       final station = favoriteStations[index];
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.only(bottom: 4),
                             child: RadioStationCard(
                           title: station.name,
                           subtitle: station.genre ?? 'Radio',

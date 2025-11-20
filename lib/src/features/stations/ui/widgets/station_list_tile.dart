@@ -40,7 +40,8 @@ class StationListTile extends ConsumerWidget {
     });
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      // even smaller bottom gap so list items sit tighter
+      margin: const EdgeInsets.only(bottom: 2),
       child: RadioStationCard(
         title: station.name,
         subtitle: station.genre ?? 'Radio',

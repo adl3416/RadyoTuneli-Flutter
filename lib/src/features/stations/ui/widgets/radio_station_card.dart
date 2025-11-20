@@ -36,18 +36,24 @@ class RadioStationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // keep full available width but add a small horizontal inset so cards
+      // appear slightly narrower than the screen edge
       width: double.infinity,
-      height: 88,
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      height: 64,
+      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
       decoration: BoxDecoration(
         // If a concrete backgroundColor is provided (e.g. for Favorites Kanarya), use it.
         // Otherwise fall back to the app's radio card gradient.
         color: backgroundColor,
         gradient: backgroundColor == null ? AppTheme.radioCardGradient : null,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 6, offset: const Offset(0, 3)),
+          BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 4, offset: const Offset(0, 2)),
         ],
+        // thin separator line at bottom to visually separate adjacent cards
+        border: Border(
+          bottom: BorderSide(color: AppTheme.gray200.withOpacity(0.9), width: 0.5),
+        ),
       ),
       child: Material(
         color: Colors.transparent,
@@ -55,17 +61,17 @@ class RadioStationCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(6),
             child: Row(
               children: [
                 // Station Image/Icon - Modern logo with initials
                 RadioLogo(
                   radioName: title,
                   logoUrl: imageUrl,
-                  size: 56,
+                  size: 40,
                   showBorder: true,
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 10),
                 // Title & Subtitle
                 Expanded(
                   child: Column(
@@ -81,7 +87,7 @@ class RadioStationCard extends StatelessWidget {
                           color: titleColor ?? AppTheme.white,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 1),
                       Text(
                         subtitle,
                         maxLines: 1,
@@ -108,10 +114,10 @@ class RadioStationCard extends StatelessWidget {
                       icon: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_outline,
                         color: isFavorite ? Colors.red : AppTheme.white,
-                        size: 20,
+                        size: 18,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 4),
                     // Play/Pause Button
                     IconButton(
                       style: IconButton.styleFrom(
