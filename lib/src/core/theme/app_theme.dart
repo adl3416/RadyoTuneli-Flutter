@@ -708,7 +708,7 @@ class AppTheme {
 
   // 🌊 KARADENIZ FIRTINASI TEMASI - Bordo (#800000) + Mavi (#4169E1)
   static const Color karadenizBordo = Color(0xFF800000);
-  static const Color karadenizMavi = Color(0xFF4169E1);
+  static const Color karadenizMavi = Color(0xFF1E90FF);
 
   static ThemeData get karadenizThemeDark {
     final textTheme = GoogleFonts.interTextTheme().apply(
@@ -744,7 +744,8 @@ class AppTheme {
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         selectedItemColor: karadenizMavi,
         unselectedItemColor: darkTextSecondary,
-        backgroundColor: darkSurface,
+        // Make BottomNavigationBar background match AppBar (bordo)
+        backgroundColor: karadenizBordo,
         type: BottomNavigationBarType.fixed,
         elevation: 12,
       ),

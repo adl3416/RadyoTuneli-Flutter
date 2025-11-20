@@ -31,11 +31,13 @@ class FavoritesScreen extends ConsumerWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                  // If Kanarya -> navy, if Aslan -> vivid red, otherwise use theme primary
-                  color: isKanarya
-                      ? AppTheme.kanaryaSecondary
-                      : (activeScheme == 'aslan' ? AppTheme.aslanRed : colorScheme.primary),
+                    decoration: BoxDecoration(
+                      // If Kanarya -> navy, if Aslan -> vivid red, if Karadeniz -> bordo, otherwise use theme primary
+                      color: isKanarya
+                        ? AppTheme.kanaryaSecondary
+                        : (activeScheme == 'aslan'
+                          ? AppTheme.aslanRed
+                          : (activeScheme == 'karadeniz' ? AppTheme.karadenizBordo : colorScheme.primary)),
                   borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -46,15 +48,21 @@ class FavoritesScreen extends ConsumerWidget {
                     width: 45,
                     height: 45,
                     decoration: BoxDecoration(
-                      color: isKanarya ? AppTheme.kanaryaPrimary.withOpacity(0.12) : colorScheme.onPrimary.withOpacity(0.2),
+                        color: isKanarya
+                          ? AppTheme.kanaryaPrimary.withOpacity(0.12)
+                          : (activeScheme == 'karadeniz'
+                            ? AppTheme.karadenizMavi.withOpacity(0.12)
+                            : colorScheme.onPrimary.withOpacity(0.2)),
                       borderRadius: BorderRadius.circular(22),
                     ),
                     child: Icon(
                       Icons.favorite,
                       // Kanarya -> yellow, Aslan -> yellow, otherwise theme onPrimary
-                      color: isKanarya
+                        color: isKanarya
                           ? AppTheme.kanaryaPrimary
-                          : (activeScheme == 'aslan' ? AppTheme.aslanYellow : colorScheme.onPrimary),
+                          : (activeScheme == 'aslan'
+                            ? AppTheme.aslanYellow
+                            : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : colorScheme.onPrimary)),
                       size: 22,
                     ),
                   ),
@@ -70,17 +78,21 @@ class FavoritesScreen extends ConsumerWidget {
                               fontWeight: FontWeight.bold,
                               color: isKanarya
                                 ? AppTheme.kanaryaPrimary
-                                : (activeScheme == 'aslan' ? AppTheme.aslanYellow : colorScheme.onPrimary),
+                                : (activeScheme == 'aslan'
+                                    ? AppTheme.aslanYellow
+                                    : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : colorScheme.onPrimary)),
                             ),
                         ),
                         Text(
                           '${favorites.length} istasyon',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: isKanarya
+                                  color: isKanarya
                                     ? AppTheme.kanaryaPrimary.withOpacity(0.9)
                                     : (activeScheme == 'aslan'
-                                        ? AppTheme.aslanYellow.withOpacity(0.9)
-                                        : colorScheme.onPrimary.withOpacity(0.8)),
+                                      ? AppTheme.aslanYellow.withOpacity(0.9)
+                                      : (activeScheme == 'karadeniz'
+                                        ? AppTheme.karadenizMavi.withOpacity(0.9)
+                                        : colorScheme.onPrimary.withOpacity(0.8))),
                           ),
                         ),
                       ],
@@ -97,7 +109,11 @@ class FavoritesScreen extends ConsumerWidget {
                         },
                         icon: Icon(
                           sortAtoZ ? Icons.sort_by_alpha : Icons.sort,
-                          color: isKanarya ? AppTheme.kanaryaPrimary : (sortAtoZ ? colorScheme.onPrimary : colorScheme.onPrimary.withOpacity(0.7)),
+                            color: isKanarya
+                              ? AppTheme.kanaryaPrimary
+                              : (sortAtoZ
+                                ? (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : colorScheme.onPrimary)
+                                : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.7) : colorScheme.onPrimary.withOpacity(0.7))),
                           size: 22,
                         ),
                         tooltip: sortAtoZ ? 'Normal Sıralama' : 'A-Z Sıralama',
@@ -108,9 +124,11 @@ class FavoritesScreen extends ConsumerWidget {
                   if (favorites.isNotEmpty)
                       IconButton(
                       onPressed: () => _showClearAllDialog(context, ref, activeScheme),
-                      icon: Icon(
+                        icon: Icon(
                         Icons.delete_sweep,
-                        color: isKanarya ? AppTheme.kanaryaPrimary : Colors.white,
+                        color: isKanarya
+                            ? AppTheme.kanaryaPrimary
+                            : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : Colors.white),
                         size: 22,
                       ),
                       tooltip: 'Tümünü Temizle',
@@ -139,23 +157,34 @@ class FavoritesScreen extends ConsumerWidget {
                       final station = favoriteStations[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
-                        child: RadioStationCard(
+                            child: RadioStationCard(
                           title: station.name,
                           subtitle: station.genre ?? 'Radio',
                           imageUrl: station.logoUrl,
-                            // If the active scheme is 'kanarya' or 'aslan', force themed backgrounds/text
+                            // If the active scheme is 'kanarya', 'aslan' or 'karadeniz', force themed backgrounds/text
                             backgroundColor: activeScheme == 'kanarya'
                               ? AppTheme.kanaryaSecondary
-                              : (activeScheme == 'aslan' ? AppTheme.aslanRed : null),
+                              : (activeScheme == 'aslan'
+                                  ? AppTheme.aslanRed
+                                  : (activeScheme == 'karadeniz' ? AppTheme.karadenizBordo : null)),
                               titleColor: activeScheme == 'kanarya'
                                 ? AppTheme.kanaryaPrimary
-                                : (activeScheme == 'aslan' ? Colors.black : null),
+                                : (activeScheme == 'aslan'
+                                    ? Colors.black
+                                    : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : null)),
                               subtitleColor: activeScheme == 'kanarya'
                                 ? AppTheme.kanaryaPrimary.withOpacity(0.9)
-                                : (activeScheme == 'aslan' ? Colors.black.withOpacity(0.9) : null),
-                              // For Aslan theme, force yellow play button with black icon for contrast
-                              playButtonBackgroundColor: activeScheme == 'aslan' ? AppTheme.aslanYellow : null,
-                              playIconColor: activeScheme == 'aslan' ? Colors.black : null,
+                                : (activeScheme == 'aslan'
+                                    ? Colors.black.withOpacity(0.9)
+                                    : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : null)),
+                              // Themed play button/icon for Aslan and Karadeniz
+                              playButtonBackgroundColor: activeScheme == 'aslan'
+                                ? AppTheme.aslanYellow
+                                : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : null),
+                              // Make the icon contrast when Karadeniz is active
+                              playIconColor: activeScheme == 'aslan'
+                                ? Colors.black
+                                : (activeScheme == 'karadeniz' ? AppTheme.karadenizBordo : null),
                           isPlaying: ref.watch(playerStateProvider).currentStation?.id == station.id &&
                                     ref.watch(playerStateProvider).isPlaying,
                           isFavorite: true, // Favori sayfasında hepsi favori

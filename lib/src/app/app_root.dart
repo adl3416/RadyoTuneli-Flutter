@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/theme/app_theme.dart';
 import '../shared/providers/theme_provider.dart';
 import '../shared/providers/color_scheme_provider.dart';
+import '../core/theme/theme_registry.dart';
 import 'main_screen.dart';
 
 class AppRoot extends ConsumerWidget {
@@ -17,18 +18,14 @@ class AppRoot extends ConsumerWidget {
     
     // Tema seçimi
     ThemeData selectedTheme;
-    switch (colorScheme) {
-      case 'kanarya':
-        print('✅ KANARYA TEMASI SEÇİLDİ!');
-        selectedTheme = AppTheme.kanarayaThemeDark;
-        print('📱 Scaffold color: ${AppTheme.kanarayaThemeDark.scaffoldBackgroundColor}');
-        print('📱 AppBar color: ${AppTheme.kanarayaThemeDark.appBarTheme.backgroundColor}');
-        print('📱 BottomNav color: ${AppTheme.kanarayaThemeDark.bottomNavigationBarTheme.backgroundColor}');
-        break;
-      case 'varsayilan':
-      default:
-        print('💜 VARSAYILAN TEMA SEÇİLDİ');
-        selectedTheme = themeMode == ThemeMode.dark ? AppTheme.darkTheme : AppTheme.lightTheme;
+    // Prefer registry lookup so new themes can be registered without editing this file.
+    final registered = getThemeByName(colorScheme);
+    if (registered != null) {
+      selectedTheme = registered;
+    } else {
+      // fallback to default behavior
+      print('💜 VARSAYILAN TEMA SEÇİLDİ');
+      selectedTheme = themeMode == ThemeMode.dark ? AppTheme.darkTheme : AppTheme.lightTheme;
     }
     
     return MaterialApp(

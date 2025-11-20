@@ -254,16 +254,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                                     // When Kanarya or Aslan themes are active, force themed backgrounds/text
                                     backgroundColor: colorScheme == 'kanarya'
                                       ? AppTheme.kanaryaSecondary
-                                      : (colorScheme == 'aslan' ? AppTheme.aslanRed : null),
+                                      : (colorScheme == 'aslan'
+                                          ? AppTheme.aslanRed
+                                          : (colorScheme == 'karadeniz' ? AppTheme.karadenizBordo : null)),
                                     titleColor: colorScheme == 'kanarya'
                                       ? AppTheme.kanaryaPrimary
-                                      : (colorScheme == 'aslan' ? Colors.black : null),
-                                      subtitleColor: colorScheme == 'kanarya'
+                                      : (colorScheme == 'aslan'
+                                          ? Colors.black
+                                          : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi : null)),
+                                    subtitleColor: colorScheme == 'kanarya'
                                         ? AppTheme.kanaryaPrimary.withOpacity(0.9)
-                                        : (colorScheme == 'aslan' ? Colors.black.withOpacity(0.9) : null),
-                                      // Aslan: yellow play button with black icon
-                                      playButtonBackgroundColor: colorScheme == 'aslan' ? AppTheme.aslanYellow : null,
-                                      playIconColor: colorScheme == 'aslan' ? Colors.black : null,
+                                        : (colorScheme == 'aslan'
+                                            ? Colors.black.withOpacity(0.9)
+                                            : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : null)),
+                                    // Aslan: yellow play button with black icon
+                                    playButtonBackgroundColor: colorScheme == 'aslan'
+                                      ? AppTheme.aslanYellow
+                                      : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi : null),
+                                    // Ensure the play icon contrasts with the Karadeniz blue background
+                                    playIconColor: colorScheme == 'aslan'
+                                      ? Colors.black
+                                      : (colorScheme == 'karadeniz' ? AppTheme.karadenizBordo : null),
                                 ),
                               );
                             },

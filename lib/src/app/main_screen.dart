@@ -6,6 +6,7 @@ import '../features/favorites/ui/favorites_screen.dart';
 import '../features/settings/ui/settings_screen.dart';
 import '../features/player/ui/mini_player.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/theme_registry.dart';
 import '../shared/providers/color_scheme_provider.dart';
 
 final selectedTabProvider = StateProvider<int>((ref) => 0);
@@ -78,6 +79,13 @@ class MainScreen extends ConsumerWidget {
             }
           }
 
+          // Prefer registered theme values when available (keeps colors centralized)
+          final registryTheme = getThemeByName(ref.watch(colorSchemeProvider));
+          final bottomTheme = registryTheme?.bottomNavigationBarTheme;
+          final bgColor = bottomTheme?.backgroundColor ?? Theme.of(context).bottomNavigationBarTheme.backgroundColor;
+          final selColor = bottomTheme?.selectedItemColor ?? getSelectedItemColor();
+          final unselColor = bottomTheme?.unselectedItemColor ?? getUnselectedItemColor();
+
           return Container(
             decoration: BoxDecoration(
               border: Border(
@@ -116,9 +124,9 @@ class MainScreen extends ConsumerWidget {
                 ref.read(selectedTabProvider.notifier).state = index;
               },
               type: BottomNavigationBarType.fixed,
-              backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-              selectedItemColor: getSelectedItemColor(),
-              unselectedItemColor: getUnselectedItemColor(),
+              backgroundColor: bgColor,
+              selectedItemColor: selColor,
+              unselectedItemColor: unselColor,
               selectedLabelStyle:
                   const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               unselectedLabelStyle:
