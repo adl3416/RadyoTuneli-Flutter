@@ -490,15 +490,38 @@ class RadioAudioHandler extends BaseAudioHandler
         updatePosition: Duration.zero,
       ));
 
-      // Set the audio source
-      await _player.setAudioSource(
-        AudioSource.uri(
-          Uri.parse(streamUrl),
-          tag: mediaItem,
-        ),
-      );
-
-      print("🎵 Audio source set, starting playback...");
+      // Try to set the audio source. Some radio streams (Shoutcast/Icecast)
+      // require specific headers (User-Agent, Icy-MetaData) or reject default
+      // player requests; on failure we retry with common headers.
+      try {
+        await _player.setAudioSource(
+          AudioSource.uri(
+            Uri.parse(streamUrl),
+            tag: mediaItem,
+          ),
+        );
+        print("🎵 Audio source set (default), starting playback...");
+      } catch (e) {
+        print('⚠️ setAudioSource failed (default): $e');
+        print('ℹ️ Retrying setAudioSource with headers (User-Agent + Icy-MetaData)');
+        try {
+          await _player.setAudioSource(
+            AudioSource.uri(
+              Uri.parse(streamUrl),
+              tag: mediaItem,
+              // Add headers commonly required by some streaming servers
+              headers: {
+                'Icy-MetaData': '1',
+                'User-Agent': 'Mozilla/5.0 (Android)',
+              },
+            ),
+          );
+          print("🎵 Audio source set (with headers), starting playback...");
+        } catch (e2) {
+          print('❌ Retry setAudioSource with headers also failed: $e2');
+          rethrow;
+        }
+      }
 
       // Start playing
       await _player.play();
@@ -554,8 +577,13 @@ class RadioAudioHandler extends BaseAudioHandler
 
   @override
   Future<void> onNotificationDeleted() async {
-    print("🗑️ Notification deleted - stopping playback");
-    await stop();
+    print("🗑️ Notification deleted - ignoring deletion to avoid unintended stop (Android Auto compatibility)");
+    // When Android Auto connects it may remove the app notification;
+    // calling stop() here causes playback to end unexpectedly on some devices (e.g. Samsung S9).
+    // We intentionally do not stop playback in response to notification deletion to allow
+    // Android Auto / external media controls to continue playback. If you want to stop
+    // when the user explicitly dismisses from the notification, implement a custom
+    // confirmation flow or handle that in the UI layer.
   }
 
   void disposePlayer() {

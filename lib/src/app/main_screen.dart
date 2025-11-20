@@ -36,7 +36,8 @@ class MainScreen extends ConsumerWidget {
               children: screens,
             ),
           ),
-          const MiniPlayer(),
+          // MiniPlayer moved into bottomNavigationBar area so it won't be
+          // obscured by the BottomNavigationBar when extendBody is true.
         ],
       ),
       bottomNavigationBar: Consumer(
@@ -133,59 +134,61 @@ class MainScreen extends ConsumerWidget {
           // ignore: avoid_print
           print('🎨 BottomBar colors - scheme: ${ref.watch(colorSchemeProvider)}, bg: $bgColor, selected: $selColor, unselected: $unselColor');
 
-          // Keep BottomNavigationBar container minimal to avoid thin divider/shadow
-          // (some devices show a faint zebra line at the bottom when a shadow/border is present).
-          // Removing the top border and boxShadow prevents that artifact.
-          return Container(
-            // Intentionally no border/boxShadow here to avoid visual artifacts on some devices (e.g. S9 + Android Auto)
-            child: BottomNavigationBar(
-              currentIndex: selectedTab,
-              onTap: (index) {
-                // Farklı sekmeler için farklı haptic feedback türleri
-                switch (index) {
-                  case 0: // Ana Sayfa
-                    HapticFeedback.lightImpact();
-                    break;
-                  case 1: // Favoriler
-                    HapticFeedback.mediumImpact();
-                    break;
-                  case 2: // Ayarlar
-                    HapticFeedback.heavyImpact();
-                    break;
-                  default:
-                    HapticFeedback.selectionClick();
-                }
-                
-                // Tab değiştir
-                ref.read(selectedTabProvider.notifier).state = index;
-              },
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: bgColor,
-              selectedItemColor: selColor,
-              unselectedItemColor: unselColor,
-              selectedLabelStyle:
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-              unselectedLabelStyle:
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-              elevation: 0,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home_outlined),
-                  activeIcon: Icon(Icons.home),
-                  label: 'Ana Sayfa',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.favorite_outline),
-                  activeIcon: Icon(Icons.favorite),
-                  label: 'Favoriler',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.settings_outlined),
-                  activeIcon: Icon(Icons.settings),
-                  label: 'Ayarlar',
-                ),
-              ],
-            ),
+          // Keep BottomNavigationBar area minimal. Put MiniPlayer above BottomNavigationBar
+          // so it remains visible (not covered by the bar when extendBody is true).
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const MiniPlayer(),
+              BottomNavigationBar(
+                currentIndex: selectedTab,
+                onTap: (index) {
+                  // Farklı sekmeler için farklı haptic feedback türleri
+                  switch (index) {
+                    case 0: // Ana Sayfa
+                      HapticFeedback.lightImpact();
+                      break;
+                    case 1: // Favoriler
+                      HapticFeedback.mediumImpact();
+                      break;
+                    case 2: // Ayarlar
+                      HapticFeedback.heavyImpact();
+                      break;
+                    default:
+                      HapticFeedback.selectionClick();
+                  }
+                  
+                  // Tab değiştir
+                  ref.read(selectedTabProvider.notifier).state = index;
+                },
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: bgColor,
+                selectedItemColor: selColor,
+                unselectedItemColor: unselColor,
+                selectedLabelStyle:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                unselectedLabelStyle:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                elevation: 0,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home_outlined),
+                    activeIcon: Icon(Icons.home),
+                    label: 'Ana Sayfa',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.favorite_outline),
+                    activeIcon: Icon(Icons.favorite),
+                    label: 'Favoriler',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.settings_outlined),
+                    activeIcon: Icon(Icons.settings),
+                    label: 'Ayarlar',
+                  ),
+                ],
+              ),
+            ],
           );
         },
       ),
