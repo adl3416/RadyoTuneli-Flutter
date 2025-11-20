@@ -21,53 +21,71 @@ class FavoritesScreen extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final activeScheme = ref.watch(colorSchemeProvider);
     final isKanarya = activeScheme == 'kanarya';
+    // Header colors (reduce nested ternaries to avoid parse issues)
+    final headerIconColor = isKanarya
+      ? AppTheme.kanaryaPrimary
+      : (activeScheme == 'aslan'
+        ? AppTheme.aslanYellow
+        : (activeScheme == 'karadeniz'
+          ? AppTheme.karadenizMavi
+          : (activeScheme == 'kartal' ? AppTheme.kartalWhite : colorScheme.onPrimary)));
+    final headerTitleColor = isKanarya
+      ? AppTheme.kanaryaPrimary
+      : (activeScheme == 'aslan'
+        ? AppTheme.aslanYellow
+        : (activeScheme == 'karadeniz'
+          ? AppTheme.karadenizMavi
+          : (activeScheme == 'kartal' ? AppTheme.kartalWhite : colorScheme.onPrimary)));
+    final headerSubtitleColor = isKanarya
+      ? AppTheme.kanaryaPrimary.withOpacity(0.9)
+      : (activeScheme == 'aslan'
+        ? AppTheme.aslanYellow.withOpacity(0.9)
+        : (activeScheme == 'karadeniz'
+          ? AppTheme.karadenizMavi.withOpacity(0.9)
+          : (activeScheme == 'kartal'
+            ? AppTheme.kartalWhite.withOpacity(0.9)
+            : colorScheme.onPrimary.withOpacity(0.8))));
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
+            // Header (simplified and balanced to avoid parse issues)
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      // If Kanarya -> navy, if Aslan -> vivid red, if Karadeniz -> bordo, otherwise use theme primary
-                      color: isKanarya
-                        ? AppTheme.kanaryaSecondary
-                        : (activeScheme == 'aslan'
-                          ? AppTheme.aslanRed
-                          : (activeScheme == 'karadeniz' ? AppTheme.karadenizBordo : colorScheme.primary)),
-                  borderRadius: BorderRadius.circular(12),
+              decoration: BoxDecoration(
+                color: isKanarya
+                    ? AppTheme.kanaryaSecondary
+                    : (activeScheme == 'aslan'
+                        ? AppTheme.aslanRed
+                        : (activeScheme == 'karadeniz'
+                            ? AppTheme.karadenizBordo
+                            : (activeScheme == 'kartal' ? AppTheme.kartalBlack : colorScheme.primary))),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Favorite Icon
                   Container(
                     width: 45,
                     height: 45,
                     decoration: BoxDecoration(
-                        color: isKanarya
+                      color: isKanarya
                           ? AppTheme.kanaryaPrimary.withOpacity(0.12)
                           : (activeScheme == 'karadeniz'
-                            ? AppTheme.karadenizMavi.withOpacity(0.12)
-                            : colorScheme.onPrimary.withOpacity(0.2)),
+                              ? AppTheme.karadenizMavi.withOpacity(0.12)
+                              : colorScheme.onPrimary.withOpacity(0.2)),
                       borderRadius: BorderRadius.circular(22),
                     ),
                     child: Icon(
                       Icons.favorite,
-                      // Kanarya -> yellow, Aslan -> yellow, otherwise theme onPrimary
-                        color: isKanarya
-                          ? AppTheme.kanaryaPrimary
-                          : (activeScheme == 'aslan'
-                            ? AppTheme.aslanYellow
-                            : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : colorScheme.onPrimary)),
+                      color: headerIconColor,
                       size: 22,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // Title
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,25 +93,15 @@ class FavoritesScreen extends ConsumerWidget {
                         Text(
                           'Favori Radyolarım',
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: isKanarya
-                                ? AppTheme.kanaryaPrimary
-                                : (activeScheme == 'aslan'
-                                    ? AppTheme.aslanYellow
-                                    : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : colorScheme.onPrimary)),
-                            ),
+                                fontWeight: FontWeight.bold,
+                                color: headerTitleColor,
+                              ),
                         ),
                         Text(
                           '${favorites.length} istasyon',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: isKanarya
-                                    ? AppTheme.kanaryaPrimary.withOpacity(0.9)
-                                    : (activeScheme == 'aslan'
-                                      ? AppTheme.aslanYellow.withOpacity(0.9)
-                                      : (activeScheme == 'karadeniz'
-                                        ? AppTheme.karadenizMavi.withOpacity(0.9)
-                                        : colorScheme.onPrimary.withOpacity(0.8))),
-                          ),
+                                color: headerSubtitleColor,
+                              ),
                         ),
                       ],
                     ),
@@ -109,26 +117,26 @@ class FavoritesScreen extends ConsumerWidget {
                         },
                         icon: Icon(
                           sortAtoZ ? Icons.sort_by_alpha : Icons.sort,
-                            color: isKanarya
+                          color: isKanarya
                               ? AppTheme.kanaryaPrimary
                               : (sortAtoZ
-                                ? (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : colorScheme.onPrimary)
-                                : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.7) : colorScheme.onPrimary.withOpacity(0.7))),
+                                  ? (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : colorScheme.onPrimary)
+                                  : (activeScheme == 'karadeniz'
+                                      ? AppTheme.karadenizMavi.withOpacity(0.7)
+                                      : colorScheme.onPrimary.withOpacity(0.7))),
                           size: 22,
                         ),
                         tooltip: sortAtoZ ? 'Normal Sıralama' : 'A-Z Sıralama',
                       );
                     },
                   ),
-                  // Clear All Button - Delete All iconuna değiştirdik
+                  // Clear All Button
                   if (favorites.isNotEmpty)
-                      IconButton(
+                    IconButton(
                       onPressed: () => _showClearAllDialog(context, ref, activeScheme),
-                        icon: Icon(
+                      icon: Icon(
                         Icons.delete_sweep,
-                        color: isKanarya
-                            ? AppTheme.kanaryaPrimary
-                            : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : Colors.white),
+                        color: isKanarya ? AppTheme.kanaryaPrimary : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : Colors.white),
                         size: 22,
                       ),
                       tooltip: 'Tümünü Temizle',
@@ -166,25 +174,25 @@ class FavoritesScreen extends ConsumerWidget {
                               ? AppTheme.kanaryaSecondary
                               : (activeScheme == 'aslan'
                                   ? AppTheme.aslanRed
-                                  : (activeScheme == 'karadeniz' ? AppTheme.karadenizBordo : null)),
+                                  : (activeScheme == 'karadeniz' ? AppTheme.karadenizBordo : (activeScheme == 'kartal' ? AppTheme.kartalBlack : null))),
                               titleColor: activeScheme == 'kanarya'
                                 ? AppTheme.kanaryaPrimary
                                 : (activeScheme == 'aslan'
                                     ? Colors.black
-                                    : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : null)),
+                                    : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : (activeScheme == 'kartal' ? AppTheme.kartalWhite : null))),
                               subtitleColor: activeScheme == 'kanarya'
                                 ? AppTheme.kanaryaPrimary.withOpacity(0.9)
                                 : (activeScheme == 'aslan'
                                     ? Colors.black.withOpacity(0.9)
-                                    : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : null)),
-                              // Themed play button/icon for Aslan and Karadeniz
+                                    : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : (activeScheme == 'kartal' ? AppTheme.kartalWhite.withOpacity(0.9) : null))),
+                              // Themed play button/icon for Aslan, Karadeniz and Kartal
                               playButtonBackgroundColor: activeScheme == 'aslan'
                                 ? AppTheme.aslanYellow
-                                : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : null),
-                              // Make the icon contrast when Karadeniz is active
+                                : (activeScheme == 'karadeniz' ? AppTheme.karadenizMavi : (activeScheme == 'kartal' ? AppTheme.kartalWhite : null)),
+                              // Make the icon contrast when Karadeniz or Kartal is active
                               playIconColor: activeScheme == 'aslan'
                                 ? Colors.black
-                                : (activeScheme == 'karadeniz' ? AppTheme.karadenizBordo : null),
+                                : (activeScheme == 'karadeniz' ? AppTheme.karadenizBordo : (activeScheme == 'kartal' ? AppTheme.kartalBlack : null)),
                           isPlaying: ref.watch(playerStateProvider).currentStation?.id == station.id &&
                                     ref.watch(playerStateProvider).isPlaying,
                           isFavorite: true, // Favori sayfasında hepsi favori

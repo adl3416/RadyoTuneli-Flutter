@@ -4,6 +4,8 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/snackbar_helper.dart';
 import '../../player/data/recently_played_provider.dart';
 import '../../stations/data/stations_provider.dart';
+import '../../../shared/providers/color_scheme_provider.dart';
+import '../../../core/theme/app_theme.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -12,12 +14,22 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final recentlyPlayedCount = ref.watch(recentlyPlayedProvider).length;
     final favoriteCount = ref.watch(favoriteStationsCountProvider);
+    final colorScheme = ref.watch(colorSchemeProvider);
+    final appBarBg = colorScheme == 'karadeniz'
+      ? AppTheme.karadenizBordo
+      : (colorScheme == 'kartal' ? AppTheme.kartalBlack : Theme.of(context).appBarTheme.backgroundColor);
+    final appBarFg = colorScheme == 'karadeniz'
+      ? AppTheme.karadenizMavi
+      : (colorScheme == 'kartal' ? AppTheme.kartalWhite : Theme.of(context).appBarTheme.foregroundColor);
 
     return Scaffold(
+      backgroundColor: colorScheme == 'kartal' ? AppTheme.kartalBlack : null,
       appBar: AppBar(
         title: const Text('Ayarlar'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: appBarBg,
+        foregroundColor: appBarFg,
         elevation: 0,
+        centerTitle: true,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/providers/theme_provider.dart';
 import '../../../shared/providers/color_scheme_provider.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/banner_ad_widget.dart';
 import '../data/app_settings_provider.dart';
 import '../../../core/utils/snackbar_helper.dart';
@@ -13,10 +14,22 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
     final appSettings = ref.watch(appSettingsProvider);
+    final colorScheme = ref.watch(colorSchemeProvider);
+    final appBarBg = colorScheme == 'karadeniz'
+      ? AppTheme.karadenizBordo
+      : (colorScheme == 'kartal' ? AppTheme.kartalBlack : Theme.of(context).appBarTheme.backgroundColor);
+    final appBarFg = colorScheme == 'karadeniz'
+      ? AppTheme.karadenizMavi
+      : (colorScheme == 'kartal' ? AppTheme.kartalWhite : Theme.of(context).appBarTheme.foregroundColor);
     
     return Scaffold(
+      backgroundColor: colorScheme == 'kartal' ? AppTheme.kartalBlack : null,
       appBar: AppBar(
         title: const Text('Ayarlar'),
+        backgroundColor: appBarBg,
+        foregroundColor: appBarFg,
+        elevation: 0,
+        centerTitle: true,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

@@ -24,6 +24,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
   late TextEditingController _searchController;
   late FocusNode _searchFocusNode;
   bool _isSearchActive = false; // Arama modunu kontrol eder
+  Color? _appBarBg;
+  Color? _appBarFg;
 
   @override
   void initState() {
@@ -51,6 +53,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
   @override
   Widget build(BuildContext context) {
     final colorScheme = ref.watch(colorSchemeProvider);
+    // compute app bar colors (allow forcing Karadeniz/Kartal immediately)
+    if (colorScheme == 'karadeniz') {
+      _appBarBg = AppTheme.karadenizBordo;
+      _appBarFg = AppTheme.karadenizMavi;
+    } else if (colorScheme == 'kartal') {
+      _appBarBg = AppTheme.kartalBlack;
+      _appBarFg = AppTheme.kartalWhite;
+    } else {
+      _appBarBg = Theme.of(context).appBarTheme.backgroundColor;
+      _appBarFg = Theme.of(context).appBarTheme.foregroundColor;
+    }
     final filteredStationsAsync = ref.watch(filteredStationsProvider);
     final recentlyPlayedAsync = ref.watch(actualRecentlyPlayedStationsProvider);
     final searchQuery = ref.watch(searchQueryProvider);
@@ -65,7 +78,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
           bottom: false,
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).appBarTheme.backgroundColor,
+              color: _appBarBg ?? Theme.of(context).appBarTheme.backgroundColor,
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(12),
                 bottomRight: Radius.circular(12),
@@ -253,28 +266,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                                   },
                                     // When Kanarya or Aslan themes are active, force themed backgrounds/text
                                     backgroundColor: colorScheme == 'kanarya'
-                                      ? AppTheme.kanaryaSecondary
-                                      : (colorScheme == 'aslan'
-                                          ? AppTheme.aslanRed
-                                          : (colorScheme == 'karadeniz' ? AppTheme.karadenizBordo : null)),
-                                    titleColor: colorScheme == 'kanarya'
-                                      ? AppTheme.kanaryaPrimary
-                                      : (colorScheme == 'aslan'
-                                          ? Colors.black
-                                          : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi : null)),
-                                    subtitleColor: colorScheme == 'kanarya'
-                                        ? AppTheme.kanaryaPrimary.withOpacity(0.9)
+                                        ? AppTheme.kanaryaSecondary
                                         : (colorScheme == 'aslan'
-                                            ? Colors.black.withOpacity(0.9)
-                                            : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : null)),
-                                    // Aslan: yellow play button with black icon
-                                    playButtonBackgroundColor: colorScheme == 'aslan'
-                                      ? AppTheme.aslanYellow
-                                      : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi : null),
-                                    // Ensure the play icon contrasts with the Karadeniz blue background
-                                    playIconColor: colorScheme == 'aslan'
-                                      ? Colors.black
-                                      : (colorScheme == 'karadeniz' ? AppTheme.karadenizBordo : null),
+                                            ? AppTheme.aslanRed
+                                            : (colorScheme == 'karadeniz' ? AppTheme.karadenizBordo : (colorScheme == 'kartal' ? AppTheme.kartalBlack : null))),
+                                      titleColor: colorScheme == 'kanarya'
+                                        ? AppTheme.kanaryaPrimary
+                                        : (colorScheme == 'aslan'
+                                            ? Colors.black
+                                            : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi : (colorScheme == 'kartal' ? AppTheme.kartalWhite : null))),
+                                      subtitleColor: colorScheme == 'kanarya'
+                                          ? AppTheme.kanaryaPrimary.withOpacity(0.9)
+                                          : (colorScheme == 'aslan'
+                                              ? Colors.black.withOpacity(0.9)
+                                              : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : (colorScheme == 'kartal' ? AppTheme.kartalWhite.withOpacity(0.9) : null))),
+                                      // Play button mapping: Kartal uses white background with black icon for contrast
+                                      playButtonBackgroundColor: colorScheme == 'aslan'
+                                        ? AppTheme.aslanYellow
+                                        : (colorScheme == 'karadeniz' ? AppTheme.karadenizMavi : (colorScheme == 'kartal' ? AppTheme.kartalWhite : null)),
+                                      // Ensure the play icon contrasts with the background
+                                      playIconColor: colorScheme == 'aslan'
+                                        ? Colors.black
+                                        : (colorScheme == 'karadeniz' ? AppTheme.karadenizBordo : (colorScheme == 'kartal' ? AppTheme.kartalBlack : null)),
                                 ),
                               );
                             },
@@ -706,9 +719,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                 HapticFeedback.lightImpact();
                 Scaffold.of(context).openDrawer();
               },
-              icon: Icon(
+                icon: Icon(
                 Icons.menu,
-                color: Theme.of(context).appBarTheme.foregroundColor,
+                color: _appBarFg ?? Theme.of(context).appBarTheme.foregroundColor,
                 size: 28,
               ),
             ),
@@ -717,9 +730,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
           Expanded(
             child: Text(
               'Radyo Tüneli',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).appBarTheme.foregroundColor,
+                color: _appBarFg ?? Theme.of(context).appBarTheme.foregroundColor,
               ),
               textAlign: TextAlign.left,
             ),
@@ -736,9 +749,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                 _searchFocusNode.requestFocus();
               });
             },
-            icon: Icon(
+              icon: Icon(
               Icons.search,
-              color: Theme.of(context).appBarTheme.foregroundColor,
+              color: _appBarFg ?? Theme.of(context).appBarTheme.foregroundColor,
               size: 28,
             ),
             tooltip: 'Ara',
@@ -752,9 +765,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                   HapticFeedback.mediumImpact();
                   ref.read(sortAtoZProvider.notifier).state = !sortAtoZ;
                 },
-                icon: Icon(
+                  icon: Icon(
                   sortAtoZ ? Icons.sort_by_alpha : Icons.sort,
-                  color: Theme.of(context).appBarTheme.foregroundColor,
+                  color: _appBarFg ?? Theme.of(context).appBarTheme.foregroundColor,
                   size: 28,
                 ),
                 tooltip: sortAtoZ ? 'Normal Sıralama' : 'A-Z Sıralama',
@@ -786,7 +799,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
             },
             icon: Icon(
               Icons.arrow_back,
-              color: Theme.of(context).appBarTheme.foregroundColor,
+              color: _appBarFg ?? Theme.of(context).appBarTheme.foregroundColor,
               size: 28,
             ),
           ),
@@ -829,7 +842,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
               },
               icon: Icon(
                 Icons.clear,
-                color: Theme.of(context).appBarTheme.foregroundColor,
+                color: _appBarFg ?? Theme.of(context).appBarTheme.foregroundColor,
                 size: 24,
               ),
             ),

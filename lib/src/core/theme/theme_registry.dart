@@ -10,6 +10,7 @@ final Map<String, ThemeData> _themeRegistry = {
   'kanarya': AppTheme.kanarayaThemeDark,
   'aslan': AppTheme.aslanThemeDark,
   'karadeniz': AppTheme.karadenizThemeDark,
+  'kartal': AppTheme.kartalThemeDark,
 };
 
 void registerTheme(String name, ThemeData theme) {
