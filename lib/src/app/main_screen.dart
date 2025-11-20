@@ -52,7 +52,7 @@ class MainScreen extends ConsumerWidget {
               case 'kartal':
                 return const Color(0xFFFFFFFF); // Beyaz
               case 'timsah':
-                return const Color(0xFF228B22); // Yeşil
+                return AppTheme.timsahWhite; // Use white icons on Timsah bottom bar
               case 'varsayilan':
               default:
                 return const Color(0xFF8B5CF6); // Mor
@@ -82,9 +82,53 @@ class MainScreen extends ConsumerWidget {
           // Prefer registered theme values when available (keeps colors centralized)
           final registryTheme = getThemeByName(ref.watch(colorSchemeProvider));
           final bottomTheme = registryTheme?.bottomNavigationBarTheme;
-          final bgColor = bottomTheme?.backgroundColor ?? Theme.of(context).bottomNavigationBarTheme.backgroundColor;
-          final selColor = bottomTheme?.selectedItemColor ?? getSelectedItemColor();
-          final unselColor = bottomTheme?.unselectedItemColor ?? getUnselectedItemColor();
+          var bgColor = bottomTheme?.backgroundColor ?? Theme.of(context).bottomNavigationBarTheme.backgroundColor;
+          var selColor = bottomTheme?.selectedItemColor ?? getSelectedItemColor();
+          var unselColor = bottomTheme?.unselectedItemColor ?? getUnselectedItemColor();
+
+          // Hard overrides for certain named themes to guarantee bottom nav look
+          // Timsah: green background + white icons
+          if (ref.watch(colorSchemeProvider) == 'timsah') {
+            bgColor = AppTheme.timsahGreen;
+            selColor = AppTheme.timsahWhite;
+            unselColor = AppTheme.timsahWhite.withOpacity(0.85);
+          }
+
+          // Kanarya: use lacivert background and white icons (per request)
+          if (ref.watch(colorSchemeProvider) == 'kanarya') {
+            bgColor = AppTheme.kanaryaSecondary; // Lacivert
+            selColor = AppTheme.kanaryaPrimary; // Sarı when selected
+            unselColor = Colors.white.withOpacity(0.85);
+          }
+
+          // Aslan: icons normally white, selected yellow
+          if (ref.watch(colorSchemeProvider) == 'aslan') {
+            // keep the theme's background (red) but ensure icons are visible
+            bgColor = AppTheme.aslanRed;
+            selColor = AppTheme.aslanYellow;
+            unselColor = Colors.white.withOpacity(0.9);
+          }
+
+          // Kartal: black background and white icons
+          if (ref.watch(colorSchemeProvider) == 'kartal') {
+            bgColor = AppTheme.kartalBlack;
+            selColor = AppTheme.kartalWhite;
+            unselColor = AppTheme.kartalWhite.withOpacity(0.85);
+          }
+
+          // Karadeniz Fırtınası: bordo background (keep selected color as theme's blue)
+          if (ref.watch(colorSchemeProvider) == 'karadeniz') {
+            bgColor = AppTheme.karadenizBordo;
+            selColor = AppTheme.karadenizMavi;
+            // Make unselected icons clearly visible on bordo background
+            unselColor = Colors.white.withOpacity(0.85);
+          }
+
+          // Debug: log resolved bottom nav colors for current scheme
+          // This helps verify whether the theme registry or fallback values are used.
+          // Remove or comment out in production.
+          // ignore: avoid_print
+          print('🎨 BottomBar colors - scheme: ${ref.watch(colorSchemeProvider)}, bg: $bgColor, selected: $selColor, unselected: $unselColor');
 
           return Container(
             decoration: BoxDecoration(

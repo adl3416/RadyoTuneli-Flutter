@@ -7,10 +7,11 @@ import 'theme_template.dart';
 
 final Map<String, ThemeData> _themeRegistry = {
   'varsayilan': AppTheme.lightTheme,
-  'kanarya': AppTheme.kanarayaThemeDark,
-  'aslan': AppTheme.aslanThemeDark,
-  'karadeniz': AppTheme.karadenizThemeDark,
-  'kartal': AppTheme.kartalThemeDark,
+  // Use the *light* variants so app scaffold backgrounds are white instead of dark
+  'kanarya': AppTheme.kanarayaThemeLight,
+  'aslan': AppTheme.aslanThemeLight,
+  'karadeniz': AppTheme.karadenizThemeLight,
+  'kartal': AppTheme.kartalThemeLight,
   // Use the light Timsah theme by default so backgrounds are white
   'timsah': AppTheme.timsahThemeLight,
 };

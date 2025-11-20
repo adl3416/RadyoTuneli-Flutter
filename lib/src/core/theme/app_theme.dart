@@ -984,7 +984,8 @@ class AppTheme {
         iconTheme: IconThemeData(color: timsahWhite),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: timsahGreen,
+        // Selected icons should be white on Timsah theme's darker surface
+        selectedItemColor: timsahWhite,
         unselectedItemColor: darkTextSecondary,
         backgroundColor: darkSurface,
         type: BottomNavigationBarType.fixed,

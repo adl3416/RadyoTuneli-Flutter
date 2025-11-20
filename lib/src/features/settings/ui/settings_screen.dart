@@ -27,7 +27,8 @@ class SettingsScreen extends ConsumerWidget {
           : (colorScheme == 'timsah' ? AppTheme.timsahWhite : Theme.of(context).appBarTheme.foregroundColor));
     
     return Scaffold(
-      backgroundColor: colorScheme == 'kartal' ? AppTheme.kartalBlack : (colorScheme == 'timsah' ? AppTheme.timsahGreen : null),
+      // For Kartal and Timsah, use white page background (like Aslan) instead of full black/green
+      backgroundColor: colorScheme == 'kartal' ? AppTheme.kartalWhite : (colorScheme == 'timsah' ? AppTheme.timsahWhite : null),
       appBar: AppBar(
         title: const Text('Ayarlar'),
         backgroundColor: appBarBg,

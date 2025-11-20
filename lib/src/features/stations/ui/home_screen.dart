@@ -281,7 +281,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                                     titleColor: colorScheme == 'kanarya'
                                       ? AppTheme.kanaryaPrimary
                                       : (colorScheme == 'aslan'
-                                        ? Colors.black
+                                        ? AppTheme.aslanYellow
                                         : (colorScheme == 'karadeniz'
                                           ? AppTheme.karadenizMavi
                                           : (colorScheme == 'kartal'
@@ -290,7 +290,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                                     subtitleColor: colorScheme == 'kanarya'
                                       ? AppTheme.kanaryaPrimary.withOpacity(0.9)
                                       : (colorScheme == 'aslan'
-                                        ? Colors.black.withOpacity(0.9)
+                                        ? AppTheme.aslanYellow.withOpacity(0.9)
                                         : (colorScheme == 'karadeniz'
                                           ? AppTheme.karadenizMavi.withOpacity(0.9)
                                           : (colorScheme == 'kartal'

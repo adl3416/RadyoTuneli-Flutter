@@ -187,24 +187,24 @@ class FavoritesScreen extends ConsumerWidget {
                                       : (activeScheme == 'kartal'
                                           ? AppTheme.kartalBlack
                                           : (activeScheme == 'timsah' ? AppTheme.timsahGreen : null)))),
-                              titleColor: activeScheme == 'kanarya'
+                                titleColor: activeScheme == 'kanarya'
                                 ? AppTheme.kanaryaPrimary
                                 : (activeScheme == 'aslan'
-                                    ? Colors.black
-                                    : (activeScheme == 'karadeniz'
-                                        ? AppTheme.karadenizMavi
-                                        : (activeScheme == 'kartal'
-                                            ? AppTheme.kartalWhite
-                                            : (activeScheme == 'timsah' ? AppTheme.timsahWhite : null)))),
-                              subtitleColor: activeScheme == 'kanarya'
+                                  ? AppTheme.aslanYellow
+                                  : (activeScheme == 'karadeniz'
+                                    ? AppTheme.karadenizMavi
+                                    : (activeScheme == 'kartal'
+                                      ? AppTheme.kartalWhite
+                                      : (activeScheme == 'timsah' ? AppTheme.timsahWhite : null)))),
+                                subtitleColor: activeScheme == 'kanarya'
                                 ? AppTheme.kanaryaPrimary.withOpacity(0.9)
                                 : (activeScheme == 'aslan'
-                                    ? Colors.black.withOpacity(0.9)
-                                    : (activeScheme == 'karadeniz'
-                                        ? AppTheme.karadenizMavi.withOpacity(0.9)
-                                        : (activeScheme == 'kartal'
-                                            ? AppTheme.kartalWhite.withOpacity(0.9)
-                                            : (activeScheme == 'timsah' ? AppTheme.timsahGreen.withOpacity(0.95) : null)))),
+                                  ? AppTheme.aslanYellow.withOpacity(0.9)
+                                  : (activeScheme == 'karadeniz'
+                                    ? AppTheme.karadenizMavi.withOpacity(0.9)
+                                    : (activeScheme == 'kartal'
+                                      ? AppTheme.kartalWhite.withOpacity(0.9)
+                                      : (activeScheme == 'timsah' ? AppTheme.timsahGreen.withOpacity(0.95) : null)))),
                               // Themed play button/icon for various themes (Timsah uses white button, white icon per request)
                               playButtonBackgroundColor: activeScheme == 'aslan'
                                 ? AppTheme.aslanYellow
