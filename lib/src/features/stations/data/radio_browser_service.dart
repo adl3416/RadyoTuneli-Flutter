@@ -14,6 +14,9 @@ class RadioBrowserService {
 
   /// Fetches Turkish radio stations from radio-browser API with fallback
   Future<List<Station>> fetchTurkishStations() async {
+    List<Station> apiStations = [];
+    bool apiSuccess = false;
+
     // Try API endpoints in order
     for (final url in _apiUrls) {
       try {
@@ -39,21 +42,31 @@ class RadioBrowserService {
           final stations = radioBrowserStations.map(_toStation).toList();
 
           // Remove duplicates based on station names
-          final uniqueStations = _removeDuplicateStations(stations);
-
-          // Sort by votes (popularity) descending
-          uniqueStations.sort((a, b) => _getVotes(b).compareTo(_getVotes(a)));
-
-          return uniqueStations; // Return unique stations only
+          apiStations = _removeDuplicateStations(stations);
+          apiSuccess = true;
+          break; // Stop after first successful API call
         }
       } catch (e) {
         print('Failed to fetch from $url: $e');
-        // Continue to next URL or fallback
+        // Continue to next URL
       }
     }
 
-    // If all APIs fail, use fallback JSON
-    return _loadFallbackStations();
+    // Always load local stations to ensure custom added radios (like Herkul, Cihan) are present
+    // even if API call was successful.
+    final localStations = await _loadFallbackStations();
+
+    if (!apiSuccess) {
+      return localStations;
+    }
+
+    // Merge API and Local stations
+    // We put API stations first so they take precedence for duplicates (unless local has higher votes)
+    // Local-only stations will be appended.
+    final allStations = [...apiStations, ...localStations];
+    
+    // Remove duplicates again after merge
+    return _removeDuplicateStations(allStations);
   }
 
   /// Loads stations from local JSON asset

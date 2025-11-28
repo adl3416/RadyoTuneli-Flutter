@@ -15,21 +15,28 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late AnimationController _logoController;
-  late AnimationController _textController;
-  late AnimationController _backgroundController;
+  AnimationController? _logoController;
+  AnimationController? _textController;
+  AnimationController? _backgroundController;
 
-  late Animation<double> _logoScaleAnimation;
-  late Animation<double> _logoOpacityAnimation;
-  late Animation<double> _textFadeAnimation;
-  late Animation<double> _textSlideAnimation;
-  late Animation<Color?> _backgroundAnimation;
+  Animation<double>? _logoScaleAnimation;
+  Animation<double>? _logoOpacityAnimation;
+  Animation<double>? _textFadeAnimation;
+  Animation<double>? _textSlideAnimation;
+  Animation<Color?>? _backgroundAnimation;
+  
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _initializeAnimations();
-    _startAnimationSequence();
+    // Start animation after first frame is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _startAnimationSequence();
+      }
+    });
   }
 
   void _initializeAnimations() {
@@ -56,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen>
       begin: 0.5,
       end: 1.0,
     ).animate(CurvedAnimation(
-      parent: _logoController,
+      parent: _logoController!,
       curve: Curves.elasticOut,
     ));
 
@@ -64,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen>
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
-      parent: _logoController,
+      parent: _logoController!,
       curve: const Interval(0.0, 0.6, curve: Curves.easeInOut),
     ));
 
@@ -73,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen>
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
-      parent: _textController,
+      parent: _textController!,
       curve: Curves.easeInOut,
     ));
 
@@ -81,7 +88,7 @@ class _SplashScreenState extends State<SplashScreen>
       begin: 50.0,
       end: 0.0,
     ).animate(CurvedAnimation(
-      parent: _textController,
+      parent: _textController!,
       curve: Curves.easeOutCubic,
     ));
 
@@ -90,28 +97,37 @@ class _SplashScreenState extends State<SplashScreen>
       begin: AppTheme.headerPurple,
       end: AppTheme.cardPurpleDark,
     ).animate(CurvedAnimation(
-      parent: _backgroundController,
+      parent: _backgroundController!,
       curve: Curves.easeInOut,
     ));
+    
+    _isInitialized = true;
   }
 
   void _startAnimationSequence() async {
+    // Ensure animations are initialized
+    if (!_isInitialized || !mounted) return;
+    
     // Haptic feedback at start
     HapticFeedback.lightImpact();
 
     // Start background animation immediately
-    _backgroundController.forward();
+    if (!mounted || _backgroundController == null) return;
+    _backgroundController!.forward();
 
     // Start logo animation after short delay
     await Future.delayed(const Duration(milliseconds: 300));
-    _logoController.forward();
+    if (!mounted || _logoController == null) return;
+    _logoController!.forward();
 
     // Start text animation after logo
     await Future.delayed(const Duration(milliseconds: 800));
-    _textController.forward();
+    if (!mounted || _textController == null) return;
+    _textController!.forward();
 
     // Navigate after all animations complete
     await Future.delayed(const Duration(milliseconds: 1500));
+    if (!mounted) return;
     _navigateToNextScreen();
   }
 
@@ -151,17 +167,36 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _logoController.dispose();
-    _textController.dispose();
-    _backgroundController.dispose();
+    _logoController?.dispose();
+    _textController?.dispose();
+    _backgroundController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Show simple placeholder if animations not initialized yet
+    if (!_isInitialized || _backgroundAnimation == null) {
+      return Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppTheme.headerPurple,
+                AppTheme.cardPurple,
+                AppTheme.gradientPurple,
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    
     return Scaffold(
       body: AnimatedBuilder(
-        animation: _backgroundAnimation,
+        animation: _backgroundAnimation!,
         builder: (context, child) {
           return Container(
             decoration: BoxDecoration(
@@ -169,7 +204,7 @@ class _SplashScreenState extends State<SplashScreen>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  _backgroundAnimation.value ?? AppTheme.headerPurple,
+                  _backgroundAnimation!.value ?? AppTheme.headerPurple,
                   AppTheme.cardPurple,
                   AppTheme.gradientPurple,
                 ],
@@ -185,12 +220,12 @@ class _SplashScreenState extends State<SplashScreen>
                     flex: 3,
                     child: Center(
                       child: AnimatedBuilder(
-                        animation: _logoController,
+                        animation: _logoController!,
                         builder: (context, child) {
                           return Transform.scale(
-                            scale: _logoScaleAnimation.value,
+                            scale: _logoScaleAnimation!.value,
                             child: Opacity(
-                              opacity: _logoOpacityAnimation.value,
+                              opacity: _logoOpacityAnimation!.value,
                               child: Container(
                                 width: 140,
                                 height: 140,
@@ -229,12 +264,12 @@ class _SplashScreenState extends State<SplashScreen>
                   Expanded(
                     flex: 2,
                     child: AnimatedBuilder(
-                      animation: _textController,
+                      animation: _textController!,
                       builder: (context, child) {
                         return Transform.translate(
-                          offset: Offset(0, _textSlideAnimation.value),
+                          offset: Offset(0, _textSlideAnimation!.value),
                           child: Opacity(
-                            opacity: _textFadeAnimation.value,
+                            opacity: _textFadeAnimation!.value,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -281,10 +316,10 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Container(
                       height: 160, // Fixed height to prevent overflow
                       child: AnimatedBuilder(
-                        animation: _textController,
+                        animation: _textController!,
                         builder: (context, child) {
                           return Opacity(
-                            opacity: _textFadeAnimation.value,
+                            opacity: _textFadeAnimation!.value,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
