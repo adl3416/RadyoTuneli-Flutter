@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../stations/ui/widgets/radio_station_card.dart';
-import '../../../core/widgets/banner_ad_widget.dart';
 import '../data/favorites_provider.dart';
 import '../../player/data/player_provider.dart';
 import '../../stations/ui/widgets/station_list_tile.dart';
@@ -54,13 +53,12 @@ class FavoritesScreen extends ConsumerWidget {
                         ? AppTheme.timsahGreen.withOpacity(0.95)
                         : colorScheme.onPrimary.withOpacity(0.8)))));
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header (simplified and balanced to avoid parse issues)
-            Container(
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header (simplified and balanced to avoid parse issues)
+          Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -152,9 +150,6 @@ class FavoritesScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            
-            // Banner Ad
-            const SmallBannerAdWidget(),
             
             const SizedBox(height: 16),
             
@@ -258,8 +253,7 @@ class FavoritesScreen extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildEmptyState(BuildContext context, WidgetRef ref) {

@@ -15,25 +15,41 @@ class SplashApp extends ConsumerWidget {
     
     // Tema seçimi
     ThemeData selectedTheme;
+    
+    // Helper to choose between light/dark based on themeMode
+    ThemeData getTheme(ThemeData light, ThemeData dark) {
+      if (themeMode == ThemeMode.system) {
+        final brightness = MediaQuery.platformBrightnessOf(context);
+        return brightness == Brightness.dark ? dark : light;
+      }
+      return themeMode == ThemeMode.dark ? dark : light;
+    }
+
     switch (colorScheme) {
       case 'kanarya':
         print('✅ KANARYA TEMASI SEÇİLDİ!');
-        selectedTheme = AppTheme.kanarayaThemeDark;
-        print('📱 Scaffold color: ${AppTheme.kanarayaThemeDark.scaffoldBackgroundColor}');
-        print('📱 AppBar color: ${AppTheme.kanarayaThemeDark.appBarTheme.backgroundColor}');
-        print('📱 BottomNav color: ${AppTheme.kanarayaThemeDark.bottomNavigationBarTheme.backgroundColor}');
+        selectedTheme = getTheme(AppTheme.kanarayaThemeLight, AppTheme.kanarayaThemeDark);
         break;
       case 'aslan':
         print('🦁 ASLAN TEMASI SEÇİLDİ!');
-        selectedTheme = AppTheme.aslanThemeDark;
-        print('📱 Scaffold color: ${AppTheme.aslanThemeDark.scaffoldBackgroundColor}');
-        print('📱 AppBar color: ${AppTheme.aslanThemeDark.appBarTheme.backgroundColor}');
-        print('📱 BottomNav color: ${AppTheme.aslanThemeDark.bottomNavigationBarTheme.backgroundColor}');
+        selectedTheme = getTheme(AppTheme.aslanThemeLight, AppTheme.aslanThemeDark);
+        break;
+      case 'karadeniz':
+        print('🌊 KARADENİZ TEMASI SEÇİLDİ!');
+        selectedTheme = getTheme(AppTheme.karadenizThemeLight, AppTheme.karadenizThemeDark);
+        break;
+      case 'kartal':
+        print('🦅 KARTAL TEMASI SEÇİLDİ!');
+        selectedTheme = getTheme(AppTheme.kartalThemeLight, AppTheme.kartalThemeDark);
+        break;
+      case 'timsah':
+        print('🐊 TİMSAH TEMASI SEÇİLDİ!');
+        selectedTheme = getTheme(AppTheme.timsahThemeLight, AppTheme.timsahThemeDark);
         break;
       case 'varsayilan':
       default:
         print('💜 VARSAYILAN TEMA SEÇİLDİ');
-        selectedTheme = themeMode == ThemeMode.dark ? AppTheme.darkTheme : AppTheme.lightTheme;
+        selectedTheme = getTheme(AppTheme.lightTheme, AppTheme.darkTheme);
     }
 
     print('🎨 SplashApp - Theme mode: $themeMode, Color scheme: $colorScheme');

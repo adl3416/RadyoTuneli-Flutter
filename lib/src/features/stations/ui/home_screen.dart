@@ -5,12 +5,11 @@ import '../data/stations_provider.dart';
 import 'widgets/recently_played_item.dart';
 import '../../player/data/player_provider.dart';
 import '../../player/ui/automotive_player_screen.dart';
+import '../../player/ui/mini_player.dart';
 import '../../../core/theme/app_theme.dart';
 import 'widgets/radio_station_card.dart';
 import '../../../shared/providers/color_scheme_provider.dart';
 import '../../../core/widgets/vintage_radio_logo.dart';
-import '../../../core/widgets/banner_ad_widget.dart';
-import '../../../core/widgets/interstitial_ad_manager.dart';
 import '../../favorites/data/favorites_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -20,12 +19,13 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixin {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   late TextEditingController _searchController;
   late FocusNode _searchFocusNode;
   bool _isSearchActive = false; // Arama modunu kontrol eder
   Color? _appBarBg;
   Color? _appBarFg;
+  String? _colorSchemeStr;
 
   @override
   void initState() {
@@ -52,15 +52,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = ref.watch(colorSchemeProvider);
+    _colorSchemeStr = ref.watch(colorSchemeProvider);
     // compute app bar colors (allow forcing Karadeniz/Kartal immediately)
-    if (colorScheme == 'karadeniz') {
+    if (_colorSchemeStr == 'karadeniz') {
       _appBarBg = AppTheme.karadenizBordo;
       _appBarFg = AppTheme.karadenizMavi;
-    } else if (colorScheme == 'kartal') {
+    } else if (_colorSchemeStr == 'kartal') {
       _appBarBg = AppTheme.kartalBlack;
       _appBarFg = AppTheme.kartalWhite;
-    } else if (colorScheme == 'timsah') {
+    } else if (_colorSchemeStr == 'timsah') {
       // Timsah: green app bar with white text/icons
       _appBarBg = AppTheme.timsahGreen;
       _appBarFg = AppTheme.timsahWhite;
@@ -71,8 +71,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
     final filteredStationsAsync = ref.watch(filteredStationsProvider);
     final recentlyPlayedAsync = ref.watch(actualRecentlyPlayedStationsProvider);
     final searchQuery = ref.watch(searchQueryProvider);
-    final sortAtoZ = ref.watch(sortAtoZProvider);
-    final selectedCategory = ref.watch(selectedCategoryProvider);
 
     return Scaffold(
       drawer: _buildDrawer(context),
@@ -104,13 +102,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
           children: [
             const SizedBox(height: 2),
             
-            // Banner reklam
-            const SmallBannerAdWidget(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              showCloseButton: true,
-            ),
-            
-            // Scroll edilebilir içerik - CustomScrollView içinde
             Expanded(
               child: filteredStationsAsync.when(
                 data: (filteredStations) {
@@ -270,49 +261,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with InterstitialAdMixi
                                     ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
                                   },
                                     // When specific themes are active, force themed backgrounds/text
-                                    backgroundColor: colorScheme == 'kanarya'
+                                    backgroundColor: _colorSchemeStr == 'kanarya'
                                       ? AppTheme.kanaryaSecondary
-                                      : (colorScheme == 'aslan'
+                                      : (_colorSchemeStr == 'aslan'
                                         ? AppTheme.aslanRed
-                                        : (colorScheme == 'karadeniz'
+                                        : (_colorSchemeStr == 'karadeniz'
                                           ? AppTheme.karadenizBordo
-                                          : (colorScheme == 'kartal'
+                                          : (_colorSchemeStr == 'kartal'
                                             ? AppTheme.kartalBlack
-                                            : (colorScheme == 'timsah' ? AppTheme.timsahGreen : null)))),
-                                    titleColor: colorScheme == 'kanarya'
+                                            : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null)))),
+                                    titleColor: _colorSchemeStr == 'kanarya'
                                       ? AppTheme.kanaryaPrimary
-                                      : (colorScheme == 'aslan'
+                                      : (_colorSchemeStr == 'aslan'
                                         ? AppTheme.aslanYellow
-                                        : (colorScheme == 'karadeniz'
+                                        : (_colorSchemeStr == 'karadeniz'
                                           ? AppTheme.karadenizMavi
-                                          : (colorScheme == 'kartal'
+                                          : (_colorSchemeStr == 'kartal'
                                             ? AppTheme.kartalWhite
-                                            : (colorScheme == 'timsah' ? AppTheme.timsahWhite : null)))),
-                                    subtitleColor: colorScheme == 'kanarya'
+                                            : (_colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null)))),
+                                    subtitleColor: _colorSchemeStr == 'kanarya'
                                       ? AppTheme.kanaryaPrimary.withOpacity(0.9)
-                                      : (colorScheme == 'aslan'
+                                      : (_colorSchemeStr == 'aslan'
                                         ? AppTheme.aslanYellow.withOpacity(0.9)
-                                        : (colorScheme == 'karadeniz'
+                                        : (_colorSchemeStr == 'karadeniz'
                                           ? AppTheme.karadenizMavi.withOpacity(0.9)
-                                          : (colorScheme == 'kartal'
+                                          : (_colorSchemeStr == 'kartal'
                                             ? AppTheme.kartalWhite.withOpacity(0.9)
-                                            : (colorScheme == 'timsah' ? AppTheme.timsahGreen.withOpacity(0.95) : null)))),
+                                            : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen.withOpacity(0.95) : null)))),
                                     // Play button mapping: map per-theme backgrounds and icon color
-                                    playButtonBackgroundColor: colorScheme == 'aslan'
+                                    playButtonBackgroundColor: _colorSchemeStr == 'aslan'
                                       ? AppTheme.aslanYellow
-                                      : (colorScheme == 'karadeniz'
+                                      : (_colorSchemeStr == 'karadeniz'
                                         ? AppTheme.karadenizMavi
-                                        : (colorScheme == 'kartal'
+                                        : (_colorSchemeStr == 'kartal'
                                           ? AppTheme.kartalWhite
-                                          : (colorScheme == 'timsah' ? AppTheme.timsahWhite : null))),
+                                          : (_colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null))),
                                     // Ensure the play icon contrasts with the background
-                                    playIconColor: colorScheme == 'aslan'
+                                    playIconColor: _colorSchemeStr == 'aslan'
                                       ? Colors.black
-                                      : (colorScheme == 'karadeniz'
+                                      : (_colorSchemeStr == 'karadeniz'
                                         ? AppTheme.karadenizBordo
-                                        : (colorScheme == 'kartal'
+                                        : (_colorSchemeStr == 'kartal'
                                           ? AppTheme.kartalBlack
-                                          : (colorScheme == 'timsah' ? AppTheme.timsahGreen : null))),
+                                          : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null))),
                                 ),
                               );
                             },

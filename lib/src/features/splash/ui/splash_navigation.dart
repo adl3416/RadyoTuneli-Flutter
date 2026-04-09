@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../app/main_screen.dart';
+import '../../../app/app_root.dart';
 import '../../onboarding/ui/onboarding_screen.dart';
 import 'splash_screen.dart';
 
@@ -31,7 +31,7 @@ class _SplashNavigationState extends State<SplashNavigation> {
     if (mounted) {
       setState(() {
         _nextScreen = onboardingCompleted 
-            ? const MainScreen() 
+            ? const AppRoot() 
             : const OnboardingScreen();
         _isLoading = false;
       });

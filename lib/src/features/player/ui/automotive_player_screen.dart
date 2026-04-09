@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/banner_ad_widget.dart';
 import '../../stations/domain/station_model.dart';
 import '../data/player_provider.dart';
 import '../data/audio_service_handler.dart';
@@ -151,29 +150,6 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                             ),
                           ),
                         ],
-                      ),
-                    ),
-
-                    SizedBox(height: spacingLarge),
-
-                    // Test Reklam Alanı - keep smaller on compact screens
-                    Container(
-                      width: double.infinity,
-                      height: constraints.maxHeight < 420 ? 56 : 80,
-                      margin: EdgeInsets.symmetric(horizontal: constraints.maxWidth < 360 ? 8 : 20),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'REKLAM BURASI - TEST',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                       ),
                     ),
 
@@ -607,14 +583,6 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                  ),
-                ),
-                
-                // Banner Reklam
-                const Padding(
-                  padding: EdgeInsets.only(top: 16),
-                  child: SmallBannerAdWidget(
-                    padding: EdgeInsets.all(0),
                   ),
                 ),
               ],

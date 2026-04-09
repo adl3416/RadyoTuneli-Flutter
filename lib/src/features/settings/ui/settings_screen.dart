@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/providers/theme_provider.dart';
 import '../../../shared/providers/color_scheme_provider.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/banner_ad_widget.dart';
 import '../data/app_settings_provider.dart';
 import '../../../core/utils/snackbar_helper.dart';
 
@@ -15,56 +14,35 @@ class SettingsScreen extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
     final appSettings = ref.watch(appSettingsProvider);
     final colorScheme = ref.watch(colorSchemeProvider);
-    final appBarBg = colorScheme == 'karadeniz'
-      ? AppTheme.karadenizBordo
-      : (colorScheme == 'kartal'
-          ? AppTheme.kartalBlack
-          : (colorScheme == 'timsah' ? AppTheme.timsahGreen : Theme.of(context).appBarTheme.backgroundColor));
-    final appBarFg = colorScheme == 'karadeniz'
-      ? AppTheme.karadenizMavi
-      : (colorScheme == 'kartal'
-          ? AppTheme.kartalWhite
-          : (colorScheme == 'timsah' ? AppTheme.timsahWhite : Theme.of(context).appBarTheme.foregroundColor));
     
-    return Scaffold(
-      // For Kartal and Timsah, use white page background (like Aslan) instead of full black/green
-      backgroundColor: colorScheme == 'kartal' ? AppTheme.kartalWhite : (colorScheme == 'timsah' ? AppTheme.timsahWhite : null),
-      appBar: AppBar(
-        title: const Text('Ayarlar'),
-        backgroundColor: appBarBg,
-        foregroundColor: appBarFg,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildThemeSection(context, ref, themeMode),
-          const Divider(height: 32),
-          _buildAppSettingsSection(context, ref, appSettings),
-          const SizedBox(height: 32),
-          _buildColorSchemeSection(context, ref),
-          const Divider(height: 32),
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _buildThemeSection(context, ref, themeMode),
+        const Divider(height: 32),
+        _buildAppSettingsSection(context, ref, appSettings),
+        const SizedBox(height: 32),
+        _buildColorSchemeSection(context, ref),
+        const Divider(height: 32),
                                                                                          
 
-          const SizedBox(height: 16),
-          
-          _buildSettingsTile(
-            context,
-            'Hakkında',
-            'Versiyon 1.0.0',
-            Icons.info_outline,
-            () {},
-          ),
-          _buildSettingsTile(
-            context,
-            'Destek',
-            'Sorun bildir veya öneride bulun',
-            Icons.support_outlined,
-            () {},
-          ),
-        ],
-      ),
+        const SizedBox(height: 16),
+        
+        _buildSettingsTile(
+          context,
+          'Hakkında',
+          'Versiyon 1.0.0',
+          Icons.info_outline,
+          () {},
+        ),
+        _buildSettingsTile(
+          context,
+          'Destek',
+          'Sorun bildir veya öneride bulun',
+          Icons.support_outlined,
+          () {},
+        ),
+      ],
     );
   }
 
@@ -118,6 +96,7 @@ class SettingsScreen extends ConsumerWidget {
             ThemeMode.light,
             themeMode,
           ),
+          /* Koyu tema geçici olarak gizlendi
           const SizedBox(height: 8),
           _buildThemeOption(
             context,
@@ -128,6 +107,7 @@ class SettingsScreen extends ConsumerWidget {
             ThemeMode.dark,
             themeMode,
           ),
+          */
         ],
       ),
     );

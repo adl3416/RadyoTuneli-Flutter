@@ -24,21 +24,20 @@ class MainScreen extends ConsumerWidget {
       const SettingsScreen(),
     ];
 
+    final registryTheme = getThemeByName(ref.watch(colorSchemeProvider));
+
     return Scaffold(
-      // Allow the body to extend behind the BottomNavigationBar.
-      // This helps avoid thin hairline separators on some devices/Android Auto.
       extendBody: true,
-      body: Column(
-        children: [
-          Expanded(
-            child: IndexedStack(
-              index: selectedTab,
-              children: screens,
-            ),
-          ),
-          // MiniPlayer moved into bottomNavigationBar area so it won't be
-          // obscured by the BottomNavigationBar when extendBody is true.
-        ],
+      appBar: selectedTab == 0 ? null : AppBar(
+        title: Text(selectedTab == 1 ? 'Favoriler' : 'Ayarlar'),
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: registryTheme?.appBarTheme.backgroundColor,
+        foregroundColor: registryTheme?.appBarTheme.foregroundColor,
+      ),
+      body: IndexedStack(
+        index: selectedTab,
+        children: screens,
       ),
       bottomNavigationBar: Consumer(
         builder: (context, ref, child) {
