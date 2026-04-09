@@ -12,6 +12,14 @@ class RadioBrowserService {
 
   static const String _fallbackAssetPath = 'assets/data/TR.json';
 
+  // Pre-compiled RegExp patterns for station name normalization
+  static final _reLeadingTrailing = RegExp(r'^[\s\-_\.]+|[\s\-_\.]+$');
+  static final _reRadioFm = RegExp(r'\s*(radyo|radio|fm|am)\s*');
+  static final _reTurkiye = RegExp(r'\s*(türkiye|turkey|tr)\s*');
+  static final _reFrequency = RegExp(r'\s*\d+[\.,]?\d*\s*(mhz|khz|fm|am)\s*');
+  static final _reMultiSpace = RegExp(r'\s+');
+  static final _reSpecialChars = RegExp(r'[^\w\s]');
+
   /// Fetches Turkish radio stations from radio-browser API with fallback
   Future<List<Station>> fetchTurkishStations() async {
     List<Station> apiStations = [];
@@ -160,23 +168,13 @@ class RadioBrowserService {
 
   /// Normalizes station name for duplicate detection
   String _normalizeStationName(String name) {
-    // Convert to lowercase and remove common patterns that create duplicates
     String normalized = name.toLowerCase().trim();
-    
-    // Remove leading/trailing spaces and special characters
-    normalized = normalized.replaceAll(RegExp(r'^[\s\-_\.]+|[\s\-_\.]+$'), '');
-    
-    // Remove common prefixes/suffixes that cause duplicates
-    normalized = normalized.replaceAll(RegExp(r'\s*(radyo|radio|fm|am)\s*'), ' ');
-    normalized = normalized.replaceAll(RegExp(r'\s*(türkiye|turkey|tr)\s*'), ' ');
-    normalized = normalized.replaceAll(RegExp(r'\s*\d+[\.,]?\d*\s*(mhz|khz|fm|am)\s*'), ' ');
-    
-    // Remove multiple spaces
-    normalized = normalized.replaceAll(RegExp(r'\s+'), ' ').trim();
-    
-    // Remove special characters that might differ between duplicates
-    normalized = normalized.replaceAll(RegExp(r'[^\w\s]'), '');
-    
+    normalized = normalized.replaceAll(_reLeadingTrailing, '');
+    normalized = normalized.replaceAll(_reRadioFm, ' ');
+    normalized = normalized.replaceAll(_reTurkiye, ' ');
+    normalized = normalized.replaceAll(_reFrequency, ' ');
+    normalized = normalized.replaceAll(_reMultiSpace, ' ').trim();
+    normalized = normalized.replaceAll(_reSpecialChars, '');
     return normalized;
   }
 

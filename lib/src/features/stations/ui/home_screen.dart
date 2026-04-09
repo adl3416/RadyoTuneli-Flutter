@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +27,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Color? _appBarBg;
   Color? _appBarFg;
   String? _colorSchemeStr;
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -45,6 +47,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
@@ -825,7 +828,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               controller: _searchController,
               focusNode: _searchFocusNode,
               onChanged: (value) {
-                ref.read(searchQueryProvider.notifier).state = value;
+                _debounceTimer?.cancel();
+                _debounceTimer = Timer(const Duration(milliseconds: 400), () {
+                  ref.read(searchQueryProvider.notifier).state = value;
+                });
               },
               textInputAction: TextInputAction.search,
               style: Theme.of(context).textTheme.bodyLarge,

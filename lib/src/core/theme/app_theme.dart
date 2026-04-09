@@ -515,10 +515,10 @@ class AppTheme {
     );
   }
 
-  // 🦁 ASLAN TEMASI - Sarı (#FFD700) + Kırmızı (#DC143C)
-  static const Color aslanYellow = Color(0xFFFFD700);
-  // Brighter, more vivid red for Aslan theme
-  static const Color aslanRed = Color(0xFFFF0000);
+  // 🦁 ASLAN TEMASI - Sarı + Arı Kırmızı (orijinal renkler)
+  static const Color aslanYellow = Color(0xFFFDB813); // Orijinal amber sarı
+  // Arı kırmızı - orijinal koyu kırmızı
+  static const Color aslanRed = Color(0xFFC8102E);
 
   static ThemeData get aslanThemeDark {
     final textTheme = GoogleFonts.interTextTheme().apply(

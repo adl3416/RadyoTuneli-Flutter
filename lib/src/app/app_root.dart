@@ -18,14 +18,19 @@ class AppRoot extends ConsumerWidget {
     
     // Tema seçimi
     ThemeData selectedTheme;
-    // Prefer registry lookup so new themes can be registered without editing this file.
-    final registered = getThemeByName(colorScheme);
+    // Determine if dark mode is requested
+    final isDark = themeMode == ThemeMode.dark ||
+        (themeMode == ThemeMode.system &&
+            MediaQuery.platformBrightnessOf(context) == Brightness.dark);
+    // Try dark variant from registry when dark mode is active
+    final themeKey = isDark ? '${colorScheme}_dark' : colorScheme;
+    final registered = getThemeByName(themeKey) ?? getThemeByName(colorScheme);
     if (registered != null) {
       selectedTheme = registered;
     } else {
       // fallback to default behavior
       print('💜 VARSAYILAN TEMA SEÇİLDİ');
-      selectedTheme = themeMode == ThemeMode.dark ? AppTheme.darkTheme : AppTheme.lightTheme;
+      selectedTheme = isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
     }
     
     return MaterialApp(

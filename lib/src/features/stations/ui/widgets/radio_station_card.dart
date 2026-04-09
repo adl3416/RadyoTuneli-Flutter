@@ -35,6 +35,19 @@ class RadioStationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final primary = colorScheme.primary;
+    // Build a gradient from the theme's primary color
+    final themeGradient = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        HSLColor.fromColor(primary).withLightness(0.35).toColor(),
+        HSLColor.fromColor(primary).withLightness(0.28).toColor(),
+        HSLColor.fromColor(primary).withLightness(0.22).toColor(),
+      ],
+    );
+
     return Container(
       // keep full available width but add a small horizontal inset so cards
       // appear slightly narrower than the screen edge
@@ -43,16 +56,15 @@ class RadioStationCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
       decoration: BoxDecoration(
         // If a concrete backgroundColor is provided (e.g. for Favorites Kanarya), use it.
-        // Otherwise fall back to the app's radio card gradient.
+        // Otherwise fall back to the theme-derived gradient.
         color: backgroundColor,
-        gradient: backgroundColor == null ? AppTheme.radioCardGradient : null,
+        gradient: backgroundColor == null ? themeGradient : null,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 4, offset: const Offset(0, 2)),
         ],
-        // thin separator line at bottom to visually separate adjacent cards
         border: Border(
-          bottom: BorderSide(color: AppTheme.gray200.withOpacity(0.9), width: 0.5),
+          bottom: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.4), width: 0.5),
         ),
       ),
       child: Material(
@@ -84,7 +96,7 @@ class RadioStationCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: titleColor ?? AppTheme.white,
+                          color: titleColor ?? colorScheme.onPrimary,
                         ),
                       ),
                       const SizedBox(height: 1),
@@ -93,7 +105,7 @@ class RadioStationCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: subtitleColor ?? AppTheme.white.withOpacity(0.9),
+                          color: subtitleColor ?? colorScheme.onPrimary.withOpacity(0.9),
                         ),
                       ),
                     ],
@@ -113,7 +125,7 @@ class RadioStationCard extends StatelessWidget {
                       },
                       icon: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_outline,
-                        color: isFavorite ? Colors.red : AppTheme.white,
+                        color: isFavorite ? Colors.red : colorScheme.onPrimary,
                         size: 18,
                       ),
                     ),

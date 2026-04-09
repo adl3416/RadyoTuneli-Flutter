@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../shared/providers/theme_provider.dart';
 import '../../../shared/providers/color_scheme_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../data/app_settings_provider.dart';
 import '../../../core/utils/snackbar_helper.dart';
+import '../../legal/ui/impressum_screen.dart';
+import '../../legal/ui/privacy_policy_screen.dart';
+import '../../legal/ui/terms_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -30,16 +34,39 @@ class SettingsScreen extends ConsumerWidget {
         
         _buildSettingsTile(
           context,
-          'Hakkında',
-          'Versiyon 1.0.0',
-          Icons.info_outline,
-          () {},
+          'Datenschutzerklärung',
+          'Gizlilik Politikası',
+          Icons.privacy_tip_outlined,
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
         ),
         _buildSettingsTile(
           context,
-          'Destek',
-          'Sorun bildir veya öneride bulun',
-          Icons.support_outlined,
+          'Impressum',
+          'Yasal Bilgiler (§5 TMG)',
+          Icons.gavel_outlined,
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImpressumScreen())),
+        ),
+        _buildSettingsTile(
+          context,
+          'Nutzungsbedingungen',
+          'Kullanım Koşulları',
+          Icons.description_outlined,
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
+        ),
+        const Divider(height: 32),
+        _buildSettingsTile(
+          context,
+          'Tüm Verileri Sil',
+          'Favoriler, ayarlar ve geçmişi temizle',
+          Icons.delete_forever_outlined,
+          () => _showDeleteAllDataDialog(context, ref),
+        ),
+        const SizedBox(height: 8),
+        _buildSettingsTile(
+          context,
+          'Hakkında',
+          'Versiyon 1.0.0',
+          Icons.info_outline,
           () {},
         ),
       ],
@@ -96,7 +123,6 @@ class SettingsScreen extends ConsumerWidget {
             ThemeMode.light,
             themeMode,
           ),
-          /* Koyu tema geçici olarak gizlendi
           const SizedBox(height: 8),
           _buildThemeOption(
             context,
@@ -107,7 +133,6 @@ class SettingsScreen extends ConsumerWidget {
             ThemeMode.dark,
             themeMode,
           ),
-          */
         ],
       ),
     );
@@ -316,9 +341,9 @@ class SettingsScreen extends ConsumerWidget {
             ref,
             'aslan',
             '🦁 Aslan',
-            'Sarı-Kırmızı',
-            const Color(0xFFFFD700),
-            const Color(0xFFDC143C),
+            'Sarı-Arı Kırmızı',
+            const Color(0xFFFDB813),
+            const Color(0xFFC8102E),
           ),
           const SizedBox(height: 12),
           // 🌊 Karadeniz Fırtınası Teması
@@ -566,5 +591,42 @@ class SettingsScreen extends ConsumerWidget {
         SnackbarHelper.showError(context, 'Ayar değiştirilemedi: $e');
       }
     }
+  }
+
+  void _showDeleteAllDataDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Tüm Verileri Sil'),
+        content: const Text(
+          'Favoriler, son dinlenenler, uygulama ayarları ve tema tercihiniz '
+          'silinecektir. Bu işlem geri alınamaz.\n\n'
+          'Alle Favoriten, kürzlich gehörte Sender, App-Einstellungen und '
+          'Thema-Präferenzen werden gelöscht. Dieser Vorgang kann nicht '
+          'rückgängig gemacht werden.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('İptal'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.clear();
+              if (context.mounted) {
+                SnackbarHelper.showSuccess(
+                  context,
+                  'Tüm veriler silindi. Uygulama yeniden başlatılmalıdır.',
+                );
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Tümünü Sil'),
+          ),
+        ],
+      ),
+    );
   }
 }

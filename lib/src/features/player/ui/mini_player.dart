@@ -18,6 +18,7 @@ class MiniPlayer extends ConsumerWidget {
     }
 
     final station = playerState.currentStation!;
+    final primary = Theme.of(context).colorScheme.primary;
 
     return Container(
       height: 78,
@@ -26,9 +27,9 @@ class MiniPlayer extends ConsumerWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF1E1E2E), // Dark blue-gray
-            Color(0xFF2D2A3F), // Purple-gray
-            Color(0xFF3B3C5D), // Medium blue-gray
+            HSLColor.fromColor(primary).withLightness(0.12).toColor(),
+            HSLColor.fromColor(primary).withLightness(0.16).toColor(),
+            HSLColor.fromColor(primary).withLightness(0.22).toColor(),
           ],
         ),
         // Removed top boxShadow to avoid thin divider artifact on some devices / Android Auto
@@ -170,24 +171,27 @@ class MiniPlayer extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.9,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1E1E2E), // Dark blue-gray
-              Color(0xFF2D2A3F), // Purple-gray
-              Color(0xFF3B3C5D), // Medium blue-gray
-            ],
+      builder: (context) {
+        final primary = Theme.of(context).colorScheme.primary;
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.9,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                HSLColor.fromColor(primary).withLightness(0.12).toColor(),
+                HSLColor.fromColor(primary).withLightness(0.16).toColor(),
+                HSLColor.fromColor(primary).withLightness(0.22).toColor(),
+              ],
+            ),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(24),
+            ),
           ),
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(24),
-          ),
-        ),
-        child: const FullScreenPlayer(),
-      ),
+          child: const FullScreenPlayer(),
+        );
+      },
     );
   }
 }

@@ -7,10 +7,28 @@ class StationRepository {
   // Local storage for favorites (in memory for now, will be persisted later)
   final Set<String> _favoriteStationIds = {};
 
+  // In-memory station cache with TTL
+  List<Station>? _cachedStations;
+  DateTime? _cacheTime;
+  static const _cacheDuration = Duration(minutes: 10);
+
   /// Fetches Turkish radio stations with fallback mechanism
   Future<List<Station>> getTurkishStations() async {
+    // Return cached data if valid
+    if (_cachedStations != null &&
+        _cacheTime != null &&
+        DateTime.now().difference(_cacheTime!) < _cacheDuration) {
+      return _cachedStations!
+          .map((station) => station.copyWith(
+                isFavorite: _favoriteStationIds.contains(station.id),
+              ))
+          .toList();
+    }
+
     try {
       final stations = await _apiService.fetchTurkishStations();
+      _cachedStations = stations;
+      _cacheTime = DateTime.now();
       // Update favorite status based on local storage
       return stations
           .map((station) => station.copyWith(
@@ -19,6 +37,14 @@ class StationRepository {
           .toList();
     } catch (e) {
       print('Error fetching stations: $e');
+      // Return stale cache if available
+      if (_cachedStations != null) {
+        return _cachedStations!
+            .map((station) => station.copyWith(
+                  isFavorite: _favoriteStationIds.contains(station.id),
+                ))
+            .toList();
+      }
       return [];
     }
   }

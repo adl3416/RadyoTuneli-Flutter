@@ -205,7 +205,7 @@ final recentlyPlayedNotifierProvider =
 // Provider to get actual recently played stations from IDs
 final actualRecentlyPlayedStationsProvider = FutureProvider<List<Station>>((ref) async {
   final recentlyPlayedIds = ref.watch(recentlyPlayedNotifierProvider);
-  final allStations = await ref.watch(stationsProvider.future);
+  final allStations = await ref.read(stationsProvider.future);
   
   if (recentlyPlayedIds.isEmpty) {
     // Eğer hiç son dinlenen yoksa, boş liste dön
@@ -263,17 +263,21 @@ class FavoriteNotifier extends Notifier<void> {
     final repository = ref.read(stationRepositoryProvider);
     repository.toggleFavorite(stationId);
 
-    // Invalidate providers to trigger rebuild
+    // Only invalidate filtered/favorite providers, not the base stationsProvider
     ref.invalidateSelf();
-    ref.invalidate(stationsProvider);
+    ref.invalidate(filteredStationsProvider);
+    ref.invalidate(favoriteStationsProvider);
+    ref.invalidate(favoriteStationsCountProvider);
   }
 
   void clearAll() {
     final repository = ref.read(stationRepositoryProvider);
     repository.clearAllFavorites();
 
-    // Invalidate providers to trigger rebuild
+    // Only invalidate filtered/favorite providers, not the base stationsProvider
     ref.invalidateSelf();
-    ref.invalidate(stationsProvider);
+    ref.invalidate(filteredStationsProvider);
+    ref.invalidate(favoriteStationsProvider);
+    ref.invalidate(favoriteStationsCountProvider);
   }
 }

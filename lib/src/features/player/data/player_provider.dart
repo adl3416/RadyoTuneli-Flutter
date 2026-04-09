@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:audio_service/audio_service.dart';
 import '../domain/player_state_model.dart';
@@ -30,6 +31,8 @@ final currentlyPlayingStationProvider = Provider<Station?>((ref) {
 class PlayerNotifier extends StateNotifier<PlayerStateModel> {
   final AudioHandler? _audioHandler;
   final Ref _ref;
+  StreamSubscription? _playbackSub;
+  StreamSubscription? _mediaItemSub;
 
   PlayerNotifier(this._audioHandler, this._ref)
       : super(const PlayerStateModel()) {
@@ -105,7 +108,8 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
     print("🎧 Setting up audio handler listeners...");
 
     // Listen to audio handler state changes
-    audioHandler.playbackState.listen((playbackState) {
+    _playbackSub?.cancel();
+    _playbackSub = audioHandler.playbackState.listen((playbackState) {
       print(
           "🔊 Playback state changed: playing=${playbackState.playing}, processingState=${playbackState.processingState}");
       state = state.copyWith(
@@ -117,7 +121,8 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
     });
 
     // Listen to media item changes
-    audioHandler.mediaItem.listen((mediaItem) {
+    _mediaItemSub?.cancel();
+    _mediaItemSub = audioHandler.mediaItem.listen((mediaItem) {
       print("🎵 Media item changed: ${mediaItem?.title}");
       if (mediaItem != null) {
         state = state.copyWith(
@@ -137,6 +142,13 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
     
     // Android Auto için radyo listesini yükle
     _loadStationsForAndroidAuto();
+  }
+
+  @override
+  void dispose() {
+    _playbackSub?.cancel();
+    _mediaItemSub?.cancel();
+    super.dispose();
   }
   
   Future<void> _loadStationsForAndroidAuto() async {

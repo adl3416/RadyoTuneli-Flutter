@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:audio_service/audio_service.dart';
+import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../domain/player_state_model.dart';
@@ -6,6 +8,11 @@ import '../domain/player_state_model.dart';
 class RadioAudioHandler extends BaseAudioHandler
     with SeekHandler, QueueHandler {
   final AudioPlayer _player = AudioPlayer();
+  
+  // Audio focus management
+  bool _wasPlayingBeforeInterruption = false;
+  StreamSubscription? _interruptionSub;
+  StreamSubscription? _becomingNoisySub;
   
   // Dinamik radyo kategorileri - uygulama çalışırken doldurulacak
   Map<String, List<MediaItem>> _radioCategories = {};
@@ -286,6 +293,9 @@ class RadioAudioHandler extends BaseAudioHandler
     print("🎧 Initializing RadioAudioHandler...");
     print("🚗🚗🚗 ANDROID AUTO: _init() method called");
 
+    // Configure audio session for proper focus handling
+    _configureAudioSession();
+
     // Initialize playback state
     playbackState.add(PlaybackState(
       controls: [],
@@ -316,6 +326,93 @@ class RadioAudioHandler extends BaseAudioHandler
     });
 
     print("✅ RadioAudioHandler initialized");
+  }
+
+  /// Configures the audio session for proper audio focus management.
+  /// - Ducks (lowers volume) for transient interruptions (notifications, navigation)
+  /// - Pauses for permanent interruptions (phone calls, other media apps)
+  /// - Resumes playback when interruption ends
+  Future<void> _configureAudioSession() async {
+    try {
+      final session = await AudioSession.instance;
+      await session.configure(const AudioSessionConfiguration(
+        avAudioSessionCategory: AVAudioSessionCategory.playback,
+        avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.duckOthers,
+        avAudioSessionMode: AVAudioSessionMode.defaultMode,
+        androidAudioAttributes: AndroidAudioAttributes(
+          contentType: AndroidAudioContentType.music,
+          usage: AndroidAudioUsage.media,
+        ),
+        androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
+        androidWillPauseWhenDucked: false,
+      ));
+
+      // Handle audio interruptions (calls, notifications, navigation, etc.)
+      _interruptionSub?.cancel();
+      _interruptionSub = session.interruptionEventStream.listen((event) {
+        print("🔔 Audio interruption: begin=${event.begin}, type=${event.type}");
+        if (event.begin) {
+          // Interruption started
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+              // Transient interruption (notification, nav instruction)
+              // just_audio handles ducking automatically on Android
+              // On iOS we lower volume manually
+              _player.setVolume(0.2);
+              print("🔉 Volume ducked for transient interruption");
+              break;
+            case AudioInterruptionType.pause:
+              // Another app needs exclusive audio (phone call, etc.)
+              _wasPlayingBeforeInterruption = _player.playing;
+              if (_wasPlayingBeforeInterruption) {
+                _player.pause();
+                print("⏸️ Paused for audio interruption");
+              }
+              break;
+            case AudioInterruptionType.unknown:
+              _wasPlayingBeforeInterruption = _player.playing;
+              if (_wasPlayingBeforeInterruption) {
+                _player.pause();
+                print("⏸️ Paused for unknown interruption");
+              }
+              break;
+          }
+        } else {
+          // Interruption ended
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+              // Restore volume
+              _player.setVolume(1.0);
+              print("🔊 Volume restored after duck");
+              break;
+            case AudioInterruptionType.pause:
+              // Resume if we were playing before
+              if (_wasPlayingBeforeInterruption) {
+                _player.play();
+                print("▶️ Resumed after interruption ended");
+              }
+              break;
+            case AudioInterruptionType.unknown:
+              if (_wasPlayingBeforeInterruption) {
+                _player.play();
+                print("▶️ Resumed after unknown interruption ended");
+              }
+              break;
+          }
+        }
+      });
+
+      // Handle becoming noisy (headphones unplugged)
+      _becomingNoisySub?.cancel();
+      _becomingNoisySub = session.becomingNoisyEventStream.listen((_) {
+        print("🔇 Becoming noisy (headphones unplugged) - pausing");
+        _player.pause();
+      });
+
+      print("✅ Audio session configured for focus management");
+    } catch (e) {
+      print("⚠️ Audio session configuration failed: $e");
+    }
   }
 
   void _broadcastState(PlayerState playerState) {
