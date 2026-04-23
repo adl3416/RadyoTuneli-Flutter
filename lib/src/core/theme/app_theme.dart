@@ -848,19 +848,22 @@ class AppTheme {
       brightness: Brightness.dark,
       colorScheme: ColorScheme.dark(
         primary: kartalWhite,
-        secondary: kartalBlack,
+        secondary: Color(0xFFBDBDBD), // Gümüş gri accent
         surface: Color(0xFF1A1A1A),
         onPrimary: kartalBlack,
-        onSecondary: kartalWhite,
+        onSecondary: kartalBlack,
         onSurface: kartalWhite,
+        surfaceVariant: Color(0xFF2A2A2A),
+        outline: Color(0xFF444444),
       ),
-      scaffoldBackgroundColor: kartalBlack,
+      scaffoldBackgroundColor: Color(0xFF0D0D0D),
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: kartalBlack, // 🦅 AppBar = Siyah
-        foregroundColor: kartalWhite, // Yazılar = Beyaz
+        backgroundColor: kartalBlack,
+        foregroundColor: kartalWhite,
         elevation: 4,
         centerTitle: true,
+        surfaceTintColor: Colors.transparent,
         titleTextStyle: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
           color: kartalWhite,
@@ -870,8 +873,8 @@ class AppTheme {
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         selectedItemColor: kartalWhite,
-        unselectedItemColor: kartalWhite.withOpacity(0.7),
-        backgroundColor: kartalBlack,
+        unselectedItemColor: Color(0xFF888888),
+        backgroundColor: Color(0xFF111111),
         type: BottomNavigationBarType.fixed,
         elevation: 12,
       ),
@@ -890,71 +893,117 @@ class AppTheme {
         fillColor: Color(0xFF1A1A1A),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Color(0xFF333333)),
+          borderSide: BorderSide(color: Color(0xFF444444)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Color(0xFF444444)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: kartalWhite, width: 2),
         ),
+        hintStyle: TextStyle(color: Color(0xFF888888)),
       ),
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) return kartalWhite;
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return kartalWhite;
           return Color(0xFF666666);
         }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return kartalWhite.withOpacity(0.3);
           }
           return Color(0xFF333333);
         }),
       ),
       tabBarTheme: TabBarThemeData(
-        labelColor: kartalWhite, // Seçili tab = Beyaz
-        unselectedLabelColor: kartalWhite.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Beyaz
-        indicatorColor: kartalWhite, // Alt çizgi = Beyaz
+        labelColor: kartalWhite,
+        unselectedLabelColor: Color(0xFF888888),
+        indicatorColor: kartalWhite,
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: kartalWhite, width: 3),
         ),
       ),
       cardTheme: CardThemeData(
-        color: kartalBlack,
+        color: Color(0xFF1A1A1A),
         elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: Color(0xFF333333), width: 0.5),
+        ),
       ),
       listTileTheme: ListTileThemeData(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         textColor: kartalWhite,
         iconColor: kartalWhite,
-        tileColor: kartalBlack,
+        tileColor: Colors.transparent,
+      ),
+      dividerTheme: DividerThemeData(color: Color(0xFF333333)),
+      dialogTheme: DialogThemeData(
+        backgroundColor: Color(0xFF1A1A1A),
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: textTheme.titleLarge?.copyWith(color: kartalWhite),
+        contentTextStyle: textTheme.bodyMedium?.copyWith(color: kartalWhite),
       ),
     );
   }
 
   static ThemeData get kartalThemeLight {
+    final textTheme = GoogleFonts.interTextTheme().apply(
+      bodyColor: kartalBlack,
+      displayColor: kartalBlack,
+    );
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.light(
         primary: kartalBlack,
-        secondary: kartalWhite,
+        secondary: Color(0xFF424242),
         surface: kartalWhite,
         onPrimary: kartalWhite,
-        onSecondary: kartalBlack,
+        onSecondary: kartalWhite,
+        onSurface: kartalBlack,
       ),
+      scaffoldBackgroundColor: Color(0xFFF5F5F5),
+      textTheme: textTheme,
       appBarTheme: AppBarTheme(
         backgroundColor: kartalBlack,
         foregroundColor: kartalWhite,
         elevation: 0,
         centerTitle: true,
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: kartalWhite,
+          fontSize: 20,
+        ),
+        iconTheme: IconThemeData(color: kartalWhite),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        selectedItemColor: kartalWhite,
+        unselectedItemColor: Color(0xFFBDBDBD),
+        backgroundColor: kartalBlack,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
       ),
       tabBarTheme: TabBarThemeData(
-        labelColor: kartalWhite, // Seçili tab = Beyaz
-        unselectedLabelColor: kartalBlack.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Siyah
-        indicatorColor: kartalWhite, // Alt çizgi = Beyaz
+        labelColor: kartalWhite,
+        unselectedLabelColor: Color(0xFFBDBDBD),
+        indicatorColor: kartalWhite,
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: kartalWhite, width: 3),
         ),
+      ),
+      cardTheme: CardThemeData(
+        color: kartalWhite,
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      listTileTheme: ListTileThemeData(
+        textColor: kartalBlack,
+        iconColor: kartalBlack,
       ),
     );
   }

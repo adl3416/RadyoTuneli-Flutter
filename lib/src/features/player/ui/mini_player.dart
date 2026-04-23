@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/theme/app_theme.dart';
 import '../data/player_provider.dart';
 import '../../stations/ui/widgets/radio_logo.dart';
+import '../../favorites/data/favorites_provider.dart';
 
 class MiniPlayer extends ConsumerWidget {
   const MiniPlayer({super.key});
@@ -82,6 +83,31 @@ class MiniPlayer extends ConsumerWidget {
                     ],
                   ),
                 ),
+
+                // Favorite Toggle Button
+                Consumer(
+                  builder: (context, ref, child) {
+                    final favorites = ref.watch(favoritesProvider);
+                    final isFavorite = favorites.contains(station.id);
+                    
+                    return IconButton(
+                      key: ValueKey('fav_${station.id}_$isFavorite'), // UI'ın güncellenmesini zorla
+                      onPressed: () {
+                        HapticFeedback.heavyImpact();
+                        ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
+                        // Force a zero-delay UI refresh hint
+                        Future.microtask(() => ref.invalidate(favoritesProvider));
+                      },
+                      icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.redAccent : Colors.white,
+                        size: 26,
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(width: 8),
 
                 // Loading indicator or Play/Pause Button with modern styling
                 if (playerState.isLoading)

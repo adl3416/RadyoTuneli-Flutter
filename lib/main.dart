@@ -38,7 +38,7 @@ Future<void> _initializeAudioService() async {
         androidNotificationChannelName: 'Radyo Tüneli',
         androidNotificationChannelDescription:
             'Radyo Tüneli - Türk Radyo İstasyonları',
-        androidNotificationOngoing: true,
+        androidNotificationOngoing: false,
         androidShowNotificationBadge: true,
         androidNotificationIcon: 'mipmap/ic_launcher',
         androidStopForegroundOnPause: true,

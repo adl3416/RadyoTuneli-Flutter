@@ -17,59 +17,130 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
     final appSettings = ref.watch(appSettingsProvider);
-    final colorScheme = ref.watch(colorSchemeProvider);
-    
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        _buildThemeSection(context, ref, themeMode),
-        const Divider(height: 32),
-        _buildAppSettingsSection(context, ref, appSettings),
-        const SizedBox(height: 32),
-        _buildColorSchemeSection(context, ref),
-        const Divider(height: 32),
-                                                                                         
+    final colorSchemeStr = ref.watch(colorSchemeProvider);
 
-        const SizedBox(height: 16),
-        
-        _buildSettingsTile(
-          context,
-          'Datenschutzerklärung',
-          'Gizlilik Politikası',
-          Icons.privacy_tip_outlined,
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
+    Color appBarBg;
+    Color appBarFg;
+
+    if (colorSchemeStr == 'karadeniz') {
+      appBarBg = AppTheme.karadenizBordo;
+      appBarFg = AppTheme.karadenizMavi;
+    } else if (colorSchemeStr == 'kartal') {
+      appBarBg = AppTheme.kartalBlack;
+      appBarFg = AppTheme.kartalWhite;
+    } else if (colorSchemeStr == 'timsah') {
+      appBarBg = AppTheme.timsahGreen;
+      appBarFg = AppTheme.timsahWhite;
+    } else if (colorSchemeStr == 'kanarya') {
+      appBarBg = AppTheme.kanaryaSecondary;
+      appBarFg = AppTheme.kanaryaPrimary;
+    } else if (colorSchemeStr == 'aslan') {
+      appBarBg = AppTheme.aslanRed;
+      appBarFg = AppTheme.aslanYellow;
+    } else {
+      appBarBg = AppTheme.headerPurple;
+      appBarFg = Colors.white;
+    }
+    
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        toolbarHeight: 0,
+        backgroundColor: appBarBg,
+        elevation: 0,
+      ),
+      body: Container(
+        color: appBarBg,
+        child: Column(
+          children: [
+            // --- HEADER BAŞLIĞI ---
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: appBarBg,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Ayarlar',
+                      style: TextStyle(
+                        color: appBarFg,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+              // --- AYARLAR LİSTESİ ---
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                    children: [
+                      _buildThemeSection(context, ref, themeMode),
+                      const SizedBox(height: 24),
+                      _buildAppSettingsSection(context, ref, appSettings),
+                      const SizedBox(height: 24),
+                      _buildColorSchemeSection(context, ref),
+                      const Divider(height: 48),
+                      
+                      _buildSettingsTile(
+                        context,
+                        'Gizlilik Politikası',
+                        'Datenschutzerklärung',
+                        Icons.privacy_tip_outlined,
+                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
+                      ),
+                      _buildSettingsTile(
+                        context,
+                        'Yasal Bilgiler (§5 TMG)',
+                        'Impressum',
+                        Icons.gavel_outlined,
+                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImpressumScreen())),
+                      ),
+                      _buildSettingsTile(
+                        context,
+                        'Kullanım Koşulları',
+                        'Nutzungsbedingungen',
+                        Icons.description_outlined,
+                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
+                      ),
+                      const Divider(height: 32),
+                      _buildSettingsTile(
+                        context,
+                        'Tüm Verileri Sil',
+                        'Favoriler, ayarlar ve geçmişi temizle',
+                        Icons.delete_forever_outlined,
+                        () => _showDeleteAllDataDialog(context, ref),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildSettingsTile(
+                        context,
+                        'Hakkında',
+                        'Versiyon 1.0.0',
+                        Icons.info_outline,
+                        () {},
+                      ),
+                      const SizedBox(height: 120), // Bottom player payı
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        _buildSettingsTile(
-          context,
-          'Impressum',
-          'Yasal Bilgiler (§5 TMG)',
-          Icons.gavel_outlined,
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImpressumScreen())),
-        ),
-        _buildSettingsTile(
-          context,
-          'Nutzungsbedingungen',
-          'Kullanım Koşulları',
-          Icons.description_outlined,
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
-        ),
-        const Divider(height: 32),
-        _buildSettingsTile(
-          context,
-          'Tüm Verileri Sil',
-          'Favoriler, ayarlar ve geçmişi temizle',
-          Icons.delete_forever_outlined,
-          () => _showDeleteAllDataDialog(context, ref),
-        ),
-        const SizedBox(height: 8),
-        _buildSettingsTile(
-          context,
-          'Hakkında',
-          'Versiyon 1.0.0',
-          Icons.info_outline,
-          () {},
-        ),
-      ],
+      ),
     );
   }
 
@@ -89,110 +160,34 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.palette_outlined,
-                color: Theme.of(context).primaryColor,
-                size: 24,
-              ),
+              Icon(Icons.palette_outlined, color: Theme.of(context).primaryColor, size: 24),
               const SizedBox(width: 12),
-              Text(
-                'Tema Ayarları',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              Text('Tema Ayarları', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 16),
-          _buildThemeOption(
-            context,
-            ref,
-            'Sistem Ayarı',
-            'Cihazın tema ayarını takip et',
-            Icons.phone_android,
-            ThemeMode.system,
-            themeMode,
-          ),
-          const SizedBox(height: 8),
-          _buildThemeOption(
-            context,
-            ref,
-            'Açık Tema',
-            'Her zaman açık tema kullan',
-            Icons.light_mode,
-            ThemeMode.light,
-            themeMode,
-          ),
-          const SizedBox(height: 8),
-          _buildThemeOption(
-            context,
-            ref,
-            'Koyu Tema',
-            'Her zaman koyu tema kullan',
-            Icons.dark_mode,
-            ThemeMode.dark,
-            themeMode,
-          ),
+          _buildThemeOption(context, ref, 'Açık Tema', ThemeMode.light, Icons.light_mode_outlined, themeMode),
+          _buildThemeOption(context, ref, 'Koyu Tema', ThemeMode.dark, Icons.dark_mode_outlined, themeMode),
+          _buildThemeOption(context, ref, 'Sistem Teması', ThemeMode.system, Icons.brightness_auto_outlined, themeMode),
         ],
       ),
     );
   }
 
-  Widget _buildThemeOption(
-    BuildContext context,
-    WidgetRef ref,
-    String title,
-    String subtitle,
-    IconData icon,
-    ThemeMode mode,
-    ThemeMode currentMode,
-  ) {
+  Widget _buildThemeOption(BuildContext context, WidgetRef ref, String title, ThemeMode mode, IconData icon, ThemeMode currentMode) {
     final isSelected = currentMode == mode;
-    
-    return Container(
-      decoration: BoxDecoration(
-        color: isSelected 
-            ? Theme.of(context).primaryColor.withOpacity(0.1)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ListTile(
-        leading: Icon(
-          icon,
-          color: isSelected 
-              ? Theme.of(context).primaryColor
-              : Theme.of(context).iconTheme.color,
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            color: isSelected 
-                ? Theme.of(context).primaryColor
-                : Theme.of(context).textTheme.bodyLarge?.color,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            color: isSelected 
-                ? Theme.of(context).primaryColor.withOpacity(0.7)
-                : Theme.of(context).textTheme.bodyMedium?.color,
-          ),
-        ),
-        trailing: isSelected
-            ? Icon(
-                Icons.check_circle,
-                color: Theme.of(context).primaryColor,
-              )
-            : const Icon(Icons.circle_outlined),
-        onTap: () {
-          print('🎨 Theme button tapped: $mode');
-          ref.read(themeProvider.notifier).setThemeMode(mode);
-        },
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      onTap: () => ref.read(themeProvider.notifier).setThemeMode(mode),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: isSelected ? Theme.of(context).primaryColor : null),
+            const SizedBox(width: 12),
+            Text(title, style: TextStyle(color: isSelected ? Theme.of(context).primaryColor : null, fontWeight: isSelected ? FontWeight.bold : null)),
+            const Spacer(),
+            if (isSelected) Icon(Icons.check_circle, size: 20, color: Theme.of(context).primaryColor),
+          ],
         ),
       ),
     );
@@ -214,60 +209,28 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.settings_outlined,
-                color: Theme.of(context).primaryColor,
-                size: 24,
-              ),
+              Icon(Icons.settings_suggest_outlined, color: Theme.of(context).primaryColor, size: 24),
               const SizedBox(width: 12),
-              Text(
-                'Uygulama Ayarları',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              Text('Uygulama Ayarları', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 16),
-          
-                    // Otomatik Oynat
-          _buildSwitchTile(
-            context,
-            'Otomatik Oynat',
-            'Uygulamayı açarken son çalınan istasyonu oynat',
-            Icons.autorenew,
-            settings.autoPlay,
-            (value) {
-              _handleAutoPlayToggle(ref, context, value);
-            },
+          SwitchListTile(
+            title: const Text('Otomatik Başlat'),
+            subtitle: const Text('Uygulama açıldığında son radyoyu çal'),
+            value: settings.autoPlay,
+            onChanged: (val) => ref.read(appSettingsProvider.notifier).setAutoPlay(val),
           ),
-          
-          const SizedBox(height: 8),
-          
-          // Bildirimler
-          _buildSwitchTile(
-            context,
-            'Bildirimler',
-            'Oynatma bildirimleri ve kontroller',
-            Icons.notifications_outlined,
-            settings.notificationsEnabled,
-            (value) {
-              _handleNotificationsToggle(ref, context, value);
-            },
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text('Varsayılan Ses Seviyesi', style: TextStyle(fontSize: 14)),
           ),
-          
-          const SizedBox(height: 8),
-          
-          // Kilit Ekranı Kontrolleri
-          _buildSwitchTile(
-            context,
-            'Kilit Ekranı Kontrolleri',
-            'Telefon kilitliyken oynatma kontrolleri göster',
-            Icons.lock_outline,
-            settings.showLockScreenControls,
-            (value) {
-              _handleLockScreenToggle(ref, context, value);
-            },
+          Slider(
+            value: settings.volume,
+            min: 0.0,
+            max: 1.0,
+            divisions: 10,
+            onChanged: (val) => ref.read(appSettingsProvider.notifier).setVolume(val),
           ),
         ],
       ),
@@ -275,9 +238,8 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildColorSchemeSection(BuildContext context, WidgetRef ref) {
-    print('🎨 SETTINGS: _buildColorSchemeSection çağrıldı');
     return Container(
-      padding: const EdgeInsets.all(16),
+       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
@@ -289,341 +251,90 @@ class SettingsScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+           Row(
             children: [
-              Icon(
-                Icons.palette_outlined,
-                color: Theme.of(context).primaryColor,
-                size: 24,
-              ),
+              Icon(Icons.color_lens_outlined, color: Theme.of(context).primaryColor, size: 24),
               const SizedBox(width: 12),
-              Text(
-                'Farklı Temalar',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              Text('Renk Şeması', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            'Takım Temasını Seç',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7),
-            ),
-          ),
-          const SizedBox(height: 12),
-          // 💜 Orijinal (Varsayılan) Tema
-          _buildThemeCard(
-            context,
-            ref,
-            'varsayilan',
-            '💜 Orijinal',
-            'Varsayılan Mor Tema',
-            const Color(0xFF9C27B0),
-            const Color(0xFF6A1B9A),
-          ),
-          const SizedBox(height: 12),
-          // 🟡 Kanarya Teması
-          _buildThemeCard(
-            context,
-            ref,
-            'kanarya',
-            '🟡 Kanarya',
-            'Sarı-Lacivert',
-            const Color(0xFFFFD700),
-            const Color(0xFF001F3F),
-          ),
-          const SizedBox(height: 12),
-          // 🦁 Aslan Teması
-          _buildThemeCard(
-            context,
-            ref,
-            'aslan',
-            '🦁 Aslan',
-            'Sarı-Arı Kırmızı',
-            const Color(0xFFFDB813),
-            const Color(0xFFC8102E),
-          ),
-          const SizedBox(height: 12),
-          // 🌊 Karadeniz Fırtınası Teması
-          _buildThemeCard(
-            context,
-            ref,
-            'karadeniz',
-            '🌊 Karadeniz Fırtınası',
-            'Bordo-Mavi',
-            const Color(0xFF800000),
-            const Color(0xFF4169E1),
-          ),
-          const SizedBox(height: 12),
-          // 🦅 Kartal Teması
-          _buildThemeCard(
-            context,
-            ref,
-            'kartal',
-            '🦅 Kartal',
-            'Siyah-Beyaz',
-            const Color(0xFF000000),
-            const Color(0xFFFFFFFF),
-          ),
-          const SizedBox(height: 12),
-          // 🐊 Timsah Teması
-          _buildThemeCard(
-            context,
-            ref,
-            'timsah',
-            '🐊 Timsah',
-            'Yeşil-Beyaz',
-            const Color(0xFF228B22),
-            const Color(0xFFFFFFFF),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              _buildColorOption(context, ref, 'Varsayılan', 'purple', Colors.deepPurple),
+              _buildColorOption(context, ref, 'Kanarya', 'kanarya', Colors.yellow),
+              _buildColorOption(context, ref, 'Aslan', 'aslan', Colors.red),
+              _buildColorOption(context, ref, 'Kartal', 'kartal', Colors.black),
+              _buildColorOption(context, ref, 'Karadeniz', 'karadeniz', Colors.blue),
+              _buildColorOption(context, ref, 'Timsah', 'timsah', Colors.green),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildThemeCard(
-    BuildContext context,
-    WidgetRef ref,
-    String themeId,
-    String title,
-    String subtitle,
-    Color color1,
-    Color color2,
-  ) {
-    return InkWell(
-      onTap: () {
-        print('🎨 TAPPED: $themeId -> $title');
-        ref.read(colorSchemeProvider.notifier).setColorScheme(themeId);
-        SnackbarHelper.showSuccess(context, '$title Teması Aktif!');
-      },
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: color1.withOpacity(0.3),
-            width: 2,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
+  Widget _buildColorOption(BuildContext context, WidgetRef ref, String name, String scheme, Color color) {
+    final currentScheme = ref.watch(colorSchemeProvider);
+    final isSelected = currentScheme == scheme;
+    
+    return Column(
+        children: [
+          InkWell(
+            onTap: () => ref.read(colorSchemeProvider.notifier).setColorScheme(scheme),
+            child: Container(
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                gradient: LinearGradient(
-                  colors: [color1, color2],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                color: color,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected ? Colors.white : Colors.transparent,
+                  width: 3,
                 ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
-                    ),
-                  ),
+                boxShadow: [
+                  if (isSelected) BoxShadow(color: color.withOpacity(0.5), blurRadius: 8, spreadRadius: 2),
                 ],
               ),
+              child: isSelected ? const Icon(Icons.check, color: Colors.white) : null,
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: Theme.of(context).primaryColor,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSwitchTile(
-    BuildContext context,
-    String title,
-    String subtitle,
-    IconData icon,
-    bool value,
-    Function(bool) onChanged,
-  ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: value 
-            ? Theme.of(context).primaryColor.withOpacity(0.1)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: SwitchListTile(
-        secondary: Icon(
-          icon,
-          color: value 
-              ? Theme.of(context).primaryColor
-              : Theme.of(context).iconTheme.color,
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            color: value 
-                ? Theme.of(context).primaryColor
-                : Theme.of(context).textTheme.bodyLarge?.color,
-            fontWeight: value ? FontWeight.w600 : FontWeight.normal,
           ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: value 
-                ? Theme.of(context).primaryColor.withOpacity(0.7)
-                : Theme.of(context).textTheme.bodySmall?.color,
-          ),
-        ),
-        value: value,
-        onChanged: onChanged,
-        activeColor: Theme.of(context).primaryColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
+          const SizedBox(height: 4),
+          Text(name, style: TextStyle(fontSize: 10, fontWeight: isSelected ? FontWeight.bold : null)),
+        ],
+      );
+  }
+
+  Widget _buildSettingsTile(BuildContext context, String trTitle, String deTitle, IconData icon, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(trTitle),
+      subtitle: Text(deTitle, style: const TextStyle(fontSize: 12)),
+      trailing: const Icon(Icons.chevron_right, size: 20),
+      onTap: onTap,
     );
-  }
-
-  Widget _buildSettingsTile(
-    BuildContext context,
-    String title,
-    String subtitle,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: onTap,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    );
-  }
-
-  void _handleAutoPlayToggle(WidgetRef ref, BuildContext context, bool value) async {
-    try {
-      await ref.read(appSettingsProvider.notifier).setAutoPlay(value);
-      if (context.mounted) {
-        if (value) {
-          SnackbarHelper.showSuccess(
-            context,
-            'Otomatik oynat açıldı. Uygulamayı tekrar açtığınızda son çalınan istasyon otomatik başlayacak.',
-          );
-        } else {
-          SnackbarHelper.showInfo(
-            context,
-            'Otomatik oynat kapatıldı.',
-          );
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        SnackbarHelper.showError(context, 'Ayar değiştirilemedi: $e');
-      }
-    }
-  }
-
-  void _handleNotificationsToggle(WidgetRef ref, BuildContext context, bool value) async {
-    try {
-      await ref.read(appSettingsProvider.notifier).setNotifications(value);
-      if (context.mounted) {
-        if (value) {
-          SnackbarHelper.showSuccess(
-            context,
-            'Bildirimler açıldı. Artık oynatma kontrolleri görünecek.',
-          );
-        } else {
-          SnackbarHelper.showInfo(
-            context,
-            'Bildirimler kapatıldı.',
-          );
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        SnackbarHelper.showError(context, 'Ayar değiştirilemedi: $e');
-      }
-    }
-  }
-
-  void _handleLockScreenToggle(WidgetRef ref, BuildContext context, bool value) async {
-    try {
-      await ref.read(appSettingsProvider.notifier).setLockScreenControls(value);
-      if (context.mounted) {
-        if (value) {
-          SnackbarHelper.showSuccess(
-            context,
-            'Kilit ekranı kontrolleri açıldı. Telefon kilitken de oynatma kontrolleri görünecek.',
-          );
-        } else {
-          SnackbarHelper.showInfo(
-            context,
-            'Kilit ekranı kontrolleri kapatıldı.',
-          );
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        SnackbarHelper.showError(context, 'Ayar değiştirilemedi: $e');
-      }
-    }
   }
 
   void _showDeleteAllDataDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Tüm Verileri Sil'),
-        content: const Text(
-          'Favoriler, son dinlenenler, uygulama ayarları ve tema tercihiniz '
-          'silinecektir. Bu işlem geri alınamaz.\n\n'
-          'Alle Favoriten, kürzlich gehörte Sender, App-Einstellungen und '
-          'Thema-Präferenzen werden gelöscht. Dieser Vorgang kann nicht '
-          'rückgängig gemacht werden.',
-        ),
+      builder: (context) => AlertDialog(
+        title: const Text('Verileri Sil'),
+        content: const Text('Tüm favorileriniz ve ayarlarınız silinecek. Bu işlem geri alınamaz.'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('İptal'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('İPTAL')),
           TextButton(
             onPressed: () async {
-              Navigator.pop(ctx);
               final prefs = await SharedPreferences.getInstance();
               await prefs.clear();
               if (context.mounted) {
-                SnackbarHelper.showSuccess(
-                  context,
-                  'Tüm veriler silindi. Uygulama yeniden başlatılmalıdır.',
-                );
+                Navigator.pop(context);
+                SnackbarHelper.showSuccess(context, 'Tüm veriler başarıyla silindi');
               }
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Tümünü Sil'),
+            child: const Text('SİL', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

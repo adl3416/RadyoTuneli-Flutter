@@ -28,7 +28,7 @@ class MainScreen extends ConsumerWidget {
 
     return Scaffold(
       extendBody: true,
-      appBar: selectedTab == 0 ? null : AppBar(
+      appBar: selectedTab == 0 || selectedTab == 1 || selectedTab == 2 ? null : AppBar(
         title: Text(selectedTab == 1 ? 'Favoriler' : 'Ayarlar'),
         elevation: 0,
         centerTitle: true,

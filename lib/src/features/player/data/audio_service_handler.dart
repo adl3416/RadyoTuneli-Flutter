@@ -298,14 +298,14 @@ class RadioAudioHandler extends BaseAudioHandler
 
     // Initialize playback state
     playbackState.add(PlaybackState(
-      controls: [],
+      controls: [MediaControl.play, MediaControl.stop],
       systemActions: const {
         MediaAction.play,
         MediaAction.pause,
         MediaAction.stop,
         MediaAction.playPause,
       },
-      androidCompactActionIndices: const [],
+      androidCompactActionIndices: const [0, 1],
       processingState: AudioProcessingState.idle,
       playing: false,
     ));
@@ -314,7 +314,14 @@ class RadioAudioHandler extends BaseAudioHandler
     _player.playerStateStream.listen((playerState) {
       print(
           "🔊 Player state changed: playing=${playerState.playing}, processing=${playerState.processingState}");
+      
+      // Update basic state immediately
       _broadcastState(playerState);
+      
+      // If stopped, ensure notification is clear
+      if (playerState.processingState == ProcessingState.idle && !playerState.playing) {
+        mediaItem.add(null);
+      }
     });
 
     // Listen to current position for progress updates
@@ -419,20 +426,17 @@ class RadioAudioHandler extends BaseAudioHandler
     final isPlaying = playerState.playing;
     final processingState = playerState.processingState;
 
-    List<MediaControl> controls = [];
+    print("📡 _broadcastState: playing=$isPlaying, processing=$processingState");
+
+    List<MediaControl> controls;
 
     if (processingState == ProcessingState.loading ||
         processingState == ProcessingState.buffering) {
-      controls = [
-        MediaControl.stop,
-      ];
-      print("🔄 Yükleniyor - Kilit ekranı kontrolleri aktif");
-    } else if (processingState != ProcessingState.completed) {
-      controls = [
-        if (isPlaying) MediaControl.pause else MediaControl.play,
-        MediaControl.stop,
-      ];
-      print("🎵 Oynatılıyor - Kilit ekranı kontrolleri aktif");
+      controls = [MediaControl.stop];
+    } else if (isPlaying) {
+      controls = [MediaControl.pause, MediaControl.stop];
+    } else {
+      controls = [MediaControl.play, MediaControl.stop];
     }
 
     playbackState.add(PlaybackState(
@@ -442,10 +446,9 @@ class RadioAudioHandler extends BaseAudioHandler
         MediaAction.pause,
         MediaAction.stop,
         MediaAction.playPause,
-        MediaAction.setRating, // Favori için rating kullan
       },
       androidCompactActionIndices: controls.length >= 2 ? const [0, 1] : const [0],
-      processingState: const {
+      processingState: {
             ProcessingState.idle: AudioProcessingState.idle,
             ProcessingState.loading: AudioProcessingState.loading,
             ProcessingState.buffering: AudioProcessingState.buffering,
@@ -461,50 +464,63 @@ class RadioAudioHandler extends BaseAudioHandler
   @override
   Future<void> play() async {
     try {
-      print("▶️ Resuming playback...");
+      print("▶️ play() CALLED - Resuming playback...");
       await _player.play();
+      print("▶️ play() COMPLETED");
     } catch (e) {
       print('❌ Error playing audio: $e');
-      rethrow;
     }
   }
 
   @override
   Future<void> pause() async {
     try {
-      print("⏸️ Pausing playback...");
+      print("⏸️ pause() CALLED - Pausing playback...");
       await _player.pause();
+      print("⏸️ pause() COMPLETED");
     } catch (e) {
       print('❌ Error pausing audio: $e');
-      rethrow;
     }
   }
 
   @override
   Future<void> stop() async {
     try {
-      print("⏹️ Stopping playback...");
+      print("⏹️ stop() CALLED - Stopping playback...");
       await _player.stop();
-
-      // Clear the current media item
       mediaItem.add(null);
-
-      // Set stopped state
       playbackState.add(PlaybackState(
         controls: [],
-        systemActions: const {
-          MediaAction.play,
-        },
+        systemActions: const {},
         androidCompactActionIndices: const [],
         processingState: AudioProcessingState.idle,
         playing: false,
         updatePosition: Duration.zero,
       ));
-
-      print("✅ Playback stopped successfully");
+      await super.stop();
+      print("⏹️ stop() COMPLETED");
     } catch (e) {
       print('❌ Error stopping audio: $e');
-      rethrow;
+    }
+  }
+
+  @override
+  Future<void> click([MediaButton button = MediaButton.media]) async {
+    print("🔘 click() CALLED with button: $button");
+    switch (button) {
+      case MediaButton.media:
+        if (_player.playing) {
+          await pause();
+        } else {
+          await play();
+        }
+        break;
+      case MediaButton.next:
+        await skipToNext();
+        break;
+      case MediaButton.previous:
+        await skipToPrevious();
+        break;
     }
   }
 
@@ -674,13 +690,8 @@ class RadioAudioHandler extends BaseAudioHandler
 
   @override
   Future<void> onNotificationDeleted() async {
-    print("🗑️ Notification deleted - ignoring deletion to avoid unintended stop (Android Auto compatibility)");
-    // When Android Auto connects it may remove the app notification;
-    // calling stop() here causes playback to end unexpectedly on some devices (e.g. Samsung S9).
-    // We intentionally do not stop playback in response to notification deletion to allow
-    // Android Auto / external media controls to continue playback. If you want to stop
-    // when the user explicitly dismisses from the notification, implement a custom
-    // confirmation flow or handle that in the UI layer.
+    print("🗑️ Notification swiped away - stopping playback");
+    await stop();
   }
 
   void disposePlayer() {
