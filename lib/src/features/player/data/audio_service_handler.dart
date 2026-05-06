@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 import '../domain/player_state_model.dart';
 
 class RadioAudioHandler extends BaseAudioHandler
@@ -13,6 +17,13 @@ class RadioAudioHandler extends BaseAudioHandler
   bool _wasPlayingBeforeInterruption = false;
   StreamSubscription? _interruptionSub;
   StreamSubscription? _becomingNoisySub;
+
+  // Duplicate broadcast önleme
+  bool? _lastPlaying;
+  ProcessingState? _lastProcessingState;
+
+  // Kullanıcı pause yaptığında true - idle state'in servisi kapatmasını engeller
+  bool _userPaused = false;
   
   // Dinamik radyo kategorileri - uygulama çalışırken doldurulacak
   Map<String, List<MediaItem>> _radioCategories = {};
@@ -22,6 +33,16 @@ class RadioAudioHandler extends BaseAudioHandler
   
   // Son dinlenen radyolar (maksimum 20)
   List<MediaItem> _recentlyPlayed = [];
+
+  // Android Auto güzel arka plan resmi cache
+  String? _cachedDefaultArtworkPath;
+
+  // Mevcut istasyon bilgisi - play() butonundan yeniden başlatmak için
+  String? _currentStreamUrl;
+  String? _currentTitle;
+  String? _currentArtist;
+  String? _currentArtUri;
+  String? _currentStationId;
 
   // Kategori isimleri ve açıklamaları (modern Android Auto tasarımı için)
   final Map<String, Map<String, String>> _categoryInfo = {
@@ -304,6 +325,7 @@ class RadioAudioHandler extends BaseAudioHandler
         MediaAction.pause,
         MediaAction.stop,
         MediaAction.playPause,
+        MediaAction.setRating, // Android Auto kalp/favori butonu
       },
       androidCompactActionIndices: const [0, 1],
       processingState: AudioProcessingState.idle,
@@ -312,25 +334,30 @@ class RadioAudioHandler extends BaseAudioHandler
 
     // Listen to audio player state changes
     _player.playerStateStream.listen((playerState) {
+      // Aynı durum tekrar gelirse broadcast etme (canlı stream spam'ini önler)
+      if (playerState.playing == _lastPlaying &&
+          playerState.processingState == _lastProcessingState) {
+        return;
+      }
+      _lastPlaying = playerState.playing;
+      _lastProcessingState = playerState.processingState;
+
       print(
           "🔊 Player state changed: playing=${playerState.playing}, processing=${playerState.processingState}");
-      
-      // Update basic state immediately
+
+      // Kullanıcı pause yaptıysa idle state'i yok say - pause() zaten paused state set etti
+      if (_userPaused && playerState.processingState == ProcessingState.idle) {
+        return;
+      }
+
       _broadcastState(playerState);
-      
-      // If stopped, ensure notification is clear
+
+      // If stopped (by user stop, not pause), clear notification
       if (playerState.processingState == ProcessingState.idle && !playerState.playing) {
         mediaItem.add(null);
       }
     });
-
-    // Listen to current position for progress updates
-    _player.positionStream.listen((position) {
-      final oldState = playbackState.value;
-      playbackState.add(oldState.copyWith(
-        updatePosition: position,
-      ));
-    });
+    // Not: Canlı yayın için positionStream dinlemiyoruz (süre=0, gereksiz spam yaratır)
 
     print("✅ RadioAudioHandler initialized");
   }
@@ -413,7 +440,9 @@ class RadioAudioHandler extends BaseAudioHandler
       _becomingNoisySub?.cancel();
       _becomingNoisySub = session.becomingNoisyEventStream.listen((_) {
         print("🔇 Becoming noisy (headphones unplugged) - pausing");
-        _player.pause();
+        // _player.pause() değil! Küpeyi takúnınca state yönetimi bozulur.
+        // Kendi pause() metodumuzu çağır ki _userPaused ve bildirim doğru ayarlansın.
+        pause();
       });
 
       print("✅ Audio session configured for focus management");
@@ -446,6 +475,7 @@ class RadioAudioHandler extends BaseAudioHandler
         MediaAction.pause,
         MediaAction.stop,
         MediaAction.playPause,
+        MediaAction.setRating, // Android Auto kalp/favori butonu
       },
       androidCompactActionIndices: controls.length >= 2 ? const [0, 1] : const [0],
       processingState: {
@@ -464,7 +494,21 @@ class RadioAudioHandler extends BaseAudioHandler
   @override
   Future<void> play() async {
     try {
-      print("▶️ play() CALLED - Resuming playback...");
+      print("▶️ play() CALLED - state: ${_player.processingState}, playing: ${_player.playing}");
+      _userPaused = false; // Artık pause değil, çalıyor
+      // Canlı radyo stream'leri için her zaman yeniden bağlan (pause sonrası bile)
+      // Çünkü live stream'lerde pause sonrası buffer kaybolur
+      if (_currentStreamUrl != null) {
+        print("▶️ Restarting live stream: $_currentStreamUrl");
+        await playStation(
+          _currentStreamUrl!,
+          _currentTitle ?? '',
+          _currentArtist ?? '',
+          _currentArtUri,
+          stationId: _currentStationId,
+        );
+        return;
+      }
       await _player.play();
       print("▶️ play() COMPLETED");
     } catch (e) {
@@ -475,11 +519,26 @@ class RadioAudioHandler extends BaseAudioHandler
   @override
   Future<void> pause() async {
     try {
-      print("⏸️ pause() CALLED - Pausing playback...");
-      await _player.pause();
-      print("⏸️ pause() COMPLETED");
+      print("⏸️ pause() CALLED");
+      _userPaused = true;
+      await _player.stop(); // Canlı stream buffer'ını temizle
+      // Bildirim'i yaşatmak için paused state yayınla (idle değil!)
+      // Idle yayınlanırsa Android servisi öldürür ve radyo tamamen kapanır
+      playbackState.add(PlaybackState(
+        controls: [MediaControl.play, MediaControl.stop],
+        systemActions: const {
+          MediaAction.play,
+          MediaAction.stop,
+          MediaAction.playPause,
+        },
+        androidCompactActionIndices: const [0, 1],
+        processingState: AudioProcessingState.ready,
+        playing: false,
+      ));
+      print("⏸️ pause() COMPLETED - stream durduruldu, bildirim aktif kaldı");
     } catch (e) {
       print('❌ Error pausing audio: $e');
+      _userPaused = false;
     }
   }
 
@@ -487,17 +546,20 @@ class RadioAudioHandler extends BaseAudioHandler
   Future<void> stop() async {
     try {
       print("⏹️ stop() CALLED - Stopping playback...");
+      _userPaused = false; // Explicit stop - servisi tamamen durdur
       await _player.stop();
-      mediaItem.add(null);
+      // mediaItem temizlenmez - kullanıcı notifikasyon play butonuyla yeniden başlatabilsin
       playbackState.add(PlaybackState(
-        controls: [],
-        systemActions: const {},
-        androidCompactActionIndices: const [],
+        controls: [MediaControl.play],
+        systemActions: const {
+          MediaAction.play,
+          MediaAction.playPause,
+        },
+        androidCompactActionIndices: const [0],
         processingState: AudioProcessingState.idle,
         playing: false,
         updatePosition: Duration.zero,
       ));
-      await super.stop();
       print("⏹️ stop() COMPLETED");
     } catch (e) {
       print('❌ Error stopping audio: $e');
@@ -562,6 +624,13 @@ class RadioAudioHandler extends BaseAudioHandler
       final isFavorite = stationId != null && _favoriteIds.contains(stationId);
       
       // Set media item for system UI - Modern Android Auto tasarımı
+      // initial:// şeması ve boş/null URI'lar için güzel arka plan kullan
+      final bool hasValidArt = artUri != null &&
+          artUri.isNotEmpty &&
+          !artUri.startsWith('initial://');
+      final artUriParsed =
+          hasValidArt ? Uri.parse(artUri!) : await _getDefaultArtUri();
+
       final mediaItem = MediaItem(
         id: stationId ?? streamUrl,
         title: title,
@@ -570,7 +639,7 @@ class RadioAudioHandler extends BaseAudioHandler
         displayTitle: title,
         displaySubtitle: '🔴 CANLI YAYIN',
         displayDescription: artist,
-        artUri: artUri != null && artUri.isNotEmpty ? Uri.parse(artUri) : Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
+        artUri: artUriParsed,
         playable: true,
         duration: Duration.zero, // Radio streams don't have duration
         rating: Rating.newHeartRating(isFavorite), // Favori durumuna göre
@@ -584,6 +653,13 @@ class RadioAudioHandler extends BaseAudioHandler
           'android.media.metadata.DOWNLOAD_STATUS': 0, // İndirilebilir değil (canlı yayın)
         },
       );
+
+      // Mevcut istasyon bilgisini kaydet (play() butonundan yeniden başlatmak için)
+      _currentStreamUrl = streamUrl;
+      _currentTitle = title;
+      _currentArtist = artist;
+      _currentArtUri = artUri;
+      _currentStationId = stationId;
 
       // Update media item
       this.mediaItem.add(mediaItem);
@@ -801,13 +877,43 @@ class RadioAudioHandler extends BaseAudioHandler
     // Kategori seviyesi - o kategorideki istasyonları döndür
     if (_categoryInfo.containsKey(parentMediaId)) {
       print("🚗🚗🚗 Returning stations for category: $parentMediaId");
-      
+
       final stations = _radioCategories[parentMediaId] ?? [];
-      
+
       if (stations.isEmpty) {
         print("⚠️ Category $parentMediaId is empty, returning placeholder");
         final categoryName = _categoryInfo[parentMediaId]?['title'] ?? 'Bu kategori';
-        // Boş kategori için kullanıcı dostu mesaj
+
+        // Favoriler kategorisi: istasyonlar henüz yüklenmediyse ama favoriler varsa bilgilendir.
+        if (parentMediaId == 'favoriler') {
+          if (_favoriteIds.isEmpty) {
+            return [
+              MediaItem(
+                id: 'empty_favoriler',
+                title: '❤️ Favori Yok',
+                artist: 'Uygulamada radyo favorileyin',
+                displaySubtitle: 'Diğer kategorilere göz atın',
+                artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
+                playable: false,
+                extras: {'isEmpty': true},
+              )
+            ];
+          } else {
+            // İstasyon verisi hazır değil — kullanıcıyı yönlendir.
+            return [
+              MediaItem(
+                id: 'favorites_loading',
+                title: '⏳ Yükleniyor…',
+                artist: 'Lütfen uygulamayı açın, ardından geri dönün',
+                artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
+                playable: false,
+                extras: {'isEmpty': true},
+              )
+            ];
+          }
+        }
+
+        // Boş kategori için genel kullanıcı dostu mesaj
         return [
           MediaItem(
             id: 'empty_$parentMediaId',
@@ -1051,10 +1157,12 @@ class RadioAudioHandler extends BaseAudioHandler
   }
 
   // Android Auto arama callback metodu
+  // audio_service 0.18.x'de onSearch yok; arama Android Auto tarafından
+  // doğrudan search() metoduna yönlendirilir.
   @override
   Future<void> onSearch(String query, [Map<String, dynamic>? extras]) async {
     print("🔍🔍🔍 onSearch CALLED with query: '$query'");
-    // search() metodu otomatik olarak çağrılır, super çağrısı gerekli değil
+    // Framework otomatik olarak search() metodunu çağırır.
   }
 
   // Android Auto arama desteği
@@ -1101,5 +1209,223 @@ class RadioAudioHandler extends BaseAudioHandler
   // Favori durumunu kontrol et
   bool isFavorite(String stationId) {
     return _favoriteIds.contains(stationId);
+  }
+
+  // ────────────────────────────────────────────────────────────────────
+  // Android Auto güzel arka plan resmi oluşturma
+  // ────────────────────────────────────────────────────────────────────
+
+  /// Logo olmayan istasyonlar için güzel bir arka plan resmi döndürür.
+  /// Resim ilk çağrıda oluşturulur ve cache'lenir.
+  Future<Uri> _getDefaultArtUri() async {
+    if (_cachedDefaultArtworkPath != null) {
+      return Uri.file(_cachedDefaultArtworkPath!);
+    }
+    try {
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/radyo_tuneli_aa_art.png');
+      if (!await file.exists()) {
+        final bytes = await _generateDefaultArtworkBytes();
+        if (bytes != null) {
+          await file.writeAsBytes(bytes);
+          print('🎨 Android Auto arka plan resmi oluşturuldu: ${file.path}');
+        }
+      }
+      _cachedDefaultArtworkPath = file.path;
+      return Uri.file(file.path);
+    } catch (e) {
+      print('❌ Arka plan resmi oluşturma hatası: $e');
+      // Hata durumunda launcher icon'a geri dön
+      return Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher');
+    }
+  }
+
+  /// 1024×1024 piksel, koyu mor gradyanlı güzel bir PNG arka plan üretir.
+  Future<Uint8List?> _generateDefaultArtworkBytes() async {
+    try {
+      const double sz = 1024.0;
+      final recorder = ui.PictureRecorder();
+      final canvas = ui.Canvas(recorder, ui.Rect.fromLTWH(0, 0, sz, sz));
+
+      // ── 1. Arka plan: derin çok katmanlı gradyan ─────────────────
+      final bgPaint = ui.Paint()
+        ..shader = ui.Gradient.linear(
+          const ui.Offset(0, 0),
+          ui.Offset(sz, sz),
+          const [
+            ui.Color(0xFF0D0020), // sol üst - çok koyu mor
+            ui.Color(0xFF1A0035), // ortası
+            ui.Color(0xFF0A0018), // sağ alt - neredeyse siyah
+          ],
+          [0.0, 0.5, 1.0],
+        );
+      canvas.drawRect(ui.Rect.fromLTWH(0, 0, sz, sz), bgPaint);
+
+      // ── 2. Merkez radyal ışıma (mor/pembe ton) ─────────────────────
+      final centerGlow = ui.Paint()
+        ..shader = ui.Gradient.radial(
+          ui.Offset(sz * 0.5, sz * 0.46),
+          sz * 0.55,
+          const [
+            ui.Color(0x607C3AED), // vibrant violet
+            ui.Color(0x30A855F7), // mor-pembe
+            ui.Color(0x00000000),
+          ],
+          [0.0, 0.45, 1.0],
+        );
+      canvas.drawRect(ui.Rect.fromLTWH(0, 0, sz, sz), centerGlow);
+
+      // ── 3. Sağ alt köşe aksanı (sıcak renk) ──────────────────────
+      final accentGlow = ui.Paint()
+        ..shader = ui.Gradient.radial(
+          ui.Offset(sz * 0.82, sz * 0.78),
+          sz * 0.35,
+          const [
+            ui.Color(0x40EC4899), // pembe-mor
+            ui.Color(0x00000000),
+          ],
+          [0.0, 1.0],
+        );
+      canvas.drawRect(ui.Rect.fromLTWH(0, 0, sz, sz), accentGlow);
+
+      // ── 4. Sol üst köşe aksanı (mavi ton) ────────────────────────
+      final blueAccent = ui.Paint()
+        ..shader = ui.Gradient.radial(
+          ui.Offset(sz * 0.15, sz * 0.2),
+          sz * 0.28,
+          const [
+            ui.Color(0x304F46E5), // indigo
+            ui.Color(0x00000000),
+          ],
+          [0.0, 1.0],
+        );
+      canvas.drawRect(ui.Rect.fromLTWH(0, 0, sz, sz), blueAccent);
+
+      // ── 5. Radyo dalgası halkaları ────────────────────────────────
+      for (int i = 1; i <= 9; i++) {
+        final radius = sz * 0.07 * i;
+        final opacity = (0.18 - i * 0.018).clamp(0.02, 0.18);
+        final ringPaint = ui.Paint()
+          ..color = ui.Color.fromARGB(
+              (opacity * 255).round(), 167, 105, 255)
+          ..style = ui.PaintingStyle.stroke
+          ..strokeWidth = sz * 0.002;
+        canvas.drawCircle(ui.Offset(sz * 0.5, sz * 0.46), radius, ringPaint);
+      }
+
+      // ── 6. İnce parıltı çizgileri (dekoratif) ────────────────────
+      final shimmerPaint = ui.Paint()
+        ..color = const ui.Color(0x157C3AED)
+        ..strokeWidth = sz * 0.001;
+      for (int i = 0; i < 8; i++) {
+        final angle = i * 3.14159 / 4;
+        final x2 = sz * 0.5 + sz * 0.48 * (i % 2 == 0 ? 1 : -1) *
+            (angle < 1.6 ? 0.9 : 0.6);
+        final y2 = sz * 0.5 + sz * 0.48 *
+            (i < 4 ? -0.5 : 0.7);
+        canvas.drawLine(
+          ui.Offset(sz * 0.5, sz * 0.46),
+          ui.Offset(x2, y2),
+          shimmerPaint,
+        );
+      }
+
+      // ── 7. Radyo ikonu (büyük daireli merkez) ─────────────────────
+      final circleBg = ui.Paint()
+        ..shader = ui.Gradient.radial(
+          ui.Offset(sz * 0.5, sz * 0.44),
+          sz * 0.16,
+          const [
+            ui.Color(0xFF7C3AED),
+            ui.Color(0xFF5B21B6),
+          ],
+          [0.0, 1.0],
+        );
+      canvas.drawCircle(ui.Offset(sz * 0.5, sz * 0.44), sz * 0.16, circleBg);
+
+      // Dış çember
+      final circleBorder = ui.Paint()
+        ..color = const ui.Color(0x80A78BFA)
+        ..style = ui.PaintingStyle.stroke
+        ..strokeWidth = sz * 0.004;
+      canvas.drawCircle(ui.Offset(sz * 0.5, sz * 0.44), sz * 0.165, circleBorder);
+
+      // ── 8. "RT" baş harfi büyük ────────────────────────────────────
+      final rtBuilder = ui.ParagraphBuilder(ui.ParagraphStyle(
+        textAlign: ui.TextAlign.center,
+        fontSize: sz * 0.18,
+        fontWeight: ui.FontWeight.w900,
+      ))
+        ..pushStyle(ui.TextStyle(
+          color: const ui.Color(0xFFFFFFFF),
+          fontSize: sz * 0.18,
+          fontWeight: ui.FontWeight.w900,
+          letterSpacing: -sz * 0.006,
+        ))
+        ..addText('RT');
+      final rtPara = rtBuilder.build();
+      rtPara.layout(ui.ParagraphConstraints(width: sz));
+      canvas.drawParagraph(
+          rtPara, ui.Offset(0, sz * 0.44 - rtPara.height * 0.5));
+
+      // ── 9. "Radyo Tüneli" başlık ──────────────────────────────────
+      final titleBuilder = ui.ParagraphBuilder(ui.ParagraphStyle(
+        textAlign: ui.TextAlign.center,
+        fontSize: sz * 0.055,
+        fontWeight: ui.FontWeight.w700,
+      ))
+        ..pushStyle(ui.TextStyle(
+          color: const ui.Color(0xFFEDE9FE),
+          fontSize: sz * 0.055,
+          fontWeight: ui.FontWeight.w700,
+          letterSpacing: sz * 0.004,
+        ))
+        ..addText('RADYO TÜNELİ');
+      final titlePara = titleBuilder.build();
+      titlePara.layout(ui.ParagraphConstraints(width: sz));
+      canvas.drawParagraph(titlePara, ui.Offset(0, sz * 0.65));
+
+      // ── 10. Altyazı ───────────────────────────────────────────────
+      final subBuilder = ui.ParagraphBuilder(ui.ParagraphStyle(
+        textAlign: ui.TextAlign.center,
+        fontSize: sz * 0.032,
+      ))
+        ..pushStyle(ui.TextStyle(
+          color: const ui.Color(0x99C4B5FD),
+          fontSize: sz * 0.032,
+          letterSpacing: sz * 0.003,
+        ))
+        ..addText('Türk Radyo İstasyonları');
+      final subPara = subBuilder.build();
+      subPara.layout(ui.ParagraphConstraints(width: sz));
+      canvas.drawParagraph(subPara, ui.Offset(0, sz * 0.72));
+
+      // ── 11. Dekoratif yatay çizgiler ─────────────────────────────
+      final linePaint = ui.Paint()
+        ..color = const ui.Color(0x447C3AED)
+        ..strokeWidth = sz * 0.002;
+      canvas.drawLine(
+        ui.Offset(sz * 0.25, sz * 0.62),
+        ui.Offset(sz * 0.75, sz * 0.62),
+        linePaint,
+      );
+      final linePaint2 = ui.Paint()
+        ..color = const ui.Color(0x257C3AED)
+        ..strokeWidth = sz * 0.001;
+      canvas.drawLine(
+        ui.Offset(sz * 0.32, sz * 0.78),
+        ui.Offset(sz * 0.68, sz * 0.78),
+        linePaint2,
+      );
+
+      final picture = recorder.endRecording();
+      final image = await picture.toImage(sz.toInt(), sz.toInt());
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      image.dispose();
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      print('❌ Artwork bytes üretme hatası: $e');
+      return null;
+    }
   }
 }

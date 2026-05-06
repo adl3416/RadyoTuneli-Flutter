@@ -242,7 +242,17 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
     }
 
     try {
-      state = state.copyWith(isLoading: true, error: null);
+      // currentStation'ı hemen set et - mini player anında görünsün
+      state = state.copyWith(
+        isLoading: true,
+        error: null,
+        currentStation: CurrentStationInfo(
+          id: station.id,
+          name: station.name,
+          artist: station.description ?? 'Turkish Radio',
+          logoUrl: station.logoUrl,
+        ),
+      );
 
       // Cast to RadioAudioHandler for playStation method
       final radioHandler = audioHandler as RadioAudioHandler;
@@ -251,7 +261,7 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
         station.name,
         station.description ?? 'Turkish Radio',
         station.logoUrl,
-        stationId: station.id, // Add station ID parameter
+        stationId: station.id,
       );
 
       // Update recently played with new provider
@@ -269,7 +279,11 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
     if (audioHandler == null) return;
 
     try {
+      // audioHandler.pause() çağrılmalı — stop() değil!
+      // stop() servisi öldürür, bildirim kaybolur ve _userPaused flag'i sıfırlanır.
+      // pause() ise stream'i durdurur, bildirimi canlı tutar.
       await audioHandler.pause();
+      state = state.copyWith(isPlaying: false, isLoading: false);
     } catch (e) {
       state = state.copyWith(error: _getErrorMessage(e));
     }
@@ -292,10 +306,11 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
 
     try {
       await audioHandler.stop();
+      // currentStation temizlenmez - mini player görünür kalır
+      // ve kullanıcı play ile yeniden başlatabilir
       state = state.copyWith(
         isPlaying: false,
         isLoading: false,
-        currentStation: null,
       );
     } catch (e) {
       state = state.copyWith(error: _getErrorMessage(e));

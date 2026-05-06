@@ -41,7 +41,7 @@ class SettingsScreen extends ConsumerWidget {
       appBarBg = AppTheme.headerPurple;
       appBarFg = Colors.white;
     }
-    
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -80,65 +80,63 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
-              // --- AYARLAR LİSTESİ ---
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                    children: [
-                      _buildThemeSection(context, ref, themeMode),
-                      const SizedBox(height: 24),
-                      _buildAppSettingsSection(context, ref, appSettings),
-                      const SizedBox(height: 24),
-                      _buildColorSchemeSection(context, ref),
-                      const Divider(height: 48),
-                      
-                      _buildSettingsTile(
-                        context,
-                        'Gizlilik Politikası',
-                        'Datenschutzerklärung',
-                        Icons.privacy_tip_outlined,
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
-                      ),
-                      _buildSettingsTile(
-                        context,
-                        'Yasal Bilgiler (§5 TMG)',
-                        'Impressum',
-                        Icons.gavel_outlined,
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImpressumScreen())),
-                      ),
-                      _buildSettingsTile(
-                        context,
-                        'Kullanım Koşulları',
-                        'Nutzungsbedingungen',
-                        Icons.description_outlined,
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
-                      ),
-                      const Divider(height: 32),
-                      _buildSettingsTile(
-                        context,
-                        'Tüm Verileri Sil',
-                        'Favoriler, ayarlar ve geçmişi temizle',
-                        Icons.delete_forever_outlined,
-                        () => _showDeleteAllDataDialog(context, ref),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildSettingsTile(
-                        context,
-                        'Hakkında',
-                        'Versiyon 1.0.0',
-                        Icons.info_outline,
-                        () {},
-                      ),
-                      const SizedBox(height: 120), // Bottom player payı
-                    ],
-                  ),
+            // --- AYARLAR LİSTESİ ---
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  children: [
+                    _buildThemeSection(context, ref, themeMode),
+                    const SizedBox(height: 24),
+                    _buildAppSettingsSection(context, ref, appSettings),
+                    const SizedBox(height: 24),
+                    _buildColorSchemeSection(context, ref),
+                    const Divider(height: 48),
+                    _buildSettingsTile(
+                      context,
+                      'Gizlilik Politikası',
+                      'Datenschutzerklärung',
+                      Icons.privacy_tip_outlined,
+                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
+                    ),
+                    _buildSettingsTile(
+                      context,
+                      'Yasal Bilgiler (§5 TMG)',
+                      'Impressum',
+                      Icons.gavel_outlined,
+                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImpressumScreen())),
+                    ),
+                    _buildSettingsTile(
+                      context,
+                      'Kullanım Koşulları',
+                      'Nutzungsbedingungen',
+                      Icons.description_outlined,
+                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
+                    ),
+                    const Divider(height: 32),
+                    _buildSettingsTile(
+                      context,
+                      'Tüm Verileri Sil',
+                      'Favoriler, ayarlar ve geçmişi temizle',
+                      Icons.delete_forever_outlined,
+                      () => _showDeleteAllDataDialog(context, ref),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildSettingsTile(
+                      context,
+                      'Hakkında',
+                      'Versiyon 1.0.0',
+                      Icons.info_outline,
+                      () {},
+                    ),
+                    const SizedBox(height: 120), // Bottom player payı
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

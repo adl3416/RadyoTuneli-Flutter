@@ -34,14 +34,17 @@ Future<void> _initializeAudioService() async {
       builder: () => handler,
       config: AudioServiceConfig(
         androidNotificationChannelId:
-            'com.turkradyo.adl.de.turkradyo.channel.audio',
+            'com.turkradyo.bsr.de.turkradyo.channel.audio',
         androidNotificationChannelName: 'Radyo Tüneli',
         androidNotificationChannelDescription:
             'Radyo Tüneli - Türk Radyo İstasyonları',
         androidNotificationOngoing: false,
         androidShowNotificationBadge: true,
         androidNotificationIcon: 'mipmap/ic_launcher',
-        androidStopForegroundOnPause: true,
+        // false = servis pause'da bile foreground'da kalır.
+        // true yapılırsa Android servisi arka plana alır ve bildirim
+        // butonları Android 12+'de yanıt vermez (ROOT CAUSE).
+        androidStopForegroundOnPause: false,
         artDownscaleWidth: 256,
         artDownscaleHeight: 256,
         fastForwardInterval: const Duration(seconds: 10),

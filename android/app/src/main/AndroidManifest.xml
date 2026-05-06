@@ -65,20 +65,37 @@
             android:name="com.ryanheise.audioservice.AudioService"
             android:exported="true"
             android:enabled="true"
+            android:stopWithTask="false"
+            android:label="Radyo Tüneli"
             android:foregroundServiceType="mediaPlayback">
-            
-            <!-- MediaBrowserService ve MEDIA_BUTTON intent filters -->
+
+            <!-- Android Auto / MediaBrowserService connection (must be standalone) -->
             <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
-            
-            <!-- Android Auto support -->
+
+            <!-- Physical/headset media button events -->
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+
+            <!-- Android Auto legacy CarMediaBrowserService -->
             <intent-filter>
                 <action android:name="com.google.android.gms.car.media.CarMediaBrowserService" />
             </intent-filter>
-                
+
         </service>
+
+        <!-- ZORUNLU: audio_service bildirim butonları BroadcastReceiver üzerinden çalışır.
+             Bu receiver kayıtlı değilse PendingIntent.getBroadcast() sessizce düşer
+             ve bildirim butonları (play/pause) hiçbir zaman MediaSession callback'ine ulaşmaz. -->
+        <receiver
+            android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
