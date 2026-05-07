@@ -41,10 +41,10 @@ Future<void> _initializeAudioService() async {
         androidNotificationOngoing: false,
         androidShowNotificationBadge: true,
         androidNotificationIcon: 'mipmap/ic_launcher',
-        // false = servis pause'da bile foreground'da kalır.
-        // true yapılırsa Android servisi arka plana alır ve bildirim
-        // butonları Android 12+'de yanıt vermez (ROOT CAUSE).
-        androidStopForegroundOnPause: false,
+        // true = pause/stop'ta servis arka plana geçer, bildirim sürükleyerek
+        // sililebilir hale gelir. Butonların çalışması artık manifest'teki
+        // MediaButtonReceiver sayesinde garantilendi.
+        androidStopForegroundOnPause: true,
         artDownscaleWidth: 256,
         artDownscaleHeight: 256,
         fastForwardInterval: const Duration(seconds: 10),

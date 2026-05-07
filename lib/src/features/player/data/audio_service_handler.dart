@@ -461,7 +461,7 @@ class RadioAudioHandler extends BaseAudioHandler
 
     if (processingState == ProcessingState.loading ||
         processingState == ProcessingState.buffering) {
-      controls = [MediaControl.stop];
+      controls = [MediaControl.pause, MediaControl.stop];
     } else if (isPlaying) {
       controls = [MediaControl.pause, MediaControl.stop];
     } else {
@@ -548,18 +548,23 @@ class RadioAudioHandler extends BaseAudioHandler
       print("⏹️ stop() CALLED - Stopping playback...");
       _userPaused = false; // Explicit stop - servisi tamamen durdur
       await _player.stop();
-      // mediaItem temizlenmez - kullanıcı notifikasyon play butonuyla yeniden başlatabilsin
+      
+      // Bildirimin tamamen kapanması için mediaItem'ı temizle
+      mediaItem.add(null);
+      
+      // State'i tamamen durdurulmuş olarak ayarla ve bildirim kontrollerini kaldır
       playbackState.add(PlaybackState(
-        controls: [MediaControl.play],
-        systemActions: const {
-          MediaAction.play,
-          MediaAction.playPause,
-        },
-        androidCompactActionIndices: const [0],
+        controls: [],
+        systemActions: const {},
+        androidCompactActionIndices: const [],
         processingState: AudioProcessingState.idle,
         playing: false,
         updatePosition: Duration.zero,
       ));
+      
+      // audio_service backend'ine stop çağrısını ilet ki OS servisi kapatsın
+      await super.stop();
+      
       print("⏹️ stop() COMPLETED");
     } catch (e) {
       print('❌ Error stopping audio: $e');

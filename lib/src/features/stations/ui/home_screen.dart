@@ -177,6 +177,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           ref.read(playerStateProvider.notifier).pause();
                                         } else {
                                           ref.read(playerStateProvider.notifier).playStation(station);
+                                          // Arama açıksa kapat ve ana sayfaya dön
+                                          if (_isSearchActive) {
+                                            setState(() => _isSearchActive = false);
+                                            _searchController.clear();
+                                            ref.read(searchQueryProvider.notifier).state = '';
+                                            _searchFocusNode.unfocus();
+                                          }
                                         }
                                       },
                                       onFavoriteToggle: () => ref.read(favoritesProvider.notifier).toggleFavorite(station.id),
