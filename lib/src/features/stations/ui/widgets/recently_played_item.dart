@@ -29,6 +29,10 @@ class RecentlyPlayedStationItem extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppConstants.surfaceVariant,
                 borderRadius: BorderRadius.circular(30), // 25'den 30'a büyütüldü
+                border: Border.all(
+                  color: Theme.of(context).primaryColor,
+                  width: 2,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),

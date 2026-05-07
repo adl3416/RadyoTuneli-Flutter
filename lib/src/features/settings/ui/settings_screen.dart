@@ -9,6 +9,7 @@ import '../../../core/utils/snackbar_helper.dart';
 import '../../legal/ui/impressum_screen.dart';
 import '../../legal/ui/privacy_policy_screen.dart';
 import '../../legal/ui/terms_screen.dart';
+import '../../../app/main_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -44,6 +45,7 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
+      drawer: _buildDrawer(context, ref),
       appBar: AppBar(
         toolbarHeight: 0,
         backgroundColor: appBarBg,
@@ -68,6 +70,12 @@ class SettingsScreen extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    IconButton(
+                      icon: Icon(Icons.menu, color: appBarFg),
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
                     Text(
                       'Ayarlar',
                       style: TextStyle(
@@ -333,6 +341,43 @@ class SettingsScreen extends ConsumerWidget {
               }
             },
             child: const Text('SİL', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context, WidgetRef ref) {
+    return Drawer(
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 150,
+            color: AppTheme.headerPurple,
+            padding: const EdgeInsets.only(top: 50, left: 20),
+            child: const Text('Radyo Tüneli', style: TextStyle(color: Colors.white, fontSize: 24)),
+          ),
+          ListTile(
+            leading: const Icon(Icons.home),
+            title: const Text('Ana Sayfa'),
+            onTap: () {
+              Navigator.pop(context);
+              ref.read(selectedTabProvider.notifier).state = 0;
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.favorite),
+            title: const Text('Favoriler'),
+            onTap: () {
+              Navigator.pop(context);
+              ref.read(selectedTabProvider.notifier).state = 1;
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Ayarlar'),
+            onTap: () => Navigator.pop(context),
           ),
         ],
       ),

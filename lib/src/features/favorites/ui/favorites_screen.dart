@@ -35,14 +35,14 @@ class FavoritesScreen extends ConsumerWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
+      drawer: _buildDrawer(context, ref),
       body: Container(
         color: appBarBg ?? Theme.of(context).appBarTheme.backgroundColor,
         child: SafeArea(
           bottom: false,
           top: false,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
+          child: Column(
+            children: [
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -58,6 +58,12 @@ class FavoritesScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Row(
                       children: [
+                        IconButton(
+                          icon: Icon(Icons.menu, color: appBarFg ?? Colors.white),
+                          onPressed: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                        ),
                         Expanded(
                           child: Text(
                             'Favoriler',
@@ -130,6 +136,43 @@ class FavoritesScreen extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context, WidgetRef ref) {
+    return Drawer(
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 150,
+            color: AppTheme.headerPurple,
+            padding: const EdgeInsets.only(top: 50, left: 20),
+            child: const Text('Radyo Tüneli', style: TextStyle(color: Colors.white, fontSize: 24)),
+          ),
+          ListTile(
+            leading: const Icon(Icons.home),
+            title: const Text('Ana Sayfa'),
+            onTap: () {
+              Navigator.pop(context);
+              ref.read(selectedTabProvider.notifier).state = 0;
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.favorite),
+            title: const Text('Favoriler'),
+            onTap: () => Navigator.pop(context),
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Ayarlar'),
+            onTap: () {
+              Navigator.pop(context);
+              ref.read(selectedTabProvider.notifier).state = 2;
+            },
+          ),
+        ],
       ),
     );
   }
