@@ -28,13 +28,7 @@ class MainScreen extends ConsumerWidget {
 
     return Scaffold(
       extendBody: true,
-      appBar: selectedTab == 0 || selectedTab == 1 ? null : AppBar(
-        title: const Text('Favoriler'),
-        elevation: 0,
-        centerTitle: true,
-        backgroundColor: registryTheme?.appBarTheme.backgroundColor,
-        foregroundColor: registryTheme?.appBarTheme.foregroundColor,
-      ),
+      appBar: null,
       body: IndexedStack(
         index: selectedTab,
         children: screens,

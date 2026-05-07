@@ -10,6 +10,8 @@ import '../../legal/ui/impressum_screen.dart';
 import '../../legal/ui/privacy_policy_screen.dart';
 import '../../legal/ui/terms_screen.dart';
 import '../../../app/main_screen.dart';
+import '../../favorites/data/favorites_provider.dart';
+import '../../stations/data/stations_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -44,108 +46,107 @@ class SettingsScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       drawer: _buildDrawer(context, ref),
-      appBar: AppBar(
-        toolbarHeight: 0,
-        backgroundColor: appBarBg,
-        elevation: 0,
-      ),
-      body: Container(
-        color: appBarBg,
-        child: Column(
-          children: [
-            // --- HEADER BAŞLIĞI ---
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: appBarBg,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.menu, color: appBarFg),
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
+      body: Builder(
+        builder: (builderContext) {
+          return Container(
+            color: appBarBg,
+            child: Column(
+              children: [
+                // --- HEADER BAŞLIĞI ---
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: appBarBg,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(12),
+                      bottomRight: Radius.circular(12),
                     ),
-                    Text(
-                      'Ayarlar',
-                      style: TextStyle(
-                        color: appBarFg,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.menu, color: appBarFg),
+                          onPressed: () {
+                            Scaffold.of(builderContext).openDrawer();
+                          },
+                        ),
+                        Text(
+                          'Ayarlar',
+                          style: TextStyle(
+                            color: appBarFg,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                // --- AYARLAR LİSTESİ ---
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      children: [
+                        _buildThemeSection(context, ref, themeMode),
+                        const SizedBox(height: 24),
+                        _buildAppSettingsSection(context, ref, appSettings),
+                        const SizedBox(height: 24),
+                        _buildColorSchemeSection(context, ref),
+                        const Divider(height: 48),
+                        _buildSettingsTile(
+                          context,
+                          'Gizlilik Politikası',
+                          'Datenschutzerklärung',
+                          Icons.privacy_tip_outlined,
+                          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
+                        ),
+                        _buildSettingsTile(
+                          context,
+                          'Yasal Bilgiler (§5 TMG)',
+                          'Impressum',
+                          Icons.gavel_outlined,
+                          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImpressumScreen())),
+                        ),
+                        _buildSettingsTile(
+                          context,
+                          'Kullanım Koşulları',
+                          'Nutzungsbedingungen',
+                          Icons.description_outlined,
+                          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
+                        ),
+                        const Divider(height: 32),
+                        _buildSettingsTile(
+                          context,
+                          'Tüm Verileri Sil',
+                          'Ayarlar ve geçmişi temizle',
+                          Icons.delete_forever_outlined,
+                          () => _showDeleteAllDataDialog(context, ref),
+                        ),
+                        const SizedBox(height: 8),
+                        _buildSettingsTile(
+                          context,
+                          'Hakkında',
+                          'Versiyon 1.0.0',
+                          Icons.info_outline,
+                          () {},
+                        ),
+                        const SizedBox(height: 120), // Bottom player payı
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            // --- AYARLAR LİSTESİ ---
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                color: Theme.of(context).scaffoldBackgroundColor,
-                child: ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                  children: [
-                    _buildThemeSection(context, ref, themeMode),
-                    const SizedBox(height: 24),
-                    _buildAppSettingsSection(context, ref, appSettings),
-                    const SizedBox(height: 24),
-                    _buildColorSchemeSection(context, ref),
-                    const Divider(height: 48),
-                    _buildSettingsTile(
-                      context,
-                      'Gizlilik Politikası',
-                      'Datenschutzerklärung',
-                      Icons.privacy_tip_outlined,
-                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
-                    ),
-                    _buildSettingsTile(
-                      context,
-                      'Yasal Bilgiler (§5 TMG)',
-                      'Impressum',
-                      Icons.gavel_outlined,
-                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImpressumScreen())),
-                    ),
-                    _buildSettingsTile(
-                      context,
-                      'Kullanım Koşulları',
-                      'Nutzungsbedingungen',
-                      Icons.description_outlined,
-                      () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
-                    ),
-                    const Divider(height: 32),
-                    _buildSettingsTile(
-                      context,
-                      'Tüm Verileri Sil',
-                      'Favoriler, ayarlar ve geçmişi temizle',
-                      Icons.delete_forever_outlined,
-                      () => _showDeleteAllDataDialog(context, ref),
-                    ),
-                    const SizedBox(height: 8),
-                    _buildSettingsTile(
-                      context,
-                      'Hakkında',
-                      'Versiyon 1.0.0',
-                      Icons.info_outline,
-                      () {},
-                    ),
-                    const SizedBox(height: 120), // Bottom player payı
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -335,6 +336,13 @@ class SettingsScreen extends ConsumerWidget {
             onPressed: () async {
               final prefs = await SharedPreferences.getInstance();
               await prefs.clear();
+              
+              // Provider'ları invalidate et
+              ref.invalidate(favoritesProvider);
+              ref.invalidate(appSettingsProvider);
+              ref.invalidate(recentlyPlayedNotifierProvider);
+              ref.invalidate(actualRecentlyPlayedStationsProvider);
+              
               if (context.mounted) {
                 Navigator.pop(context);
                 SnackbarHelper.showSuccess(context, 'Tüm veriler başarıyla silindi');
