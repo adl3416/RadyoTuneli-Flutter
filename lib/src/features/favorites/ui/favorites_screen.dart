@@ -40,8 +40,9 @@ class FavoritesScreen extends ConsumerWidget {
         child: SafeArea(
           bottom: false,
           top: false,
-          child: Column(
-            children: [
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(

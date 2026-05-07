@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../features/stations/ui/home_screen.dart';
 import '../features/favorites/ui/favorites_screen.dart';
-import '../features/settings/ui/settings_screen.dart';
 import '../features/player/ui/mini_player.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_registry.dart';
@@ -21,15 +20,14 @@ class MainScreen extends ConsumerWidget {
     final screens = [
       const HomeScreen(),
       const FavoritesScreen(),
-      const SettingsScreen(),
     ];
 
     final registryTheme = getThemeByName(ref.watch(colorSchemeProvider));
 
     return Scaffold(
       extendBody: true,
-      appBar: selectedTab == 0 || selectedTab == 1 || selectedTab == 2 ? null : AppBar(
-        title: Text(selectedTab == 1 ? 'Favoriler' : 'Ayarlar'),
+      appBar: selectedTab == 0 || selectedTab == 1 ? null : AppBar(
+        title: const Text('Favoriler'),
         elevation: 0,
         centerTitle: true,
         backgroundColor: registryTheme?.appBarTheme.backgroundColor,
@@ -150,9 +148,6 @@ class MainScreen extends ConsumerWidget {
                     case 1: // Favoriler
                       HapticFeedback.mediumImpact();
                       break;
-                    case 2: // Ayarlar
-                      HapticFeedback.heavyImpact();
-                      break;
                     default:
                       HapticFeedback.selectionClick();
                   }
@@ -179,11 +174,6 @@ class MainScreen extends ConsumerWidget {
                     icon: Icon(Icons.favorite_outline),
                     activeIcon: Icon(Icons.favorite),
                     label: 'Favoriler',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.settings_outlined),
-                    activeIcon: Icon(Icons.settings),
-                    label: 'Ayarlar',
                   ),
                 ],
               ),

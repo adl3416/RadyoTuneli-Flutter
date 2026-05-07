@@ -18,17 +18,17 @@ class RecentlyPlayedStationItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 70, // 80'den 70'e küçültüldü
+        width: 75, // 60'dan 75'e büyütüldü
         margin: const EdgeInsets.only(right: 12), // 16'dan 12'ye küçültüldü
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 50, // 60'dan 50'ye küçültüldü
-              height: 50, // 60'dan 50'ye küçültüldü
+              width: 60, // 45'den 60'a büyütüldü
+              height: 60, // 45'den 60'a büyütüldü
               decoration: BoxDecoration(
                 color: AppConstants.surfaceVariant,
-                borderRadius: BorderRadius.circular(25), // 30'dan 25'e küçültüldü
+                borderRadius: BorderRadius.circular(30), // 25'den 30'a büyütüldü
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
@@ -38,7 +38,7 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(25), // 30'dan 25'e küçültüldü
+                borderRadius: BorderRadius.circular(30), // 25'den 30'a büyütüldü
                 child: CachedNetworkImage(
                   imageUrl: station.logoUrl,
                   fit: BoxFit.cover,
@@ -70,7 +70,7 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                       fontSize: 10, // 12'den 10'a küçültüldü
                     ),
                 textAlign: TextAlign.center,
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),

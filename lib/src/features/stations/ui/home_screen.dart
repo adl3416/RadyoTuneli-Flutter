@@ -106,7 +106,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           if (searchQuery.isEmpty) ...[
                             SliverToBoxAdapter(
                               child: Padding(
-                                padding: const EdgeInsets.all(16),
+                                padding: const EdgeInsets.only(left: 16, right: 16, top: 1, bottom: 4),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
@@ -124,7 +124,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                             SliverToBoxAdapter(
                               child: SizedBox(
-                                height: 82,
+                                height: 85, // 70'den 85'e büyütüldü
                                 child: recentlyPlayedAsync.when(
                                   data: (recentlyPlayedStations) => ListView.builder(
                                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -145,16 +145,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                             const SliverToBoxAdapter(child: SizedBox(height: 24)),
                           ],
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(
-                                searchQuery.isNotEmpty ? 'Arama Sonuçları (${filteredStations.length})' : 'Tüm İstasyonlar (${filteredStations.length})',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                            ),
-                          ),
-                          const SliverToBoxAdapter(child: SizedBox(height: 16)),
                           if (filteredStations.isEmpty)
                             SliverToBoxAdapter(child: _buildEmptyState(context, searchQuery))
                           else
@@ -248,6 +238,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onTap: () {
                 Navigator.pop(context);
                 ref.read(selectedTabProvider.notifier).state = 1;
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Ayarlar'),
+              onTap: () {
+                Navigator.pop(context);
+                ref.read(selectedTabProvider.notifier).state = 2;
               },
             ),
         ],
