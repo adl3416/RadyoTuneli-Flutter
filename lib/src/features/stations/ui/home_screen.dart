@@ -98,68 +98,123 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               // Son Dinlenenler — sabit bölüm, radyo listesiyle birlikte kaymaz
               if (searchQuery.isEmpty)
-                Container(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 8, top: 8, bottom: 4),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Son Dinlenenler',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                            recentlyPlayedAsync.maybeWhen(
-                              data: (list) => list.isNotEmpty
-                                  ? TextButton(
-                                      onPressed: () {
-                                        HapticFeedback.lightImpact();
-                                        ref.read(recentlyPlayedNotifierProvider.notifier).clearRecent();
-                                      },
-                                      child: const Text('Temizle'),
-                                    )
-                                  : const SizedBox.shrink(),
-                              orElse: () => const SizedBox.shrink(),
-                            ),
-                          ],
-                        ),
+                Builder(builder: (context) {
+                  final primary = Theme.of(context).primaryColor;
+                  final isDark = Theme.of(context).brightness == Brightness.dark;
+                  final bezelColor = isDark
+                      ? Color.lerp(primary, Colors.black, 0.55)!
+                      : Color.lerp(primary, Colors.white, 0.15)!;
+                  final cardBg = isDark
+                      ? Color.lerp(primary, Colors.black, 0.82)!
+                      : Color.lerp(primary, Colors.white, 0.88)!;
+                  final onBezel = bezelColor.computeLuminance() > 0.4
+                      ? Colors.black87
+                      : Colors.white;
+
+                  return Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: bezelColor, width: 3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: primary.withValues(alpha: 0.30),
+                            blurRadius: 10,
+                            spreadRadius: 1,
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.18),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 100,
-                        child: recentlyPlayedAsync.when(
-                          data: (recentlyPlayedStations) => recentlyPlayedStations.isEmpty
-                              ? Center(
-                                  child: Text(
-                                    'Henüz radyo dinlemediniz',
-                                    style: TextStyle(
-                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
-                                      fontSize: 13,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Başlık çubuğu — tema rengiyle
+                          Container(
+                            decoration: BoxDecoration(
+                              color: bezelColor,
+                              borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
+                            ),
+                            padding: const EdgeInsets.only(left: 12, right: 4, top: 5, bottom: 5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.tv, size: 14, color: onBezel.withValues(alpha: 0.8)),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Son Dinlenenler',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                        color: onBezel,
+                                      ),
                                     ),
-                                  ),
-                                )
-                              : ListView.builder(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: recentlyPlayedStations.length,
-                                  itemBuilder: (context, index) {
-                                    final station = recentlyPlayedStations[index];
-                                    return RecentlyPlayedStationItem(
-                                      station: station,
-                                      onTap: () => ref.read(playerStateProvider.notifier).playStation(station),
-                                    );
-                                  },
+                                  ],
                                 ),
-                          loading: () => const SizedBox.shrink(),
-                          error: (_, __) => const SizedBox.shrink(),
-                        ),
+                                recentlyPlayedAsync.maybeWhen(
+                                  data: (list) => list.isNotEmpty
+                                      ? TextButton(
+                                          style: TextButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                                            minimumSize: Size.zero,
+                                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            foregroundColor: onBezel.withValues(alpha: 0.75),
+                                          ),
+                                          onPressed: () {
+                                            HapticFeedback.lightImpact();
+                                            ref.read(recentlyPlayedNotifierProvider.notifier).clearRecent();
+                                          },
+                                          child: const Text('Temizle', style: TextStyle(fontSize: 12)),
+                                        )
+                                      : const SizedBox.shrink(),
+                                  orElse: () => const SizedBox.shrink(),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Ekran alanı
+                          SizedBox(
+                            height: 108,
+                            child: recentlyPlayedAsync.when(
+                              data: (recentlyPlayedStations) => recentlyPlayedStations.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        'Henüz radyo dinlemediniz',
+                                        style: TextStyle(
+                                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    )
+                                  : ListView.builder(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: recentlyPlayedStations.length,
+                                      itemBuilder: (context, index) {
+                                        final station = recentlyPlayedStations[index];
+                                        return RecentlyPlayedStationItem(
+                                          station: station,
+                                          onTap: () => ref.read(playerStateProvider.notifier).playStation(station),
+                                        );
+                                      },
+                                    ),
+                              loading: () => const SizedBox.shrink(),
+                              error: (_, __) => const SizedBox.shrink(),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                }),
               // Radyo listesi — sadece bu kısım kaydırılır
               Expanded(
                 child: Container(

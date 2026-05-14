@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../domain/station_model.dart';
 
 class RecentlyPlayedStationItem extends StatelessWidget {
@@ -16,15 +15,17 @@ class RecentlyPlayedStationItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bezelColor = isDark ? const Color(0xFF2A2A2A) : const Color(0xFF1C1C1E);
-    final screenBg = isDark ? const Color(0xFF0D0D0D) : const Color(0xFF111111);
-    final glowColor = Theme.of(context).primaryColor;
+    final primary = Theme.of(context).primaryColor;
+    final bezelColor = isDark
+        ? Color.lerp(primary, Colors.black, 0.55)!
+        : Color.lerp(primary, Colors.white, 0.15)!;
+    const screenBg = Color(0xFFF5F5F5);
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 80,
-        margin: const EdgeInsets.only(right: 12),
+        margin: const EdgeInsets.only(right: 10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -37,7 +38,7 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: glowColor.withValues(alpha: 0.35),
+                    color: primary.withValues(alpha: 0.35),
                     blurRadius: 8,
                     spreadRadius: 1,
                   ),
@@ -55,27 +56,23 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      // Ekran arka planı
                       Container(color: screenBg),
-                      // Logo
                       CachedNetworkImage(
                         imageUrl: station.logoUrl,
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: screenBg,
-                          child: const Icon(Icons.radio, size: 24, color: Colors.white30),
+                          child: const Icon(Icons.tv, size: 22, color: Colors.white30),
                         ),
                         errorWidget: (context, url, error) => Container(
                           color: screenBg,
-                          child: const Icon(Icons.radio, size: 24, color: Colors.white30),
+                          child: const Icon(Icons.tv, size: 22, color: Colors.white30),
                         ),
                       ),
-                      // Ekran parlaması (cam yansıması)
+                      // Cam yansıması
                       Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: 18,
+                        top: 0, left: 0, right: 0,
+                        height: 16,
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
@@ -99,8 +96,7 @@ class RecentlyPlayedStationItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 12,
-                  height: 4,
+                  width: 12, height: 4,
                   decoration: BoxDecoration(
                     color: bezelColor,
                     borderRadius: const BorderRadius.only(
@@ -111,8 +107,7 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Container(
-                  width: 12,
-                  height: 4,
+                  width: 12, height: 4,
                   decoration: BoxDecoration(
                     color: bezelColor,
                     borderRadius: const BorderRadius.only(
@@ -141,4 +136,5 @@ class RecentlyPlayedStationItem extends StatelessWidget {
     );
   }
 }
+
 

@@ -127,62 +127,8 @@ class MainScreen extends ConsumerWidget {
           // ignore: avoid_print
           print('🎨 BottomBar colors - scheme: ${ref.watch(colorSchemeProvider)}, bg: $bgColor, selected: $selColor, unselected: $unselColor');
 
-          // Keep BottomNavigationBar area minimal. Put MiniPlayer above BottomNavigationBar
-          // so it remains visible (not covered by the bar when extendBody is true).
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const MiniPlayer(),
-              BottomNavigationBar(
-                currentIndex: selectedTab,
-                onTap: (index) {
-                  // Farklı sekmeler için farklı haptic feedback türleri
-                  switch (index) {
-                    case 0: // Ana Sayfa
-                      HapticFeedback.lightImpact();
-                      break;
-                    case 1: // Favoriler
-                      HapticFeedback.mediumImpact();
-                      break;
-                    case 2: // Ayarlar
-                      HapticFeedback.lightImpact();
-                      break;
-                    default:
-                      HapticFeedback.selectionClick();
-                  }
-                  
-                  // Tab değiştir
-                  ref.read(selectedTabProvider.notifier).state = index;
-                },
-                type: BottomNavigationBarType.fixed,
-                backgroundColor: bgColor,
-                selectedItemColor: selColor,
-                unselectedItemColor: unselColor,
-                selectedLabelStyle:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                unselectedLabelStyle:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-                elevation: 0,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home_outlined),
-                    activeIcon: Icon(Icons.home),
-                    label: 'Ana Sayfa',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.favorite_outline),
-                    activeIcon: Icon(Icons.favorite),
-                    label: 'Favoriler',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.settings_outlined),
-                    activeIcon: Icon(Icons.settings),
-                    label: 'Ayarlar',
-                  ),
-                ],
-              ),
-            ],
-          );
+          // Sadece MiniPlayer göster, tab bar gizlendi
+          return const MiniPlayer();
         },
       ),
     );

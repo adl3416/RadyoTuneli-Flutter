@@ -36,6 +36,7 @@ class RadioLogo extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: showBorder ? Border.all(
           color: Colors.white.withOpacity(0.2),
@@ -53,7 +54,7 @@ class RadioLogo extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: Image.network(
           logoUrl!,
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             // Hata olursa baş harf avatar'ına geç
             return _buildLetterAvatarContent();

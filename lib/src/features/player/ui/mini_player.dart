@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,44 +14,94 @@ class MiniPlayer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playerState = ref.watch(playerStateProvider);
+    final primary = Theme.of(context).colorScheme.primary;
 
     if (playerState.currentStation == null) {
-      return const SizedBox.shrink();
+      return Container(
+        height: 72,
+        decoration: BoxDecoration(
+          color: const Color(0xFF111111),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          border: Border(
+            top: BorderSide(
+              color: primary.withValues(alpha: 0.5),
+              width: 1.5,
+            ),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: primary.withValues(alpha: 0.18),
+              blurRadius: 14,
+              offset: const Offset(0, -3),
+            ),
+            const BoxShadow(
+              color: Color(0x66000000),
+              blurRadius: 10,
+              offset: Offset(0, -2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.radio, color: primary.withValues(alpha: 0.45), size: 22),
+            const SizedBox(width: 10),
+            Text(
+              'Bir radyo seçin',
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.38),
+                fontSize: 14,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     final station = playerState.currentStation!;
-    final primary = Theme.of(context).colorScheme.primary;
 
     return Container(
-      height: 78,
+      height: 90,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            HSLColor.fromColor(primary).withLightness(0.12).toColor(),
-            HSLColor.fromColor(primary).withLightness(0.16).toColor(),
-            HSLColor.fromColor(primary).withLightness(0.22).toColor(),
-          ],
+        color: const Color(0xFF111111),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        border: Border(
+          top: BorderSide(
+            color: primary.withValues(alpha: 0.6),
+            width: 1.5,
+          ),
         ),
-        // Removed top boxShadow to avoid thin divider artifact on some devices / Android Auto
+        boxShadow: [
+          BoxShadow(
+            color: primary.withValues(alpha: 0.22),
+            blurRadius: 18,
+            offset: const Offset(0, -4),
+          ),
+          const BoxShadow(
+            color: Color(0x80000000),
+            blurRadius: 16,
+            offset: Offset(0, -4),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         child: InkWell(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           onTap: () {
-            // Navigate to full screen player
             _showFullScreenPlayer(context);
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
                 // Station Logo with colorful initials
                 RadioLogo(
                   radioName: station.name,
                   logoUrl: station.logoUrl,
-                  size: 50,
+                  size: 58,
                   showBorder: true,
                 ),
 
@@ -112,34 +163,34 @@ class MiniPlayer extends ConsumerWidget {
                 // Loading indicator or Play/Pause Button with modern styling
                 if (playerState.isLoading)
                   Container(
-                    width: 50,
-                    height: 50,
+                    width: 54,
+                    height: 54,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: const Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2.5,
-                        ),
+                      color: Colors.white.withValues(alpha: 0.07),
+                      borderRadius: BorderRadius.circular(27),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.12),
+                        width: 1,
                       ),
+                    ),
+                    child: Center(
+                      child: _NeonSpinner(size: 36, color: primary),
                     ),
                   )
                 else
                   Container(
-                    width: 50,
-                    height: 50,
+                    width: 54,
+                    height: 54,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
-                        width: 1,
-                      ),
+                      color: Colors.white.withOpacity(0.92),
+                      borderRadius: BorderRadius.circular(27),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.25),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: IconButton(
                       onPressed: () async {
@@ -150,40 +201,15 @@ class MiniPlayer extends ConsumerWidget {
                         }
                       },
                       icon: Icon(
-                        playerState.isPlaying ? Icons.pause : Icons.play_arrow,
-                        color: Colors.white,
-                        size: 26,
+                        playerState.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                        color: primary,
+                        size: 30,
                       ),
                       padding: EdgeInsets.zero,
                     ),
                   ),
 
-                const SizedBox(width: 8),
 
-                // Stop Button with modern styling
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(23),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: IconButton(
-                    onPressed: () async {
-                      await ref.read(playerStateProvider.notifier).stop();
-                    },
-                    icon: const Icon(
-                      Icons.stop,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                    padding: EdgeInsets.zero,
-                  ),
-                ),
               ],
             ),
           ),
@@ -221,6 +247,130 @@ class MiniPlayer extends ConsumerWidget {
     );
   }
 }
+
+// ─── Neon Spinner ───────────────────────────────────────────────────────────
+
+class _NeonSpinner extends StatefulWidget {
+  final double size;
+  final Color color;
+  const _NeonSpinner({required this.size, required this.color});
+
+  @override
+  State<_NeonSpinner> createState() => _NeonSpinnerState();
+}
+
+class _NeonSpinnerState extends State<_NeonSpinner>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (_, __) => CustomPaint(
+        size: Size(widget.size, widget.size),
+        painter: _NeonRingPainter(progress: _ctrl.value, color: widget.color),
+      ),
+    );
+  }
+}
+
+class _NeonRingPainter extends CustomPainter {
+  final double progress;
+  final Color color;
+  _NeonRingPainter({required this.progress, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = Offset(size.width / 2, size.height / 2);
+    final r = (size.width - 6) / 2;
+    final rotation = progress * math.pi * 2 - math.pi / 2;
+
+    // Track ring
+    canvas.drawCircle(
+      c, r,
+      Paint()
+        ..color = color.withValues(alpha: 0.12)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
+
+    // Gradient arc with tail
+    final rect = Rect.fromCircle(center: c, radius: r);
+    final gradPaint = Paint()
+      ..shader = SweepGradient(
+        startAngle: 0,
+        endAngle: math.pi * 2,
+        colors: [
+          Colors.transparent,
+          color.withValues(alpha: 0.0),
+          color.withValues(alpha: 0.35),
+          color.withValues(alpha: 0.85),
+          color,
+        ],
+        stops: const [0.0, 0.55, 0.75, 0.90, 1.0],
+        transform: GradientRotation(rotation),
+      ).createShader(rect)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round;
+    canvas.drawCircle(c, r, gradPaint);
+
+    // Outer glow
+    final glowPaint = Paint()
+      ..shader = SweepGradient(
+        startAngle: 0,
+        endAngle: math.pi * 2,
+        colors: [
+          Colors.transparent,
+          color.withValues(alpha: 0.0),
+          color.withValues(alpha: 0.25),
+          color.withValues(alpha: 0.55),
+        ],
+        stops: const [0.0, 0.6, 0.85, 1.0],
+        transform: GradientRotation(rotation),
+      ).createShader(rect)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+    canvas.drawCircle(c, r, glowPaint);
+
+    // Bright head dot
+    final hx = c.dx + r * math.cos(rotation + math.pi / 2);
+    final hy = c.dy + r * math.sin(rotation + math.pi / 2);
+    canvas.drawCircle(
+      Offset(hx, hy), 4.5,
+      Paint()
+        ..color = color.withValues(alpha: 0.45)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
+    );
+    canvas.drawCircle(
+      Offset(hx, hy), 2.2,
+      Paint()..color = Colors.white,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_NeonRingPainter old) => old.progress != progress;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class FullScreenPlayer extends ConsumerWidget {
   const FullScreenPlayer({super.key});

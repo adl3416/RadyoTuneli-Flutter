@@ -134,7 +134,7 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
           ),
         );
       } else {
-        state = state.copyWith(currentStation: null);
+        // currentStation temizlenmez - mini player son radyoyu göstermeye devam eder
       }
     });
 
