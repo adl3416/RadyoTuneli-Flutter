@@ -90,9 +90,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 child: SafeArea(
                   bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-                    child: _isSearchActive ? _buildSearchHeader() : _buildNormalHeader(),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                        child: _isSearchActive ? _buildSearchHeader() : _buildNormalHeader(),
+                      ),
+                      if (!_isSearchActive) _buildCategoryChips(),
+                    ],
                   ),
                 ),
               ),
@@ -292,37 +297,71 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildDrawer() {
+    final headerBg = _appBarBg ?? Theme.of(context).primaryColor;
+    final headerFg = _appBarFg ?? Colors.white;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final drawerBg = Theme.of(context).scaffoldBackgroundColor;
+    final itemColor = Theme.of(context).colorScheme.onSurface;
+
     return Drawer(
+      backgroundColor: drawerBg,
       child: Column(
         children: [
-            Container(
-              width: double.infinity,
-              height: 150,
-              color: AppTheme.headerPurple,
-              padding: const EdgeInsets.only(top: 50, left: 20),
-              child: const Text('Radyo Tüneli', style: TextStyle(color: Colors.white, fontSize: 24)),
+          Container(
+            width: double.infinity,
+            height: 150,
+            decoration: BoxDecoration(
+              color: headerBg,
+              boxShadow: [
+                BoxShadow(
+                  color: headerBg.withValues(alpha: 0.4),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Ana Sayfa'),
-              onTap: () => Navigator.pop(context),
+            padding: const EdgeInsets.only(top: 50, left: 20, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Icon(Icons.radio, color: headerFg.withValues(alpha: 0.8), size: 28),
+                const SizedBox(height: 6),
+                Text(
+                  'Radyo Tüneli',
+                  style: TextStyle(
+                    color: headerFg,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.favorite),
-              title: const Text('Favoriler'),
-              onTap: () {
-                Navigator.pop(context);
-                ref.read(selectedTabProvider.notifier).state = 1;
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Ayarlar'),
-              onTap: () {
-                Navigator.pop(context);
-                ref.read(selectedTabProvider.notifier).state = 2;
-              },
-            ),
+          ),
+          const SizedBox(height: 8),
+          ListTile(
+            leading: Icon(Icons.home, color: headerBg),
+            title: Text('Ana Sayfa', style: TextStyle(color: itemColor, fontWeight: FontWeight.w500)),
+            onTap: () => Navigator.pop(context),
+          ),
+          Divider(height: 1, indent: 16, endIndent: 16, color: itemColor.withValues(alpha: 0.1)),
+          ListTile(
+            leading: Icon(Icons.favorite, color: Colors.redAccent),
+            title: Text('Favoriler', style: TextStyle(color: itemColor, fontWeight: FontWeight.w500)),
+            onTap: () {
+              Navigator.pop(context);
+              ref.read(selectedTabProvider.notifier).state = 1;
+            },
+          ),
+          Divider(height: 1, indent: 16, endIndent: 16, color: itemColor.withValues(alpha: 0.1)),
+          ListTile(
+            leading: Icon(Icons.settings, color: headerBg),
+            title: Text('Ayarlar', style: TextStyle(color: itemColor, fontWeight: FontWeight.w500)),
+            onTap: () {
+              Navigator.pop(context);
+              ref.read(selectedTabProvider.notifier).state = 2;
+            },
+          ),
         ],
       ),
     );
@@ -346,6 +385,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             icon: Icon(Icons.search, color: _appBarFg ?? Colors.white),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryChips() {
+    final selectedCategory = ref.watch(selectedCategoryProvider);
+    final fg = _appBarFg ?? Colors.white;
+    final bg = _appBarBg ?? Theme.of(context).primaryColor;
+
+    final List<(String?, String, IconData)> categories = [
+      (null, 'Tümü', Icons.radio),
+      ('muzik', 'Müzik', Icons.music_note),
+      ('turku', 'Türkü', Icons.queue_music),
+      ('haber', 'Haber', Icons.article),
+      ('spor', 'Spor', Icons.sports_soccer),
+      ('dini', 'Dini', Icons.mosque),
+      ('arabesk', 'Arabesk', Icons.mic),
+      ('yerel', 'Yerel', Icons.location_on),
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.fromLTRB(8, 2, 8, 10),
+      child: Row(
+        children: categories.map((cat) {
+          final isSelected = selectedCategory == cat.$1;
+          return Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                ref.read(selectedCategoryProvider.notifier).state = cat.$1;
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: isSelected ? fg : fg.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isSelected ? fg : fg.withValues(alpha: 0.45),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(cat.$3, size: 13, color: isSelected ? bg : fg),
+                    const SizedBox(width: 4),
+                    Text(
+                      cat.$2,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isSelected ? bg : fg,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }

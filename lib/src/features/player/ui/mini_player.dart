@@ -15,27 +15,34 @@ class MiniPlayer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final playerState = ref.watch(playerStateProvider);
     final primary = Theme.of(context).colorScheme.primary;
+    final appBarBg = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
+    final appBarFg = Theme.of(context).appBarTheme.foregroundColor ?? Colors.white;
+    // Mini player arkaplanı: tema rengiyle biraz karartılmış
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final playerBg = isDark
+        ? Color.lerp(appBarBg, Colors.black, 0.35)!
+        : Color.lerp(appBarBg, Colors.black, 0.10)!;
 
     if (playerState.currentStation == null) {
       return Container(
         height: 72,
         decoration: BoxDecoration(
-          color: const Color(0xFF111111),
+          color: playerBg,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           border: Border(
             top: BorderSide(
-              color: primary.withValues(alpha: 0.5),
+              color: appBarFg.withValues(alpha: 0.3),
               width: 1.5,
             ),
           ),
           boxShadow: [
             BoxShadow(
-              color: primary.withValues(alpha: 0.18),
+              color: appBarBg.withValues(alpha: 0.3),
               blurRadius: 14,
               offset: const Offset(0, -3),
             ),
             const BoxShadow(
-              color: Color(0x66000000),
+              color: Color(0x44000000),
               blurRadius: 10,
               offset: Offset(0, -2),
             ),
@@ -44,12 +51,12 @@ class MiniPlayer extends ConsumerWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.radio, color: primary.withValues(alpha: 0.45), size: 22),
+            Icon(Icons.radio, color: appBarFg.withValues(alpha: 0.45), size: 22),
             const SizedBox(width: 10),
             Text(
               'Bir radyo seçin',
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.38),
+                color: appBarFg.withValues(alpha: 0.55),
                 fontSize: 14,
                 letterSpacing: 0.3,
               ),
@@ -64,22 +71,22 @@ class MiniPlayer extends ConsumerWidget {
     return Container(
       height: 90,
       decoration: BoxDecoration(
-        color: const Color(0xFF111111),
+        color: playerBg,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           top: BorderSide(
-            color: primary.withValues(alpha: 0.6),
+            color: appBarFg.withValues(alpha: 0.35),
             width: 1.5,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: primary.withValues(alpha: 0.22),
+            color: appBarBg.withValues(alpha: 0.35),
             blurRadius: 18,
             offset: const Offset(0, -4),
           ),
           const BoxShadow(
-            color: Color(0x80000000),
+            color: Color(0x55000000),
             blurRadius: 16,
             offset: Offset(0, -4),
           ),
@@ -116,7 +123,7 @@ class MiniPlayer extends ConsumerWidget {
                       Text(
                         station.name,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.white,
+                              color: appBarFg,
                               fontWeight: FontWeight.w600,
                               fontSize: 15,
                             ),
@@ -127,7 +134,7 @@ class MiniPlayer extends ConsumerWidget {
                       Text(
                         playerState.isPlaying ? 'Çalıyor' : 'Duraklatıldı',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white70,
+                              color: appBarFg.withValues(alpha: 0.7),
                               fontSize: 12,
                             ),
                       ),
@@ -142,16 +149,15 @@ class MiniPlayer extends ConsumerWidget {
                     final isFavorite = favorites.contains(station.id);
                     
                     return IconButton(
-                      key: ValueKey('fav_${station.id}_$isFavorite'), // UI'ın güncellenmesini zorla
+                      key: ValueKey('fav_${station.id}_$isFavorite'),
                       onPressed: () {
                         HapticFeedback.heavyImpact();
                         ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
-                        // Force a zero-delay UI refresh hint
                         Future.microtask(() => ref.invalidate(favoritesProvider));
                       },
                       icon: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.redAccent : Colors.white,
+                        color: isFavorite ? Colors.redAccent : appBarFg.withValues(alpha: 0.85),
                         size: 26,
                       ),
                     );
@@ -174,7 +180,7 @@ class MiniPlayer extends ConsumerWidget {
                       ),
                     ),
                     child: Center(
-                      child: _NeonSpinner(size: 36, color: primary),
+                      child: _NeonSpinner(size: 36, color: appBarFg),
                     ),
                   )
                 else
@@ -182,7 +188,7 @@ class MiniPlayer extends ConsumerWidget {
                     width: 54,
                     height: 54,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.92),
+                      color: appBarFg.withValues(alpha: 0.92),
                       borderRadius: BorderRadius.circular(27),
                       boxShadow: [
                         BoxShadow(
@@ -202,7 +208,7 @@ class MiniPlayer extends ConsumerWidget {
                       },
                       icon: Icon(
                         playerState.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                        color: primary,
+                        color: playerBg,
                         size: 30,
                       ),
                       padding: EdgeInsets.zero,
@@ -461,8 +467,35 @@ class FullScreenPlayer extends ConsumerWidget {
               overflow: TextOverflow.ellipsis,
             ),
   
-            const SizedBox(height: 30), // 40'tan 30'a azaltıldı
-  
+            const SizedBox(height: 20),
+
+            // Favorite Button
+            Consumer(
+              builder: (context, ref, _) {
+                final favorites = ref.watch(favoritesProvider);
+                final isFavorite = favorites.contains(station.id);
+                return GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
+                    Future.microtask(() => ref.invalidate(favoritesProvider));
+                  },
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
+                    child: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      key: ValueKey(isFavorite),
+                      color: isFavorite ? Colors.redAccent : Colors.white70,
+                      size: 36,
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 24),
+
             // Control Buttons with modern styling
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
