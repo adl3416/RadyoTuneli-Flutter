@@ -148,6 +148,96 @@ class RadioBrowserService {
     return 1000;
   }
 
+  // Öncelikli istasyonlar — küçük numara = üstte görünür (1-50)
+  static const Map<String, int> _stationPriority = {
+    // 1-10: Ana Pop/Müzik Radyoları
+    'kral fm': 1,
+    'trt fm': 2,
+    'power türk': 3,
+    'powertürk': 3,
+    'power turk': 3,
+    'süper fm': 4,
+    'super fm': 4,
+    'slow türk': 5,
+    'slow turk': 5,
+    'metro fm': 6,
+    'best fm': 7,
+    'alem fm': 8,
+    'joy türk': 9,
+    'joy turk': 9,
+    'show radyo': 10,
+    'show radio': 10,
+    // 11-20: Haber, Spor ve Tematik
+    'ntv radyo': 11,
+    'habertürk radyo': 12,
+    'haberturk radyo': 12,
+    'habertürk': 12,
+    'cnn türk radyo': 13,
+    'cnn turk radyo': 13,
+    'kafa radyo': 14,
+    'a haber radyo': 15,
+    'a haber': 15,
+    'radyo spor': 16,
+    'trt radyo 1': 17,
+    'trt1': 17,
+    'a spor radyo': 18,
+    'a spor': 18,
+    'radyo 7': 19,
+    'trt haber radyo': 20,
+    'trt haber': 20,
+    // 21-30: Pop ve Tematik
+    'kral pop': 21,
+    'fenomen fm': 22,
+    'virgin radio türkiye': 23,
+    'virgin radio turkiye': 23,
+    'virgin radio': 23,
+    'number one fm': 24,
+    'number one türk': 25,
+    'number one turk': 25,
+    'radyo d': 26,
+    'bloomberg ht': 27,
+    'bloomberg': 27,
+    'diyanet radyo': 28,
+    'radyo viva': 29,
+    'trt türkü': 30,
+    'trt turku': 30,
+    // 31-40: Bölgesel ve Tematik
+    'baba radyo': 31,
+    'pal station': 32,
+    'pal nostalji': 33,
+    'joy fm': 34,
+    'karadeniz fm': 35,
+    'radyo turkuvaz': 36,
+    'lalegül fm': 37,
+    'lalegul fm': 37,
+    'akra fm': 38,
+    'radyo alaturka': 39,
+    'trt nağme': 40,
+    'trt nagme': 40,
+    // 41-50: Özel Tematik
+    'lig radyo': 41,
+    'radyo seymen': 42,
+    'radyo voyage': 43,
+    'radyo eksen': 44,
+    'istanbul fm': 45,
+    'İstanbul fm': 45,
+    'moral fm': 46,
+    'damla fm': 47,
+    'radyo 2000': 48,
+    'ülke radyo': 49,
+    'ulke radyo': 49,
+    'park fm': 50,
+  };
+
+  /// İstasyon adına göre öncelik sırası döndür (düşük = üstte)
+  int _getStationPriority(String stationName) {
+    final lower = stationName.toLowerCase().trim();
+    for (final entry in _stationPriority.entries) {
+      if (lower.contains(entry.key)) return entry.value;
+    }
+    return 9999; // Öncelik listesinde yok → sona
+  }
+
   /// Removes duplicate stations based on normalized names
   List<Station> _removeDuplicateStations(List<Station> stations) {
     final Map<String, Station> uniqueStations = {};
@@ -163,7 +253,10 @@ class RadioBrowserService {
       }
     }
     
-    return uniqueStations.values.toList();
+    // Önce öncelikli istasyonlar (1-50), ardından geri kalanlar
+    final result = uniqueStations.values.toList();
+    result.sort((a, b) => _getStationPriority(a.name).compareTo(_getStationPriority(b.name)));
+    return result;
   }
 
   /// Normalizes station name for duplicate detection

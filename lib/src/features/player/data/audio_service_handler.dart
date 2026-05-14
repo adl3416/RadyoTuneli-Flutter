@@ -44,6 +44,10 @@ class RadioAudioHandler extends BaseAudioHandler
   String? _currentArtUri;
   String? _currentStationId;
 
+  // Eş zamanlı playStation çağrılarını iptal etmek için sayaç
+  // Yeni bir istek geldiğinde artırılır; eski istekler ID eşleşmeyince durur
+  int _playRequestId = 0;
+
   // Kategori isimleri ve açıklamaları (modern Android Auto tasarımı için)
   // ÖNEMLİ: Map sırası = Android Auto tab sırası. İlk 3 tab görünür, geri kalanı "Diğer"e düşer.
   final Map<String, Map<String, String>> _categoryInfo = {
@@ -493,6 +497,14 @@ class RadioAudioHandler extends BaseAudioHandler
 
     print("📡 _broadcastState: playing=$isPlaying, processing=$processingState");
 
+    // Favori durumuna göre kalp ikonu seç
+    final isFavorite = _currentStationId != null && _favoriteIds.contains(_currentStationId);
+    final heartControl = MediaControl(
+      androidIcon: isFavorite ? 'drawable/ic_favorite' : 'drawable/ic_favorite_border',
+      label: isFavorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle',
+      action: MediaAction.setRating,
+    );
+
     List<MediaControl> controls;
 
     if (processingState == ProcessingState.loading ||
@@ -500,18 +512,21 @@ class RadioAudioHandler extends BaseAudioHandler
       controls = [
         MediaControl.skipToPrevious,
         MediaControl.pause,
+        heartControl,
         MediaControl.skipToNext,
       ];
     } else if (isPlaying) {
       controls = [
         MediaControl.skipToPrevious,
         MediaControl.pause,
+        heartControl,
         MediaControl.skipToNext,
       ];
     } else {
       controls = [
         MediaControl.skipToPrevious,
         MediaControl.play,
+        heartControl,
         MediaControl.skipToNext,
       ];
     }
@@ -527,7 +542,7 @@ class RadioAudioHandler extends BaseAudioHandler
         MediaAction.skipToPrevious,
         MediaAction.setRating,
       },
-      androidCompactActionIndices: const [0, 1, 2],
+      androidCompactActionIndices: const [0, 1, 3], // Bildirimde: prev, play/pause, next (kalp hariç)
       processingState: {
             ProcessingState.idle: AudioProcessingState.idle,
             ProcessingState.loading: AudioProcessingState.loading,
@@ -574,10 +589,17 @@ class RadioAudioHandler extends BaseAudioHandler
       await _player.stop(); // Canlı stream buffer'ını temizle
       // Bildirim'i yaşatmak için paused state yayınla (idle değil!)
       // Idle yayınlanırsa Android servisi öldürür ve radyo tamamen kapanır
+      final isFavPause = _currentStationId != null && _favoriteIds.contains(_currentStationId);
+      final heartControlPause = MediaControl(
+        androidIcon: isFavPause ? 'drawable/ic_favorite' : 'drawable/ic_favorite_border',
+        label: isFavPause ? 'Favorilerden Çıkar' : 'Favorilere Ekle',
+        action: MediaAction.setRating,
+      );
       playbackState.add(PlaybackState(
         controls: [
           MediaControl.skipToPrevious,
           MediaControl.play,
+          heartControlPause,
           MediaControl.skipToNext,
         ],
         systemActions: const {
@@ -586,8 +608,9 @@ class RadioAudioHandler extends BaseAudioHandler
           MediaAction.playPause,
           MediaAction.skipToNext,
           MediaAction.skipToPrevious,
+          MediaAction.setRating,
         },
-        androidCompactActionIndices: const [0, 1, 2],
+        androidCompactActionIndices: const [0, 1, 3], // Bildirimde: prev, play, next (kalp hariç)
         processingState: AudioProcessingState.ready,
         playing: false,
       ));
@@ -690,6 +713,10 @@ class RadioAudioHandler extends BaseAudioHandler
       );
       
       this.mediaItem.add(updatedMediaItem);
+
+      // Kalp ikonu anlık güncellenmesi için playbackState'i yenile
+      _broadcastState(_player.playerState);
+
       print('❤️ Rating updated for ${currentStation.title}: $isFavorite');
     }
   }
@@ -704,6 +731,19 @@ class RadioAudioHandler extends BaseAudioHandler
 
   Future<void> playStation(
       String streamUrl, String title, String artist, String? artUri, {String? stationId}) async {
+    // Bu isteğe özgü ID al — yeni istek gelirse bu ID geçersiz kalır
+    final myId = ++_playRequestId;
+    print("📻 playStation[$myId] başladı: $title");
+
+    // Mevcut oynatmayı hemen durdur ki ses kesilsin
+    try { await _player.stop(); } catch (_) {}
+
+    // Daha yeni bir istek geldiyse iptal et
+    if (myId != _playRequestId) {
+      print("🚫 playStation[$myId] iptal edildi (daha yeni istek var): $title");
+      return;
+    }
+
     try {
       print("📻 Setting up radio station: $title (ID: ${stationId ?? 'none'})");
 
@@ -720,6 +760,11 @@ class RadioAudioHandler extends BaseAudioHandler
           (artUri.startsWith('http://') || artUri.startsWith('https://') || artUri.startsWith('file://'));
       final artUriParsed =
           hasValidArt ? Uri.parse(artUri!) : await _getDefaultArtUri();
+
+      if (myId != _playRequestId) {
+        print("🚫 playStation[$myId] iptal edildi (artUri sonrası): $title");
+        return;
+      }
 
       final mediaItem = MediaItem(
         id: stationId ?? streamUrl,
@@ -758,6 +803,11 @@ class RadioAudioHandler extends BaseAudioHandler
       // Son dinlenenlere ekle
       await _addToRecentlyPlayed(mediaItem);
 
+      if (myId != _playRequestId) {
+        print("🚫 playStation[$myId] iptal edildi (recentlyPlayed sonrası): $title");
+        return;
+      }
+
       // Set loading state
       playbackState.add(PlaybackState(
         controls: [MediaControl.stop],
@@ -782,6 +832,11 @@ class RadioAudioHandler extends BaseAudioHandler
         );
         print("🎵 Audio source set (default), starting playback...");
       } catch (e) {
+        // Yeni bir istek geldiyse retry yapma — zaten iptal edildi
+        if (myId != _playRequestId) {
+          print("🚫 playStation[$myId] iptal edildi (setAudioSource catch, retry öncesi): $title");
+          return;
+        }
         print('⚠️ setAudioSource failed (default): $e');
         print('ℹ️ Retrying setAudioSource with headers (User-Agent + Icy-MetaData)');
         try {
@@ -798,9 +853,19 @@ class RadioAudioHandler extends BaseAudioHandler
           );
           print("🎵 Audio source set (with headers), starting playback...");
         } catch (e2) {
+          if (myId != _playRequestId) {
+            print("🚫 playStation[$myId] iptal edildi (header retry sonrası): $title");
+            return;
+          }
           print('❌ Retry setAudioSource with headers also failed: $e2');
           rethrow;
         }
+      }
+
+      // setAudioSource tamamlandı — yeni bir istek geldiyse oynatma
+      if (myId != _playRequestId) {
+        print("🚫 playStation[$myId] iptal edildi (setAudioSource sonrası): $title");
+        return;
       }
 
       // Start playing
@@ -808,6 +873,11 @@ class RadioAudioHandler extends BaseAudioHandler
 
       print("✅ Radio station started successfully");
     } catch (e) {
+      // İptal edildiyse hata gösterme — yeni istasyon zaten çalınıyor
+      if (myId != _playRequestId) {
+        print("🚫 playStation[$myId] iptal edildi (catch bloğu): $title");
+        return;
+      }
       print('❌ Error setting up station: $e');
 
       // Set error state

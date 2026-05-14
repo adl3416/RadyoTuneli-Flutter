@@ -113,7 +113,9 @@ class FavoritesScreen extends ConsumerWidget {
                                       isFavorite: true,
                                       onTap: () {
                                         final playerState = ref.read(playerStateProvider);
-                                        if (playerState.isLoading) return;
+                                        // Sadece aynı istasyon yükleniyorsa engelle
+                                        final isSameStationLoading = playerState.currentStation?.id == station.id && playerState.isLoading;
+                                        if (isSameStationLoading) return;
                                         if (isPlaying) {
                                           ref.read(playerStateProvider.notifier).pause();
                                         } else {

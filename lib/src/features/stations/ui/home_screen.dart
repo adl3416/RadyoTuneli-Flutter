@@ -239,7 +239,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               isFavorite: ref.watch(favoritesProvider).contains(station.id),
                               onTap: () {
                                 final playerState = ref.read(playerStateProvider);
-                                if (playerState.isLoading) return;
+                                // Sadece aynı istasyon zaten yükleniyorsa engelle;
+                                // farklı istasyona geçişe her zaman izin ver
+                                final isSameStationLoading = playerState.currentStation?.id == station.id && playerState.isLoading;
+                                if (isSameStationLoading) return;
                                 if (playerState.currentStation?.id == station.id && playerState.isPlaying) {
                                   ref.read(playerStateProvider.notifier).pause();
                                 } else {
