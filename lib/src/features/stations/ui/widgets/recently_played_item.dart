@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../domain/station_model.dart';
+import 'radio_logo.dart';
 
 class RecentlyPlayedStationItem extends StatelessWidget {
   final Station station;
@@ -57,17 +57,11 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                     fit: StackFit.expand,
                     children: [
                       Container(color: screenBg),
-                      CachedNetworkImage(
-                        imageUrl: station.logoUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: screenBg,
-                          child: const Icon(Icons.tv, size: 22, color: Colors.white30),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          color: screenBg,
-                          child: const Icon(Icons.tv, size: 22, color: Colors.white30),
-                        ),
+                      RadioLogo(
+                        radioName: station.name,
+                        logoUrl: station.logoUrl,
+                        size: 50,
+                        showBorder: false,
                       ),
                       // Cam yansıması
                       Positioned(

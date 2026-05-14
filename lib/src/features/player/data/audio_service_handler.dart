@@ -711,10 +711,13 @@ class RadioAudioHandler extends BaseAudioHandler
       final isFavorite = stationId != null && _favoriteIds.contains(stationId);
       
       // Set media item for system UI - Modern Android Auto tasarımı
-      // initial:// şeması ve boş/null URI'lar için güzel arka plan kullan
+      // initial:// ve assets:// şeması ile boş/null URI'lar için güzel arka plan kullan
+      // Not: Asset path'leri (assets/logos/...) sistem bildirimleri için kullanılamaz
       final bool hasValidArt = artUri != null &&
           artUri.isNotEmpty &&
-          !artUri.startsWith('initial://');
+          !artUri.startsWith('initial://') &&
+          !artUri.startsWith('assets/') &&
+          (artUri.startsWith('http://') || artUri.startsWith('https://') || artUri.startsWith('file://'));
       final artUriParsed =
           hasValidArt ? Uri.parse(artUri!) : await _getDefaultArtUri();
 
@@ -734,6 +737,7 @@ class RadioAudioHandler extends BaseAudioHandler
           'isLive': true,
           'streamUrl': streamUrl,
           'stationId': stationId,
+          'logoUrl': artUri ?? '', // Orijinal logo URL'si (asset path veya http)
           // Android Auto için ek metadata
           'android.media.metadata.CONTENT_TYPE': 'audio/mpeg',
           'android.media.metadata.ADVERTISEMENT': 0, // Reklam değil

@@ -125,12 +125,17 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
     _mediaItemSub = audioHandler.mediaItem.listen((mediaItem) {
       print("🎵 Media item changed: ${mediaItem?.title}");
       if (mediaItem != null) {
+        // extras'taki orijinal logoUrl'yi kullan (asset path round-trip sorununu önler)
+        final logoUrl = mediaItem.extras?['logoUrl'] as String?;
+        final effectiveLogo = (logoUrl != null && logoUrl.isNotEmpty)
+            ? logoUrl
+            : mediaItem.artUri?.toString();
         state = state.copyWith(
           currentStation: CurrentStationInfo(
             id: mediaItem.id,
             name: mediaItem.title,
             artist: mediaItem.artist ?? '',
-            logoUrl: mediaItem.artUri?.toString(),
+            logoUrl: effectiveLogo,
           ),
         );
       } else {
