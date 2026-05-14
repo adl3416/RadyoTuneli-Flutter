@@ -45,26 +45,22 @@ class RadioAudioHandler extends BaseAudioHandler
   String? _currentStationId;
 
   // Kategori isimleri ve açıklamaları (modern Android Auto tasarımı için)
+  // ÖNEMLİ: Map sırası = Android Auto tab sırası. İlk 3 tab görünür, geri kalanı "Diğer"e düşer.
   final Map<String, Map<String, String>> _categoryInfo = {
-    'son_dinlenenler': {
-      'title': '🕐 Son Dinlenenler',
-      'description': 'Yakın zamanda dinlediğiniz radyolar',
-      'icon': 'history',
+    'tum_radyolar': {
+      'title': '📻 Tüm Radyolar',
+      'description': 'Tüm radyo kanalları',
+      'icon': 'radio',
     },
     'favoriler': {
       'title': '❤️ Favoriler',
       'description': 'Favori radyolarınız',
       'icon': 'favorite',
     },
-    'populer': {
-      'title': '⭐ Popüler',
-      'description': 'En çok dinlenen 50 radyo',
-      'icon': 'star',
-    },
-    'tum_radyolar': {
-      'title': '📻 Tüm İstasyonlar',
-      'description': 'Tüm radyo kanalları',
-      'icon': 'radio',
+    'son_dinlenenler': {
+      'title': '🕐 Son Dinlenenler',
+      'description': 'Yakın zamanda dinlediğiniz radyolar',
+      'icon': 'history',
     },
     'haber': {
       'title': '📰 Haber',
@@ -90,6 +86,11 @@ class RadioAudioHandler extends BaseAudioHandler
       'title': '🕌 Dini',
       'description': 'Dini içerikler',
       'icon': 'mosque',
+    },
+    'populer': {
+      'title': '⭐ Popüler',
+      'description': 'En çok dinlenen 50 radyo',
+      'icon': 'star',
     },
   };
 
@@ -271,8 +272,13 @@ class RadioAudioHandler extends BaseAudioHandler
     // Kategorilere göre radyoları ayır
     _radioCategories.clear();
     
-    // Tüm radyoları işle (maksimum 200 radyo)
-    final allStations = stations.take(200).toList();
+    // Tüm radyoları işle (maksimum 500 radyo), alfabetik sırala
+    final allStations = List<dynamic>.from(stations)
+      ..sort((a, b) {
+        final nameA = (a['name'] ?? '').toString().toUpperCase();
+        final nameB = (b['name'] ?? '').toString().toUpperCase();
+        return nameA.compareTo(nameB);
+      });
     final List<MediaItem> allMediaItems = [];
     
     for (int i = 0; i < allStations.length; i++) {
@@ -491,11 +497,23 @@ class RadioAudioHandler extends BaseAudioHandler
 
     if (processingState == ProcessingState.loading ||
         processingState == ProcessingState.buffering) {
-      controls = [MediaControl.pause, MediaControl.stop];
+      controls = [
+        MediaControl.skipToPrevious,
+        MediaControl.pause,
+        MediaControl.skipToNext,
+      ];
     } else if (isPlaying) {
-      controls = [MediaControl.pause, MediaControl.stop];
+      controls = [
+        MediaControl.skipToPrevious,
+        MediaControl.pause,
+        MediaControl.skipToNext,
+      ];
     } else {
-      controls = [MediaControl.play, MediaControl.stop];
+      controls = [
+        MediaControl.skipToPrevious,
+        MediaControl.play,
+        MediaControl.skipToNext,
+      ];
     }
 
     playbackState.add(PlaybackState(
@@ -505,9 +523,11 @@ class RadioAudioHandler extends BaseAudioHandler
         MediaAction.pause,
         MediaAction.stop,
         MediaAction.playPause,
-        MediaAction.setRating, // Android Auto kalp/favori butonu
+        MediaAction.skipToNext,
+        MediaAction.skipToPrevious,
+        MediaAction.setRating,
       },
-      androidCompactActionIndices: controls.length >= 2 ? const [0, 1] : const [0],
+      androidCompactActionIndices: const [0, 1, 2],
       processingState: {
             ProcessingState.idle: AudioProcessingState.idle,
             ProcessingState.loading: AudioProcessingState.loading,
@@ -555,13 +575,19 @@ class RadioAudioHandler extends BaseAudioHandler
       // Bildirim'i yaşatmak için paused state yayınla (idle değil!)
       // Idle yayınlanırsa Android servisi öldürür ve radyo tamamen kapanır
       playbackState.add(PlaybackState(
-        controls: [MediaControl.play, MediaControl.stop],
+        controls: [
+          MediaControl.skipToPrevious,
+          MediaControl.play,
+          MediaControl.skipToNext,
+        ],
         systemActions: const {
           MediaAction.play,
           MediaAction.stop,
           MediaAction.playPause,
+          MediaAction.skipToNext,
+          MediaAction.skipToPrevious,
         },
-        androidCompactActionIndices: const [0, 1],
+        androidCompactActionIndices: const [0, 1, 2],
         processingState: AudioProcessingState.ready,
         playing: false,
       ));
@@ -599,6 +625,32 @@ class RadioAudioHandler extends BaseAudioHandler
     } catch (e) {
       print('❌ Error stopping audio: $e');
     }
+  }
+
+  @override
+  Future<void> skipToNext() async {
+    final stations = _radioCategories['tum_radyolar'] ?? [];
+    if (stations.isEmpty || _currentStationId == null) return;
+    final idx = stations.indexWhere((s) => s.id == _currentStationId);
+    final nextIdx = (idx + 1) % stations.length;
+    final next = stations[nextIdx];
+    final streamUrl = next.extras?['streamUrl'] as String?;
+    if (streamUrl == null || streamUrl.isEmpty) return;
+    print('⏭️ skipToNext → ${next.title}');
+    await playStation(streamUrl, next.title, next.artist ?? '', next.artUri?.toString(), stationId: next.id);
+  }
+
+  @override
+  Future<void> skipToPrevious() async {
+    final stations = _radioCategories['tum_radyolar'] ?? [];
+    if (stations.isEmpty || _currentStationId == null) return;
+    final idx = stations.indexWhere((s) => s.id == _currentStationId);
+    final prevIdx = (idx - 1 + stations.length) % stations.length;
+    final prev = stations[prevIdx];
+    final streamUrl = prev.extras?['streamUrl'] as String?;
+    if (streamUrl == null || streamUrl.isEmpty) return;
+    print('⏮️ skipToPrevious → ${prev.title}');
+    await playStation(streamUrl, prev.title, prev.artist ?? '', prev.artUri?.toString(), stationId: prev.id);
   }
 
   @override

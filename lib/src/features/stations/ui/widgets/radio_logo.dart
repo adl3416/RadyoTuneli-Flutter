@@ -18,19 +18,50 @@ class RadioLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Logo varsa ve geçerliyse göster
-    final hasValidLogo = logoUrl != null && 
-                         logoUrl!.isNotEmpty && 
-                         (logoUrl!.startsWith('http://') || logoUrl!.startsWith('https://'));
-
-    if (hasValidLogo) {
-      return _buildImageLogo();
-    } else {
-      return _buildLetterAvatar();
+    if (logoUrl != null && logoUrl!.isNotEmpty) {
+      if (logoUrl!.startsWith('assets/')) {
+        return _buildAssetLogo();
+      } else if (logoUrl!.startsWith('http://') || logoUrl!.startsWith('https://')) {
+        return _buildImageLogo();
+      }
     }
+    return _buildLetterAvatar();
   }
 
-  /// Logo resmi widget'ı
+  /// Asset logo widget'ı (yerel dosya)
+  Widget _buildAssetLogo() {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: showBorder ? Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 2,
+        ) : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.asset(
+          logoUrl!,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildLetterAvatarContent();
+          },
+        ),
+      ),
+    );
+  }
+
+  /// Network logo widget'ı
   Widget _buildImageLogo() {
     return Container(
       width: size,

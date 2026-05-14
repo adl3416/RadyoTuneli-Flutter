@@ -106,7 +106,7 @@ class RadioBrowserService {
       streamUrl: (apiStation.urlResolved?.isNotEmpty ?? false)
           ? apiStation.urlResolved!
           : apiStation.url,
-      logoUrl: _getCustomLogo(apiStation.name, apiStation.favicon),
+      logoUrl: _getCustomLogo(apiStation.name, apiStation.favicon, apiStation.homepage),
       bitrate: '${apiStation.bitrate ?? 128} kbps',
       description: _generateDescription(apiStation),
       genre: apiStation.tags?.split(',').first ?? 'Müzik',
@@ -179,20 +179,60 @@ class RadioBrowserService {
   }
 
   /// Custom logo mapping for specific stations
-  String _getCustomLogo(String stationName, String? originalLogo) {
+  String _getCustomLogo(String stationName, String? originalLogo, [String? homepage]) {
     final name = stationName.toLowerCase().trim();
     
-    // TRT Radyoları için özel logo mappings
+    // Yerel logo dosyası eşlemeleri (assets/logos/)
     final logoMappings = {
+      // TRT FM
       'trt fm': 'assets/logos/trt fm.png',
+      // TRT Memleketim
       'trt memleketim': 'assets/logos/trt memleketim.png',
-      'trt memleketim fm': 'assets/logos/trt memleketim.png',
+      // TRT Trabzon
       'trt trabzon': 'assets/logos/trt trabzon.png',
+      // TRT TSR
       'trt tsr': 'assets/logos/trt tsr.png',
+      // TRT Türkü
       'trt türkü': 'assets/logos/trt türkü.png',
+      'trt turku': 'assets/logos/trt türkü.png',
+      // TRT Radyo 1
       'trt radyo 1': 'assets/logos/trt_radyo1.png',
+      'trt radyo1': 'assets/logos/trt_radyo1.png',
+      // TRT Radyo 3
+      'trt radyo 3': 'assets/logos/trt-radyo-3.png',
+      'trt3': 'assets/logos/trt-radyo-3.png',
+      // TRT Radyo Haber
+      'trt radyo haber': 'assets/logos/trt-radyo-haber.png',
+      'trt haber': 'assets/logos/trt-radyo-haber.png',
+      // TRT Kürtçe
       'trt radyo kurdî': 'assets/logos/trt_radyokurdi_log.png',
-      'trt radyo kurdi': 'assets/logos/trt_radyokurdi_log.png', // Alternatif yazım
+      'trt radyo kurdi': 'assets/logos/trt_radyokurdi_log.png',
+      'trt kurdî': 'assets/logos/trt_radyokurdi_log.png',
+      'trt kurdi': 'assets/logos/trt_radyokurdi_log.png',
+      // TRT Antalya
+      'trt antalya': 'assets/logos/trt Antalya.jpg',
+      // TRT Arabi
+      'trt arabi': 'assets/logos/trt-arabi.png',
+      // TRT Çukurova
+      'trt çukurova': 'assets/logos/trt-cukurova.png',
+      'trt cukurova': 'assets/logos/trt-cukurova.png',
+      // TRT Erzurum
+      'trt erzurum': 'assets/logos/trt-erzurum.png',
+      // TRT GAP
+      'trt gap': 'assets/logos/trt-gap.png',
+      // TRT Nağme
+      'trt nağme': 'assets/logos/trt-nagme.png',
+      'trt nagme': 'assets/logos/trt-nagme.png',
+      // TRT Diyanet Çocuk
+      'trt diyanet': 'assets/logos/trt diyanet cocuk.png',
+      // TRT World
+      'trt world': 'assets/logos/trt-world.png',
+      // TRT Voice of Turkey
+      'trt vot': 'assets/logos/trt-vot.png',
+      'voice of turkey': 'assets/logos/trt-vot.png',
+      // Süper FM
+      'süper fm': 'assets/logos/super.png',
+      'super fm': 'assets/logos/super.png',
     };
     
     // Önce özel mapping'leri kontrol et
@@ -206,7 +246,18 @@ class RadioBrowserService {
     if (originalLogo?.isNotEmpty == true && originalLogo != 'null' && originalLogo!.trim().isNotEmpty) {
       return originalLogo!;
     }
-    
+
+    // Homepage varsa Google Favicon API ile logo bul
+    if (homepage != null && homepage.trim().isNotEmpty) {
+      try {
+        final uri = Uri.parse(homepage.trim());
+        final domain = uri.host;
+        if (domain.isNotEmpty) {
+          return 'https://www.google.com/s2/favicons?domain=$domain&sz=128';
+        }
+      } catch (_) {}
+    }
+
     // Son çare olarak baş harf logosu
     return _generateInitialLogo(stationName);
   }

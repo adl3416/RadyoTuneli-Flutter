@@ -65,7 +65,7 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 12, 16, 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
