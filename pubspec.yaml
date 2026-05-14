@@ -2,7 +2,7 @@ name: turkradyo
 description: "A modern Flutter radio streaming application with dark theme."
 publish_to: 'none'
 
-version: 2.0.4+2015
+version: 2.0.5+2016
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

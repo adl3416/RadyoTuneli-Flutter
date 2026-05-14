@@ -9,6 +9,7 @@ import '../../../core/utils/snackbar_helper.dart';
 import '../../legal/ui/impressum_screen.dart';
 import '../../legal/ui/privacy_policy_screen.dart';
 import '../../legal/ui/terms_screen.dart';
+import '../../legal/ui/support_screen.dart';
 import '../../../app/main_screen.dart';
 import '../../favorites/data/favorites_provider.dart';
 import '../../stations/data/stations_provider.dart';
@@ -103,43 +104,17 @@ class SettingsScreen extends ConsumerWidget {
                         _buildAppSettingsSection(context, ref, appSettings),
                         const SizedBox(height: 24),
                         _buildColorSchemeSection(context, ref),
-                        const Divider(height: 48),
-                        _buildSettingsTile(
-                          context,
-                          'Gizlilik Politikası',
-                          'Datenschutzerklärung',
-                          Icons.privacy_tip_outlined,
-                          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
-                        ),
-                        _buildSettingsTile(
-                          context,
-                          'Yasal Bilgiler (§5 TMG)',
-                          'Impressum',
-                          Icons.gavel_outlined,
-                          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImpressumScreen())),
-                        ),
-                        _buildSettingsTile(
-                          context,
-                          'Kullanım Koşulları',
-                          'Nutzungsbedingungen',
-                          Icons.description_outlined,
-                          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
-                        ),
-                        const Divider(height: 32),
+                        const SizedBox(height: 24),
+                        _buildSupportSection(context),
+                        const SizedBox(height: 24),
+                        _buildLegalSection(context),
+                        const SizedBox(height: 24),
                         _buildSettingsTile(
                           context,
                           'Tüm Verileri Sil',
                           'Ayarlar ve geçmişi temizle',
                           Icons.delete_forever_outlined,
                           () => _showDeleteAllDataDialog(context, ref),
-                        ),
-                        const SizedBox(height: 8),
-                        _buildSettingsTile(
-                          context,
-                          'Hakkında',
-                          'Versiyon 1.0.0',
-                          Icons.info_outline,
-                          () {},
                         ),
                         const SizedBox(height: 120), // Bottom player payı
                       ],
@@ -316,6 +291,102 @@ class SettingsScreen extends ConsumerWidget {
           Text(name, style: TextStyle(fontSize: 10, fontWeight: isSelected ? FontWeight.bold : null)),
         ],
       );
+  }
+
+  Widget _buildSupportSection(BuildContext context) {
+    final theme = Theme.of(context);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: theme.dividerColor.withValues(alpha: 0.5)),
+        ),
+        child: ExpansionTile(
+          leading: Icon(Icons.support_agent_outlined, color: theme.primaryColor, size: 24),
+          title: Text('Destek & İletişim', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          initiallyExpanded: false,
+          shape: const Border(),
+          collapsedShape: const Border(),
+          children: [
+            _buildSettingsTile(
+              context,
+              'Destek & İletişim',
+              'E-posta, SSS ve hata bildirimi',
+              Icons.headset_mic_outlined,
+              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SupportScreen())),
+            ),
+            _buildSettingsTile(
+              context,
+              'Hakkında',
+              'Radyo Tüneli v2.0.4',
+              Icons.info_outline,
+              () => _showAboutDialog(context),
+            ),
+            const SizedBox(height: 4),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegalSection(BuildContext context) {
+    final theme = Theme.of(context);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: theme.dividerColor.withValues(alpha: 0.5)),
+        ),
+        child: ExpansionTile(
+          leading: Icon(Icons.shield_outlined, color: theme.primaryColor, size: 24),
+          title: Text('Yasal & Gizlilik', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          initiallyExpanded: false,
+          shape: const Border(),
+          collapsedShape: const Border(),
+          children: [
+            _buildSettingsTile(
+              context,
+              'Gizlilik Politikası',
+              'Datenschutzerklärung',
+              Icons.privacy_tip_outlined,
+              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
+            ),
+            _buildSettingsTile(
+              context,
+              'Kullanım Koşulları',
+              'Nutzungsbedingungen',
+              Icons.description_outlined,
+              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
+            ),
+            _buildSettingsTile(
+              context,
+              'Yasal Bilgiler (§5 TMG)',
+              'Impressum',
+              Icons.gavel_outlined,
+              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImpressumScreen())),
+            ),
+            const SizedBox(height: 4),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showAboutDialog(
+      context: context,
+      applicationName: 'Radyo Tüneli',
+      applicationVersion: '2.0.4',
+      applicationLegalese: '© 2025 Radyo Tüneli. Tüm hakları saklıdır.',
+      children: [
+        const SizedBox(height: 12),
+        const Text('Türk radyo istasyonlarını dinlemek için geliştirilmiş ücretsiz bir uygulama.'),
+      ],
+    );
   }
 
   Widget _buildSettingsTile(BuildContext context, String trTitle, String deTitle, IconData icon, VoidCallback onTap) {
