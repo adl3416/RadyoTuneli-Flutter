@@ -20,6 +20,8 @@ final Map<String, ThemeData> _themeRegistry = {
   // Use the light Timsah theme by default so backgrounds are white
   'timsah': AppTheme.timsahThemeLight,
   'timsah_dark': AppTheme.timsahThemeDark,
+  'sade': AppTheme.sadeThemeLight,
+  'sade_dark': AppTheme.sadeThemeDark,
 };
 
 void registerTheme(String name, ThemeData theme) {

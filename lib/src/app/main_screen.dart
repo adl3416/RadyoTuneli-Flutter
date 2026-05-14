@@ -113,6 +113,13 @@ class MainScreen extends ConsumerWidget {
             unselColor = AppTheme.kartalWhite.withOpacity(0.85);
           }
 
+          // Sade: dark grey background + white icons
+          if (ref.watch(colorSchemeProvider) == 'sade') {
+            bgColor = AppTheme.sadeDarkGrey;
+            selColor = AppTheme.sadeWhite;
+            unselColor = AppTheme.sadeWhite.withOpacity(0.65);
+          }
+
           // Karadeniz Fırtınası: bordo background (keep selected color as theme's blue)
           if (ref.watch(colorSchemeProvider) == 'karadeniz') {
             bgColor = AppTheme.karadenizBordo;

@@ -125,7 +125,7 @@ class RadioStationCard extends StatelessWidget {
                       },
                       icon: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_outline,
-                        color: isFavorite ? Colors.red : colorScheme.onPrimary,
+                        color: isFavorite ? Colors.red : Colors.pink.shade300,
                         size: 18,
                       ),
                     ),

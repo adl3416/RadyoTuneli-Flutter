@@ -15,44 +15,44 @@ class RecentlyPlayedStationItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = Theme.of(context).primaryColor;
+    final primary = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
     final bezelColor = isDark
         ? Color.lerp(primary, Colors.black, 0.55)!
-        : Color.lerp(primary, Colors.white, 0.15)!;
+        : primary;
     const screenBg = Color(0xFFF5F5F5);
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 80,
-        margin: const EdgeInsets.only(right: 10),
+        width: 66,
+        margin: const EdgeInsets.only(right: 6),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // TV gövdesi
             Container(
-              width: 68,
-              height: 56,
+              width: 56,
+              height: 46,
               decoration: BoxDecoration(
                 color: bezelColor,
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: primary.withValues(alpha: 0.35),
-                    blurRadius: 8,
-                    spreadRadius: 1,
+                    color: primary.withValues(alpha: 0.30),
+                    blurRadius: 6,
+                    spreadRadius: 0,
                   ),
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.5),
+                    color: Colors.black.withValues(alpha: 0.25),
                     blurRadius: 4,
-                    offset: const Offset(0, 3),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(3),
+                padding: const EdgeInsets.all(2),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(4),
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
@@ -60,7 +60,7 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                       RadioLogo(
                         radioName: station.name,
                         logoUrl: station.logoUrl,
-                        size: 50,
+                        size: 40,
                         showBorder: false,
                       ),
                       // Cam yansıması
@@ -84,33 +84,6 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-            // TV ayakları
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 12, height: 4,
-                  decoration: BoxDecoration(
-                    color: bezelColor,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(3),
-                      bottomRight: Radius.circular(3),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Container(
-                  width: 12, height: 4,
-                  decoration: BoxDecoration(
-                    color: bezelColor,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(3),
-                      bottomRight: Radius.circular(3),
-                    ),
-                  ),
-                ),
-              ],
             ),
             const SizedBox(height: 3),
             // İstasyon adı

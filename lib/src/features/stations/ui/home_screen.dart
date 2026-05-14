@@ -60,6 +60,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     } else if (_colorSchemeStr == 'timsah') {
       _appBarBg = AppTheme.timsahGreen;
       _appBarFg = AppTheme.timsahWhite;
+    } else if (_colorSchemeStr == 'sade') {
+      _appBarBg = AppTheme.sadeDarkGrey;
+      _appBarFg = AppTheme.sadeWhite;
     } else {
       _appBarBg = Theme.of(context).appBarTheme.backgroundColor;
       _appBarFg = Theme.of(context).appBarTheme.foregroundColor;
@@ -104,17 +107,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               // Son Dinlenenler — sabit bölüm, radyo listesiyle birlikte kaymaz
               if (searchQuery.isEmpty)
                 Builder(builder: (context) {
-                  final primary = Theme.of(context).primaryColor;
+                  final bezelColor = _appBarBg ?? Theme.of(context).primaryColor;
+                  final onBezel = _appBarFg ?? Colors.white;
                   final isDark = Theme.of(context).brightness == Brightness.dark;
-                  final bezelColor = isDark
-                      ? Color.lerp(primary, Colors.black, 0.55)!
-                      : Color.lerp(primary, Colors.white, 0.15)!;
                   final cardBg = isDark
-                      ? Color.lerp(primary, Colors.black, 0.82)!
-                      : Color.lerp(primary, Colors.white, 0.88)!;
-                  final onBezel = bezelColor.computeLuminance() > 0.4
-                      ? Colors.black87
-                      : Colors.white;
+                      ? Color.lerp(bezelColor, Colors.black, 0.82)!
+                      : Color.lerp(bezelColor, Colors.white, 0.88)!;
 
                   return Container(
                     color: Theme.of(context).scaffoldBackgroundColor,
@@ -126,12 +124,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         border: Border.all(color: bezelColor, width: 3),
                         boxShadow: [
                           BoxShadow(
-                            color: primary.withValues(alpha: 0.30),
+                            color: bezelColor.withValues(alpha: 0.28),
                             blurRadius: 10,
                             spreadRadius: 1,
                           ),
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.18),
+                            color: Colors.black.withValues(alpha: 0.15),
                             blurRadius: 6,
                             offset: const Offset(0, 3),
                           ),
@@ -187,20 +185,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           // Ekran alanı
                           SizedBox(
-                            height: 108,
+                            height: 82,
                             child: recentlyPlayedAsync.when(
                               data: (recentlyPlayedStations) => recentlyPlayedStations.isEmpty
                                   ? Center(
                                       child: Text(
                                         'Henüz radyo dinlemediniz',
                                         style: TextStyle(
-                                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
+                                          color: const Color(0xFF757575),
                                           fontSize: 13,
                                         ),
                                       ),
                                     )
                                   : ListView.builder(
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                       scrollDirection: Axis.horizontal,
                                       itemCount: recentlyPlayedStations.length,
                                       itemBuilder: (context, index) {
@@ -261,11 +259,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 }
                               },
                               onFavoriteToggle: () => ref.read(favoritesProvider.notifier).toggleFavorite(station.id),
-                              backgroundColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaSecondary : (_colorSchemeStr == 'aslan' ? AppTheme.aslanRed : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (_colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null)))),
-                              titleColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary : (_colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (_colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null)))),
-                              subtitleColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary.withOpacity(0.9) : (_colorSchemeStr == 'aslan' ? AppTheme.aslanYellow.withOpacity(0.9) : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite.withOpacity(0.9) : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen.withOpacity(0.95) : null)))),
-                              playButtonBackgroundColor: _colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (_colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null))),
-                              playIconColor: _colorSchemeStr == 'aslan' ? Colors.black : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (_colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null))),
+                              backgroundColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaSecondary : (_colorSchemeStr == 'aslan' ? AppTheme.aslanRed : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (_colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : (_colorSchemeStr == 'sade' ? (index % 2 == 0 ? Colors.white : AppTheme.sadeLightGrey) : null))))),
+                              titleColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary : (_colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (_colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : (_colorSchemeStr == 'sade' ? Colors.black87 : null))))),
+                              subtitleColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary.withOpacity(0.9) : (_colorSchemeStr == 'aslan' ? AppTheme.aslanYellow.withOpacity(0.9) : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite.withOpacity(0.9) : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen.withOpacity(0.95) : (_colorSchemeStr == 'sade' ? AppTheme.sadeMediumGrey : null))))),
+                              playButtonBackgroundColor: _colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (_colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : (_colorSchemeStr == 'sade' ? AppTheme.sadeDarkGrey : null)))),
+                              playIconColor: _colorSchemeStr == 'aslan' ? Colors.black : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (_colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : (_colorSchemeStr == 'sade' ? AppTheme.sadeWhite : null)))),
                             ),
                           );
                         },
@@ -405,49 +403,70 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ('yerel', 'Yerel', Icons.location_on),
     ];
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(8, 2, 8, 10),
-      child: Row(
-        children: categories.map((cat) {
-          final isSelected = selectedCategory == cat.$1;
-          return Padding(
-            padding: const EdgeInsets.only(right: 6),
-            child: GestureDetector(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                ref.read(selectedCategoryProvider.notifier).state = cat.$1;
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: isSelected ? fg : fg.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isSelected ? fg : fg.withValues(alpha: 0.45),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(cat.$3, size: 13, color: isSelected ? bg : fg),
-                    const SizedBox(width: 4),
-                    Text(
-                      cat.$2,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: isSelected ? bg : fg,
-                      ),
-                    ),
-                  ],
-                ),
+    Widget buildChip((String?, String, IconData) cat) {
+      final isSelected = selectedCategory == cat.$1;
+      return Padding(
+        padding: const EdgeInsets.only(right: 6),
+        child: GestureDetector(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            ref.read(selectedCategoryProvider.notifier).state = cat.$1;
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: isSelected ? fg : fg.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected ? fg : fg.withValues(alpha: 0.45),
+                width: 1,
               ),
             ),
-          );
-        }).toList(),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(cat.$3, size: 13, color: isSelected ? bg : fg),
+                const SizedBox(width: 4),
+                Text(
+                  cat.$2,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? bg : fg,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 2, 0, 10),
+      child: Row(
+        children: [
+          // Tümü sabit kalır
+          buildChip(categories[0]),
+          // Dikey ayraç
+          Container(
+            width: 1,
+            height: 24,
+            margin: const EdgeInsets.only(right: 6),
+            color: fg.withValues(alpha: 0.35),
+          ),
+          // Diğer kategoriler kaydırılabilir
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(right: 8),
+              child: Row(
+                children: categories.skip(1).map(buildChip).toList(),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

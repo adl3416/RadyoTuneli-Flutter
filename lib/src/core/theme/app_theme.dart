@@ -1134,6 +1134,113 @@ class AppTheme {
       ),
     );
   }
+
+  // ⬜ SADE TEMASI - Koyu Gri (#3D3D3D) + Beyaz (#FFFFFF)
+  static const Color sadeDarkGrey = Color(0xFF3D3D3D);
+  static const Color sadeWhite = Color(0xFFFFFFFF);
+  static const Color sadeLightGrey = Color(0xFFF0F0F0); // Zebra satır rengi
+  static const Color sadeMediumGrey = Color(0xFF757575);
+  static const Color sadeDeepDark = Color(0xFF2A2A2A); // Dark tema AppBar
+
+  static ThemeData get sadeThemeLight {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.light(
+        primary: sadeDarkGrey,
+        secondary: sadeMediumGrey,
+        surface: sadeWhite,
+        onPrimary: sadeWhite,
+        onSecondary: sadeWhite,
+        onSurface: Colors.black87,
+      ),
+      scaffoldBackgroundColor: sadeWhite,
+      appBarTheme: AppBarTheme(
+        backgroundColor: sadeDarkGrey,
+        foregroundColor: sadeWhite,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: sadeWhite),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: sadeDarkGrey,
+        selectedItemColor: sadeWhite,
+        unselectedItemColor: sadeWhite.withOpacity(0.65),
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: sadeDarkGrey,
+          foregroundColor: sadeWhite,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: sadeWhite,
+        elevation: 1,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      tabBarTheme: TabBarThemeData(
+        labelColor: sadeDarkGrey,
+        unselectedLabelColor: sadeMediumGrey,
+        indicatorColor: sadeDarkGrey,
+        indicator: const UnderlineTabIndicator(
+          borderSide: BorderSide(color: sadeDarkGrey, width: 3),
+        ),
+      ),
+    );
+  }
+
+  static ThemeData get sadeThemeDark {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.dark(
+        primary: sadeLightGrey,
+        secondary: sadeMediumGrey,
+        surface: const Color(0xFF1E1E1E),
+        onPrimary: sadeDarkGrey,
+        onSecondary: sadeWhite,
+        onSurface: sadeWhite,
+      ),
+      scaffoldBackgroundColor: const Color(0xFF121212),
+      appBarTheme: AppBarTheme(
+        backgroundColor: sadeDeepDark,
+        foregroundColor: sadeWhite,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: sadeWhite),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: sadeDeepDark,
+        selectedItemColor: sadeWhite,
+        unselectedItemColor: sadeWhite.withOpacity(0.55),
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: sadeDarkGrey,
+          foregroundColor: sadeWhite,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: const Color(0xFF1E1E1E),
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      tabBarTheme: TabBarThemeData(
+        labelColor: sadeWhite,
+        unselectedLabelColor: sadeWhite.withOpacity(0.5),
+        indicatorColor: sadeWhite,
+        indicator: const UnderlineTabIndicator(
+          borderSide: BorderSide(color: sadeWhite, width: 3),
+        ),
+      ),
+    );
+  }
 }
 
 

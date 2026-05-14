@@ -40,6 +40,9 @@ class SettingsScreen extends ConsumerWidget {
     } else if (colorSchemeStr == 'aslan') {
       appBarBg = AppTheme.aslanRed;
       appBarFg = AppTheme.aslanYellow;
+    } else if (colorSchemeStr == 'sade') {
+      appBarBg = AppTheme.sadeDarkGrey;
+      appBarFg = AppTheme.sadeWhite;
     } else {
       appBarBg = AppTheme.headerPurple;
       appBarFg = Colors.white;
@@ -276,6 +279,7 @@ class SettingsScreen extends ConsumerWidget {
               _buildColorOption(context, ref, 'Kartal', 'kartal', Colors.black),
               _buildColorOption(context, ref, 'Karadeniz', 'karadeniz', Colors.blue),
               _buildColorOption(context, ref, 'Timsah', 'timsah', Colors.green),
+              _buildColorOption(context, ref, 'Sade', 'sade', const Color(0xFF3D3D3D)),
             ],
           ),
         ],

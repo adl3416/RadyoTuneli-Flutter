@@ -17,11 +17,13 @@ class MiniPlayer extends ConsumerWidget {
     final primary = Theme.of(context).colorScheme.primary;
     final appBarBg = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
     final appBarFg = Theme.of(context).appBarTheme.foregroundColor ?? Colors.white;
-    // Mini player arkaplanı: tema rengiyle biraz karartılmış
+    // Mini player arkaplanı: tema rengiyle
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final playerBg = isDark
         ? Color.lerp(appBarBg, Colors.black, 0.35)!
         : Color.lerp(appBarBg, Colors.black, 0.10)!;
+    // Ön plan: her zaman AppBar ön plan rengi
+    final playerFg = appBarFg;
 
     if (playerState.currentStation == null) {
       return Container(
@@ -51,12 +53,12 @@ class MiniPlayer extends ConsumerWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.radio, color: appBarFg.withValues(alpha: 0.45), size: 22),
+            Icon(Icons.radio, color: playerFg.withValues(alpha: 0.45), size: 22),
             const SizedBox(width: 10),
             Text(
               'Bir radyo seçin',
               style: TextStyle(
-                color: appBarFg.withValues(alpha: 0.55),
+                color: playerFg.withValues(alpha: 0.55),
                 fontSize: 14,
                 letterSpacing: 0.3,
               ),
@@ -75,13 +77,13 @@ class MiniPlayer extends ConsumerWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           top: BorderSide(
-            color: appBarFg.withValues(alpha: 0.35),
+            color: playerFg.withValues(alpha: 0.3),
             width: 1.5,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: appBarBg.withValues(alpha: 0.35),
+            color: playerFg.withValues(alpha: 0.15),
             blurRadius: 18,
             offset: const Offset(0, -4),
           ),
@@ -123,7 +125,7 @@ class MiniPlayer extends ConsumerWidget {
                       Text(
                         station.name,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: appBarFg,
+                              color: playerFg,
                               fontWeight: FontWeight.w600,
                               fontSize: 15,
                             ),
@@ -134,7 +136,7 @@ class MiniPlayer extends ConsumerWidget {
                       Text(
                         playerState.isPlaying ? 'Çalıyor' : 'Duraklatıldı',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: appBarFg.withValues(alpha: 0.7),
+                              color: playerFg.withValues(alpha: 0.7),
                               fontSize: 12,
                             ),
                       ),
@@ -157,7 +159,7 @@ class MiniPlayer extends ConsumerWidget {
                       },
                       icon: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.redAccent : appBarFg.withValues(alpha: 0.85),
+                        color: isFavorite ? Colors.redAccent : playerFg.withValues(alpha: 0.85),
                         size: 26,
                       ),
                     );
@@ -180,7 +182,7 @@ class MiniPlayer extends ConsumerWidget {
                       ),
                     ),
                     child: Center(
-                      child: _NeonSpinner(size: 36, color: appBarFg),
+                      child: _NeonSpinner(size: 36, color: playerFg),
                     ),
                   )
                 else
@@ -188,7 +190,7 @@ class MiniPlayer extends ConsumerWidget {
                     width: 54,
                     height: 54,
                     decoration: BoxDecoration(
-                      color: appBarFg.withValues(alpha: 0.92),
+                      color: playerFg.withValues(alpha: 0.92),
                       borderRadius: BorderRadius.circular(27),
                       boxShadow: [
                         BoxShadow(
