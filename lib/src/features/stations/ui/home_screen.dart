@@ -96,99 +96,116 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               ),
-              Expanded(
-                child: Container(
+              // Son Dinlenenler — sabit bölüm, radyo listesiyle birlikte kaymaz
+              if (searchQuery.isEmpty)
+                Container(
                   color: Theme.of(context).scaffoldBackgroundColor,
-                  child: filteredStationsAsync.when(
-                    data: (filteredStations) {
-                      return CustomScrollView(
-                        slivers: [
-                          if (searchQuery.isEmpty) ...[
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 16, right: 16, top: 1, bottom: 4),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text('Son Dinlenenler', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                    TextButton(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 8, top: 8, bottom: 4),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Son Dinlenenler',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            recentlyPlayedAsync.maybeWhen(
+                              data: (list) => list.isNotEmpty
+                                  ? TextButton(
                                       onPressed: () {
                                         HapticFeedback.lightImpact();
                                         ref.read(recentlyPlayedNotifierProvider.notifier).clearRecent();
                                       },
                                       child: const Text('Temizle'),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                                    )
+                                  : const SizedBox.shrink(),
+                              orElse: () => const SizedBox.shrink(),
                             ),
-                            SliverToBoxAdapter(
-                              child: SizedBox(
-                                height: 85, // 70'den 85'e büyütüldü
-                                child: recentlyPlayedAsync.when(
-                                  data: (recentlyPlayedStations) => ListView.builder(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: recentlyPlayedStations.length,
-                                    itemBuilder: (context, index) {
-                                      final station = recentlyPlayedStations[index];
-                                      return RecentlyPlayedStationItem(
-                                        station: station,
-                                        onTap: () => ref.read(playerStateProvider.notifier).playStation(station),
-                                      );
-                                    },
-                                  ),
-                                  loading: () => const Center(child: CircularProgressIndicator()),
-                                  error: (err, stack) => Center(child: Text('Hata: $err')),
-                                ),
-                              ),
-                            ),
-                            const SliverToBoxAdapter(child: SizedBox(height: 24)),
                           ],
-                          if (filteredStations.isEmpty)
-                            SliverToBoxAdapter(child: _buildEmptyState(context, searchQuery))
-                          else
-                            SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) {
-                                  final station = filteredStations[index];
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                                    child: RadioStationCard(
-                                      title: station.name,
-                                      subtitle: station.genre ?? 'Turkish Radio',
-                                      imageUrl: station.logoUrl,
-                                      isPlaying: ref.watch(playerStateProvider).currentStation?.id == station.id && ref.watch(playerStateProvider).isPlaying,
-                                      isFavorite: ref.watch(favoritesProvider).contains(station.id),
-                                      onTap: () {
-                                        final playerState = ref.read(playerStateProvider);
-                                        if (playerState.isLoading) return;
-                                        if (playerState.currentStation?.id == station.id && playerState.isPlaying) {
-                                          ref.read(playerStateProvider.notifier).pause();
-                                        } else {
-                                          ref.read(playerStateProvider.notifier).playStation(station);
-                                          // Arama açıksa kapat ve ana sayfaya dön
-                                          if (_isSearchActive) {
-                                            setState(() => _isSearchActive = false);
-                                            _searchController.clear();
-                                            ref.read(searchQueryProvider.notifier).state = '';
-                                            _searchFocusNode.unfocus();
-                                          }
-                                        }
-                                      },
-                                      onFavoriteToggle: () => ref.read(favoritesProvider.notifier).toggleFavorite(station.id),
-                                      backgroundColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaSecondary : (_colorSchemeStr == 'aslan' ? AppTheme.aslanRed : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (_colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null)))),
-                                      titleColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary : (_colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (_colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null)))),
-                                      subtitleColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary.withOpacity(0.9) : (_colorSchemeStr == 'aslan' ? AppTheme.aslanYellow.withOpacity(0.9) : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite.withOpacity(0.9) : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen.withOpacity(0.95) : null)))),
-                                      playButtonBackgroundColor: _colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (_colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null))),
-                                      playIconColor: _colorSchemeStr == 'aslan' ? Colors.black : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (_colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null))),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 100,
+                        child: recentlyPlayedAsync.when(
+                          data: (recentlyPlayedStations) => recentlyPlayedStations.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    'Henüz radyo dinlemediniz',
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
+                                      fontSize: 13,
                                     ),
-                                  );
-                                },
-                                childCount: filteredStations.length,
-                              ),
+                                  ),
+                                )
+                              : ListView.builder(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: recentlyPlayedStations.length,
+                                  itemBuilder: (context, index) {
+                                    final station = recentlyPlayedStations[index];
+                                    return RecentlyPlayedStationItem(
+                                      station: station,
+                                      onTap: () => ref.read(playerStateProvider.notifier).playStation(station),
+                                    );
+                                  },
+                                ),
+                          loading: () => const SizedBox.shrink(),
+                          error: (_, __) => const SizedBox.shrink(),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+              // Radyo listesi — sadece bu kısım kaydırılır
+              Expanded(
+                child: Container(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: filteredStationsAsync.when(
+                    data: (filteredStations) {
+                      if (filteredStations.isEmpty) {
+                        return _buildEmptyState(context, searchQuery);
+                      }
+                      return ListView.builder(
+                        padding: EdgeInsets.zero,
+                        itemCount: filteredStations.length,
+                        itemBuilder: (context, index) {
+                          final station = filteredStations[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                            child: RadioStationCard(
+                              title: station.name,
+                              subtitle: station.genre ?? 'Turkish Radio',
+                              imageUrl: station.logoUrl,
+                              isPlaying: ref.watch(playerStateProvider).currentStation?.id == station.id && ref.watch(playerStateProvider).isPlaying,
+                              isFavorite: ref.watch(favoritesProvider).contains(station.id),
+                              onTap: () {
+                                final playerState = ref.read(playerStateProvider);
+                                if (playerState.isLoading) return;
+                                if (playerState.currentStation?.id == station.id && playerState.isPlaying) {
+                                  ref.read(playerStateProvider.notifier).pause();
+                                } else {
+                                  ref.read(playerStateProvider.notifier).playStation(station);
+                                  if (_isSearchActive) {
+                                    setState(() => _isSearchActive = false);
+                                    _searchController.clear();
+                                    ref.read(searchQueryProvider.notifier).state = '';
+                                    _searchFocusNode.unfocus();
+                                  }
+                                }
+                              },
+                              onFavoriteToggle: () => ref.read(favoritesProvider.notifier).toggleFavorite(station.id),
+                              backgroundColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaSecondary : (_colorSchemeStr == 'aslan' ? AppTheme.aslanRed : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (_colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null)))),
+                              titleColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary : (_colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (_colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null)))),
+                              subtitleColor: _colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary.withOpacity(0.9) : (_colorSchemeStr == 'aslan' ? AppTheme.aslanYellow.withOpacity(0.9) : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite.withOpacity(0.9) : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen.withOpacity(0.95) : null)))),
+                              playButtonBackgroundColor: _colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (_colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (_colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null))),
+                              playIconColor: _colorSchemeStr == 'aslan' ? Colors.black : (_colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (_colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (_colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null))),
                             ),
-                        ],
+                          );
+                        },
                       );
                     },
                     loading: () => const Center(child: CircularProgressIndicator()),

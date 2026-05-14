@@ -17,8 +17,9 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Initialize audio service before starting app
-  await _initializeAudioService();
+  // AudioService'i arka planda başlat — runApp'i bloklama!
+  // PlayerNotifier zaten handler null olsa da bekleyip retry yapıyor.
+  _initializeAudioService();
 
   runApp(const ProviderScope(child: SplashApp()));
 }
@@ -34,7 +35,7 @@ Future<void> _initializeAudioService() async {
       builder: () => handler,
       config: AudioServiceConfig(
         androidNotificationChannelId:
-            'com.turkradyo.bsr.de.turkradyo.channel.audio',
+            'com.turkradyo.adl.de.turkradyo.channel.audio',
         androidNotificationChannelName: 'Radyo Tüneli',
         androidNotificationChannelDescription:
             'Radyo Tüneli - Türk Radyo İstasyonları',

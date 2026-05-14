@@ -12,6 +12,9 @@ class RadioBrowserService {
 
   static const String _fallbackAssetPath = 'assets/data/TR.json';
 
+  // Fallback istasyonları bir kez yükle, tekrar tekrar parse etme
+  static List<Station>? _cachedFallbackStations;
+
   // Pre-compiled RegExp patterns for station name normalization
   static final _reLeadingTrailing = RegExp(r'^[\s\-_\.]+|[\s\-_\.]+$');
   static final _reRadioFm = RegExp(r'\s*(radyo|radio|fm|am)\s*');
@@ -34,7 +37,7 @@ class RadioBrowserService {
             'User-Agent': 'TurkRadyo/1.0.0',
             'Accept': 'application/json',
           },
-        ).timeout(const Duration(seconds: 10));
+        ).timeout(const Duration(seconds: 6));
 
         if (response.statusCode == 200) {
           final List<dynamic> jsonList = json.decode(response.body);
@@ -77,8 +80,9 @@ class RadioBrowserService {
     return _removeDuplicateStations(allStations);
   }
 
-  /// Loads stations from local JSON asset
+  /// Loads stations from local JSON asset (cached after first load)
   Future<List<Station>> _loadFallbackStations() async {
+    if (_cachedFallbackStations != null) return _cachedFallbackStations!;
     try {
       final String jsonString = await rootBundle.loadString(_fallbackAssetPath);
       final List<dynamic> jsonList = json.decode(jsonString);
@@ -87,13 +91,9 @@ class RadioBrowserService {
           jsonList.map((json) => RadioBrowserStation.fromJson(json)).toList();
 
       final stations = radioBrowserStations.map(_toStation).toList();
-      
-      // Remove duplicates from fallback stations as well
-      final uniqueStations = _removeDuplicateStations(stations);
-      
-      return uniqueStations;
+      _cachedFallbackStations = _removeDuplicateStations(stations);
+      return _cachedFallbackStations!;
     } catch (e) {
-      print('Failed to load fallback stations: $e');
       return [];
     }
   }
@@ -195,23 +195,18 @@ class RadioBrowserService {
       'trt radyo kurdi': 'assets/logos/trt_radyokurdi_log.png', // Alternatif yazım
     };
     
-    print('🔍 Logo kontrol: "$name" için mapping kontrol ediliyor...');
-    
     // Önce özel mapping'leri kontrol et
     for (final entry in logoMappings.entries) {
       if (name.contains(entry.key)) {
-        print('✅ Logo bulundu: $name -> ${entry.value}');
         return entry.value;
       }
     }
     
     // Eğer original logo varsa onu kullan
     if (originalLogo?.isNotEmpty == true && originalLogo != 'null' && originalLogo!.trim().isNotEmpty) {
-      print('📷 Original logo kullanılıyor: $originalLogo');
       return originalLogo!;
     }
     
-    print('� Baş harf logosu oluşturuluyor: ${stationName.substring(0, 1).toUpperCase()}');
     // Son çare olarak baş harf logosu
     return _generateInitialLogo(stationName);
   }

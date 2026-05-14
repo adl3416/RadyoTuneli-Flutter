@@ -22,9 +22,6 @@ class _SplashNavigationState extends State<SplashNavigation> {
   }
 
   Future<void> _checkFirstTime() async {
-    // Theme provider'ın yüklenmesi için kısa bir süre bekle
-    await Future.delayed(const Duration(milliseconds: 500));
-    
     final prefs = await SharedPreferences.getInstance();
     final bool onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
 

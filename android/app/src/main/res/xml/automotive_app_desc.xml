@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <automotiveApp>
+    <!-- Media uygulaması özelliği -->
     <uses name="media"/>
-    <!-- Android Auto arama desteği -->
+    <!-- Arama özelliği -->
     <uses name="search"/>
+    <!-- Bildirimler (play/pause kontrolleri) -->
+    <uses name="notification"/>
 </automotiveApp>

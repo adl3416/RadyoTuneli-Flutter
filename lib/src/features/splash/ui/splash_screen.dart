@@ -42,19 +42,19 @@ class _SplashScreenState extends State<SplashScreen>
   void _initializeAnimations() {
     // Logo animation controller
     _logoController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 900),
       vsync: this,
     );
 
     // Text animation controller
     _textController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 600),
       vsync: this,
     );
 
     // Background animation controller
     _backgroundController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
@@ -116,17 +116,17 @@ class _SplashScreenState extends State<SplashScreen>
     _backgroundController!.forward();
 
     // Start logo animation after short delay
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 150));
     if (!mounted || _logoController == null) return;
     _logoController!.forward();
 
     // Start text animation after logo
-    await Future.delayed(const Duration(milliseconds: 800));
+    await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted || _textController == null) return;
     _textController!.forward();
 
     // Navigate after all animations complete
-    await Future.delayed(const Duration(milliseconds: 1500));
+    await Future.delayed(const Duration(milliseconds: 700));
     if (!mounted) return;
     _navigateToNextScreen();
   }
@@ -159,7 +159,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: child,
             );
           },
-          transitionDuration: const Duration(milliseconds: 600),
+          transitionDuration: const Duration(milliseconds: 350),
         ),
       );
     }

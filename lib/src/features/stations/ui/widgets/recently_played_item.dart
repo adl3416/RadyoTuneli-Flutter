@@ -15,68 +15,125 @@ class RecentlyPlayedStationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bezelColor = isDark ? const Color(0xFF2A2A2A) : const Color(0xFF1C1C1E);
+    final screenBg = isDark ? const Color(0xFF0D0D0D) : const Color(0xFF111111);
+    final glowColor = Theme.of(context).primaryColor;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 75, // 60'dan 75'e büyütüldü
-        margin: const EdgeInsets.only(right: 12), // 16'dan 12'ye küçültüldü
+        width: 80,
+        margin: const EdgeInsets.only(right: 12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // TV gövdesi
             Container(
-              width: 60, // 45'den 60'a büyütüldü
-              height: 60, // 45'den 60'a büyütüldü
+              width: 68,
+              height: 56,
               decoration: BoxDecoration(
-                color: AppConstants.surfaceVariant,
-                borderRadius: BorderRadius.circular(30), // 25'den 30'a büyütüldü
-                border: Border.all(
-                  color: Theme.of(context).primaryColor,
-                  width: 2,
-                ),
+                color: bezelColor,
+                borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 6, // 8'den 6'ya küçültüldü
-                    offset: const Offset(0, 2),
+                    color: glowColor.withValues(alpha: 0.35),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    blurRadius: 4,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30), // 25'den 30'a büyütüldü
-                child: CachedNetworkImage(
-                  imageUrl: station.logoUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    color: AppConstants.surfaceVariant,
-                    child: Icon(
-                      Icons.radio,
-                      size: 20, // 24'den 20'ye küçültüldü
-                      color: AppConstants.textSecondary,
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    color: AppConstants.surfaceVariant,
-                    child: Icon(
-                      Icons.radio,
-                      size: 20, // 24'den 20'ye küçültüldü
-                      color: AppConstants.textSecondary,
-                    ),
+              child: Padding(
+                padding: const EdgeInsets.all(3),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      // Ekran arka planı
+                      Container(color: screenBg),
+                      // Logo
+                      CachedNetworkImage(
+                        imageUrl: station.logoUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: screenBg,
+                          child: const Icon(Icons.radio, size: 24, color: Colors.white30),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: screenBg,
+                          child: const Icon(Icons.radio, size: 24, color: Colors.white30),
+                        ),
+                      ),
+                      // Ekran parlaması (cam yansıması)
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: 18,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.white.withValues(alpha: 0.18),
+                                Colors.white.withValues(alpha: 0.0),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 4), // 6'dan 4'e küçültüldü
-            Expanded(
-              child: Text(
-                station.name,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 10, // 12'den 10'a küçültüldü
+            // TV ayakları
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 12,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: bezelColor,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(3),
+                      bottomRight: Radius.circular(3),
                     ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Container(
+                  width: 12,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: bezelColor,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(3),
+                      bottomRight: Radius.circular(3),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 3),
+            // İstasyon adı
+            Text(
+              station.name,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 10,
+                  ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -84,3 +141,4 @@ class RecentlyPlayedStationItem extends StatelessWidget {
     );
   }
 }
+

@@ -46,7 +46,7 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
     }
 
     // Otomatik oynat özelliğini gecikme ile kontrol et
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds: 800), () {
       _checkAutoPlay();
     });
   }
@@ -56,7 +56,7 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
       print("🔄 Otomatik oynat kontrolü başlıyor...");
       
       // Ayarlar yüklenene kadar bekle
-      await Future.delayed(const Duration(milliseconds: 1000));
+      await Future.delayed(const Duration(milliseconds: 300));
       
       final appSettings = _ref.read(appSettingsProvider);
       print("🔄 Uygulama ayarları: autoPlay=${appSettings.autoPlay}");
@@ -140,7 +140,7 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
 
     print("✅ Audio handler listeners set up successfully");
     
-    // Android Auto için radyo listesini yükle
+    // Android Auto için radyo listesini yükle (async, background'da)
     _loadStationsForAndroidAuto();
   }
 
@@ -154,6 +154,9 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
   Future<void> _loadStationsForAndroidAuto() async {
     try {
       print("🚗 Loading stations for Android Auto...");
+      
+      // Kısa delay - stationsProvider hazır olması için
+      await Future.delayed(const Duration(milliseconds: 500));
       
       // Stations provider'dan radyo listesini al
       final stations = await _ref.read(stationsProvider.future);

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'station_repository.dart';
 import '../domain/station_model.dart';
 
@@ -14,12 +15,11 @@ final stationsProvider = FutureProvider<List<Station>>((ref) async {
 
   // Add timeout to prevent infinite loading
   return await repository.getTurkishStations().timeout(
-    const Duration(seconds: 30),
+    const Duration(seconds: 12),
     onTimeout: () {
-      print('Station loading timeout, falling back to local data');
-      // This will trigger the fallback mechanism in the repository
+      // Timeout sonrası fallback’a düşür
       throw TimeoutException(
-          'Station loading timeout', const Duration(seconds: 30));
+          'Station loading timeout', const Duration(seconds: 12));
     },
   );
 });
@@ -77,13 +77,17 @@ final filteredStationsProvider = FutureProvider<List<Station>>((ref) async {
   final query = ref.watch(searchQueryProvider);
   final sortAtoZ = ref.watch(sortAtoZProvider);
   final selectedCategory = ref.watch(selectedCategoryProvider);
-  final repository = ref.read(stationRepositoryProvider);
 
-  List<Station> stations;
-  if (query.isEmpty) {
-    stations = await repository.getTurkishStations();
-  } else {
-    stations = await repository.searchStations(query);
+  // Riverpod cache'inden al — tekrar API çağrısı yapma!
+  List<Station> stations = await ref.watch(stationsProvider.future);
+
+  // Arama filtresi
+  if (query.isNotEmpty) {
+    final lowerQuery = query.toLowerCase();
+    stations = stations.where((s) =>
+        s.name.toLowerCase().contains(lowerQuery) ||
+        (s.genre?.toLowerCase().contains(lowerQuery) ?? false) ||
+        (s.description?.toLowerCase().contains(lowerQuery) ?? false)).toList();
   }
   
   // Kategori filtresi uygula
@@ -199,7 +203,9 @@ final recentlyPlayedStationsProvider =
 // Provider for recently played stations management
 final recentlyPlayedNotifierProvider = 
     StateNotifierProvider<RecentlyPlayedNotifier, List<String>>((ref) {
-  return RecentlyPlayedNotifier();
+  final notifier = RecentlyPlayedNotifier();
+  notifier.loadFromPrefs();
+  return notifier;
 });
 
 // Provider to get actual recently played stations from IDs
@@ -227,21 +233,34 @@ final actualRecentlyPlayedStationsProvider = FutureProvider<List<Station>>((ref)
 });
 
 class RecentlyPlayedNotifier extends StateNotifier<List<String>> {
+  static const _key = 'recently_played_ids';
+
   RecentlyPlayedNotifier() : super([]);
 
+  Future<void> loadFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList(_key);
+    if (saved != null && saved.isNotEmpty) {
+      state = saved;
+    }
+  }
+
+  Future<void> _save() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_key, state);
+  }
+
   void addRecentStation(String stationId) {
-    // Remove if already exists to avoid duplicates
-    state = state.where((id) => id != stationId).toList();
-    // Add to beginning of list
-    state = [stationId, ...state];
-    // Keep only last 10 items
+    state = [stationId, ...state.where((id) => id != stationId)];
     if (state.length > 10) {
       state = state.take(10).toList();
     }
+    _save();
   }
 
   void clearRecent() {
     state = [];
+    _save();
   }
 }
 

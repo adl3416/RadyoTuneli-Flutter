@@ -101,12 +101,7 @@ class RadioAudioHandler extends BaseAudioHandler
   }
 
   void _setupAndroidAutoSupport() {
-    print("🚗🚗🚗 ANDROID AUTO: Setting up support");
-    
-    // Force MediaBrowserService to be ready
-    Future.delayed(Duration(seconds: 1), () {
-      print("🚗🚗🚗 ANDROID AUTO: MediaBrowserService ready for discovery");
-    });
+    // MediaBrowserService Android Auto discovery için hazır
   }
 
   // Favorileri SharedPreferences'dan yükle
@@ -232,6 +227,41 @@ class RadioAudioHandler extends BaseAudioHandler
     } catch (e) {
       print('❌ Error toggling favorite: $e');
     }
+  }
+
+  // Kategori cache'sini test istasyonlarla initialize et (fallback)
+  void _initializeDefaultCategories() {
+    if (_radioCategories.isNotEmpty) return; // Already loaded
+    
+    print("🚗 Initializing default categories with test stations");
+    
+    // Basit test istasyonları - Android Auto UI'ı test etmek için
+    final testStations = [
+      MediaItem(
+        id: 'trt-fm-1',
+        title: 'TRT FM',
+        artist: 'Müzik',
+        genre: 'Müzik',
+        playable: true,
+        extras: {'streamUrl': 'https://radio-streaming.example.com/trt-fm'},
+      ),
+      MediaItem(
+        id: 'trt-haber-1',
+        title: 'TRT Haber',
+        artist: 'Haber',
+        genre: 'Haber',
+        playable: true,
+        extras: {'streamUrl': 'https://radio-streaming.example.com/trt-haber'},
+      ),
+    ];
+    
+    // Kategorileri initialize et
+    _radioCategories['muzik'] = [testStations[0]];
+    _radioCategories['haber'] = [testStations[1]];
+    _radioCategories['populer'] = testStations;
+    _radioCategories['tum_radyolar'] = testStations;
+    
+    print("✅ Default categories initialized with ${testStations.length} test stations");
   }
 
   // Radyo listesini dışarıdan yükle (player_provider tarafından çağrılır)
@@ -846,6 +876,13 @@ class RadioAudioHandler extends BaseAudioHandler
       print("🚗🚗🚗 Returning ROOT level categories");
       print("🚗🚗🚗 Total categories defined: ${_categoryInfo.length}");
       print("🚗🚗🚗 Categories with stations: ${_radioCategories.keys.length}");
+      
+      // Eğer kategoriler boşsa ve ilk kez çağrılıyorsa, test kategorileri yükle
+      if (_radioCategories.isEmpty) {
+        print("⚠️ Categories empty, loading default stations...");
+        // Fallback: test kategorilerini hızlıca yükle
+        _initializeDefaultCategories();
+      }
       
       // TÜM kategorileri döndür - Modern Grid görünümü
       final categories = _categoryInfo.entries.map((entry) {

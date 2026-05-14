@@ -27,33 +27,25 @@ class SplashApp extends ConsumerWidget {
 
     switch (colorScheme) {
       case 'kanarya':
-        print('✅ KANARYA TEMASI SEÇİLDİ!');
         selectedTheme = getTheme(AppTheme.kanarayaThemeLight, AppTheme.kanarayaThemeDark);
         break;
       case 'aslan':
-        print('🦁 ASLAN TEMASI SEÇİLDİ!');
         selectedTheme = getTheme(AppTheme.aslanThemeLight, AppTheme.aslanThemeDark);
         break;
       case 'karadeniz':
-        print('🌊 KARADENİZ TEMASI SEÇİLDİ!');
         selectedTheme = getTheme(AppTheme.karadenizThemeLight, AppTheme.karadenizThemeDark);
         break;
       case 'kartal':
-        print('🦅 KARTAL TEMASI SEÇİLDİ!');
         selectedTheme = getTheme(AppTheme.kartalThemeLight, AppTheme.kartalThemeDark);
         break;
       case 'timsah':
-        print('🐊 TİMSAH TEMASI SEÇİLDİ!');
         selectedTheme = getTheme(AppTheme.timsahThemeLight, AppTheme.timsahThemeDark);
         break;
       case 'varsayilan':
       default:
-        print('💜 VARSAYILAN TEMA SEÇİLDİ');
         selectedTheme = getTheme(AppTheme.lightTheme, AppTheme.darkTheme);
     }
 
-    print('🎨 SplashApp - Theme mode: $themeMode, Color scheme: $colorScheme');
-    
     return MaterialApp(
       title: 'Radyo Tüneli',
       theme: selectedTheme,
