@@ -35,7 +35,7 @@ Future<void> _initializeAudioService() async {
       builder: () => handler,
       config: AudioServiceConfig(
         androidNotificationChannelId:
-            'com.turkradyo.adl.de.turkradyo.channel.audio',
+            'com.turkradyo.bsr.de.turkradyo.channel.audio',
         androidNotificationChannelName: 'Radyo Tüneli',
         androidNotificationChannelDescription:
             'Radyo Tüneli - Türk Radyo İstasyonları',

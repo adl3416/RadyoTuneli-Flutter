@@ -951,7 +951,7 @@ class RadioAudioHandler extends BaseAudioHandler
         id: AudioService.browsableRootId,
         title: 'Radyo Tüneli',
         artist: 'Türk Radyo İstasyonları',
-        artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
+        artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
         playable: false,
         extras: {
           'browsable': true,
@@ -969,7 +969,7 @@ class RadioAudioHandler extends BaseAudioHandler
         id: mediaId,
         title: categoryData['title']!,
         artist: categoryData['description']!,
-        artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
+        artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
         playable: false,
         extras: {
           'browsable': true,
@@ -1025,7 +1025,7 @@ class RadioAudioHandler extends BaseAudioHandler
               ? '$stationCount radyo istasyonu' 
               : 'Yakında...',
           album: categoryData['description'],
-          artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
+          artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
           playable: false,
           extras: {
             'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
@@ -1061,7 +1061,7 @@ class RadioAudioHandler extends BaseAudioHandler
                 title: '❤️ Favori Yok',
                 artist: 'Uygulamada radyo favorileyin',
                 displaySubtitle: 'Diğer kategorilere göz atın',
-                artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
+                artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
                 playable: false,
                 extras: {'isEmpty': true},
               )
@@ -1073,7 +1073,7 @@ class RadioAudioHandler extends BaseAudioHandler
                 id: 'favorites_loading',
                 title: '⏳ Yükleniyor…',
                 artist: 'Lütfen uygulamayı açın, ardından geri dönün',
-                artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
+                artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
                 playable: false,
                 extras: {'isEmpty': true},
               )
@@ -1088,7 +1088,7 @@ class RadioAudioHandler extends BaseAudioHandler
             title: '📭 Radyo Bulunamadı',
             artist: '$categoryName kategorisinde henüz radyo yok',
             displaySubtitle: 'Diğer kategorilere göz atın',
-            artUri: Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
+            artUri: Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
             playable: false,
             extras: {
               'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
@@ -1115,7 +1115,7 @@ class RadioAudioHandler extends BaseAudioHandler
           displayTitle: station.title,
           displaySubtitle: station.artist ?? 'Türk Radyosu',
           displayDescription: isFav ? '❤️ Favori  •  🎧 Canlı yayın' : '🎧 Canlı yayın',
-          artUri: station.artUri ?? Uri.parse('android.resource://com.turkradyo.adl.de.turkradyo/mipmap/ic_launcher'),
+          artUri: station.artUri ?? Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
           playable: true,
           duration: null, // Live stream
           extras: {
