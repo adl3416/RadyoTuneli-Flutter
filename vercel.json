@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": null,
-  "outputDirectory": "public",
+  "outputDirectory": "web",
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
