@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Use – Radyo Tüneli</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #09090F; --bg2: #0E0E1A; --card: #131320;
+      --border: rgba(255,255,255,0.07);
+      --text: #F1F0FF; --text2: #BCBAD8; --muted: #6A6A90;
+      --accent: #C084FC; --purple: #7C3AED;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(9,9,15,0.88); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 6%; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-back { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--muted); font-size: 0.88rem; font-weight: 500; transition: color .2s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-title { font-size: 0.9rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), #E879F9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .nav-legal-links { display: flex; gap: 16px; }
+    .nav-legal-links a { color: var(--muted); text-decoration: none; font-size: 0.82rem; transition: color .2s; }
+    .nav-legal-links a:hover, .nav-legal-links a.active { color: var(--accent); }
+
+    .page-hero {
+      padding: 64px 6% 48px;
+      background: radial-gradient(ellipse 60% 60% at 50% 0%, rgba(124,58,237,0.12), transparent 70%);
+      border-bottom: 1px solid var(--border);
+    }
+    .page-hero-inner { max-width: 760px; margin: 0 auto; }
+    .page-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .page-hero h1 { font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 10px; }
+    .page-meta { font-size: 0.82rem; color: var(--muted); }
+
+    .content-wrap { max-width: 760px; margin: 0 auto; padding: 56px 6%; }
+    .content-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 40px 36px; }
+    .content-card h2 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin: 28px 0 8px; }
+    .content-card h2:first-child { margin-top: 0; }
+    .content-card p, .content-card li { font-size: 0.9rem; color: var(--text2); line-height: 1.8; }
+    .content-card ul { padding-left: 20px; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+    .content-card strong { color: var(--text); font-weight: 600; }
+    .content-card a { color: var(--accent); text-decoration: none; }
+    .content-card a:hover { text-decoration: underline; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    footer {
+      background: var(--bg2); border-top: 1px solid var(--border);
+      padding: 28px 6%;
+      display: flex; flex-wrap: wrap; gap: 14px;
+      justify-content: space-between; align-items: center;
+      font-size: 0.8rem; color: var(--muted);
+    }
+    .f-legal { display: flex; gap: 18px; flex-wrap: wrap; }
+    .f-legal a { color: var(--muted); text-decoration: none; transition: color .2s; }
+    .f-legal a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-back">← Radyo Tüneli</a>
+  <span class="nav-title">Terms of Use</span>
+  <div class="nav-legal-links">
+    <a href="imprint.html">Imprint</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html" class="active">Terms</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-eyebrow">Legal</div>
+    <h1>Terms of Use</h1>
+    <p class="page-meta">Last updated: May 15, 2026</p>
+  </div>
+</div>
+
+<div class="content-wrap">
+  <div class="content-card">
+    <h2>1. General</h2>
+    <p>Radyo Tüneli is a free application that provides access to live Turkish radio station streams over the internet. By using this app, you agree to these terms of use.</p>
+
+    <hr class="divider" />
+
+    <h2>2. Scope of Service</h2>
+    <ul>
+      <li>The app provides access to radio station live streams hosted by third parties</li>
+      <li>All broadcast content belongs to the respective radio stations</li>
+      <li>Uninterrupted service availability is not guaranteed</li>
+      <li>Station data is sourced from the public API at radio-browser.info</li>
+    </ul>
+
+    <hr class="divider" />
+
+    <h2>3. Acceptable Use</h2>
+    <ul>
+      <li>The app is intended for personal, non-commercial use only</li>
+      <li>Commercial use or redistribution is prohibited</li>
+      <li>Reverse engineering, decompiling, or modifying the app is prohibited</li>
+      <li>Using the app to violate any applicable laws is prohibited</li>
+    </ul>
+
+    <hr class="divider" />
+
+    <h2>4. Intellectual Property</h2>
+    <p>The app's source code, design, and original content are the property of the Radyo Tüneli developer. Radio station names, logos, and broadcast content are the property of their respective owners.</p>
+
+    <hr class="divider" />
+
+    <h2>5. Disclaimer</h2>
+    <p>The developer of Radyo Tüneli is not responsible for the content broadcast by radio stations accessible through the app. The developer is not liable for any damages resulting from service interruptions, inaccurate station data, or third-party content.</p>
+
+    <hr class="divider" />
+
+    <h2>6. Changes to Terms</h2>
+    <p>These terms may be updated at any time without prior notice. Continued use of the app after changes constitutes acceptance of the updated terms.</p>
+
+    <hr class="divider" />
+
+    <h2>7. Contact</h2>
+    <p>
+      <a href="mailto:radyotuneli@gmail.com">radyotuneli@gmail.com</a><br>
+      <a href="mailto:software19951995@gmail.com">software19951995@gmail.com</a>
+    </p>
+  </div>
+</div>
+
+<footer>
+  <span>© 2025 Radyo Tüneli. All rights reserved.</span>
+  <div class="f-legal">
+    <a href="imprint.html">Imprint</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Use</a>
+  </div>
+</footer>
+</body>
+</html>
