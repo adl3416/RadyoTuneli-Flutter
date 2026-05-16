@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../stations/domain/station_model.dart';
+import '../../stations/ui/widgets/radio_logo.dart';
 import '../data/player_provider.dart';
-import '../data/audio_service_handler.dart';
 import '../../favorites/data/favorites_provider.dart';
 
 class AutomotivePlayerScreen extends ConsumerWidget {
@@ -88,11 +88,21 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                               color: AppTheme.orange400.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: Icon(
-                              Icons.radio,
-                              color: AppTheme.orange400,
-                              size: (logoSize * 0.5).clamp(28.0, 80.0),
-                            ),
+                            child: playerState.currentStation == null
+                                ? Icon(
+                                    Icons.radio,
+                                    color: AppTheme.orange400,
+                                    size: (logoSize * 0.5).clamp(28.0, 80.0),
+                                  )
+                                : Padding(
+                                    padding: const EdgeInsets.all(6),
+                                    child: RadioLogo(
+                                      radioName: playerState.currentStation!.name,
+                                      logoUrl: playerState.currentStation!.logoUrl,
+                                      size: logoSize,
+                                      showBorder: false,
+                                    ),
+                                  ),
                           ),
 
                           SizedBox(height: spacingLarge),
@@ -534,12 +544,11 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                             ),
                             child: ListTile(
                               contentPadding: EdgeInsets.zero,
-                              leading: CircleAvatar(
-                                backgroundColor: AppTheme.orange400.withOpacity(0.2),
-                                child: Icon(
-                                  Icons.radio,
-                                  color: AppTheme.orange400,
-                                ),
+                              leading: RadioLogo(
+                                radioName: station.name,
+                                logoUrl: station.logoUrl,
+                                size: 44,
+                                showBorder: false,
                               ),
                               title: Text(
                                 station.name,

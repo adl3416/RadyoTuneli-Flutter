@@ -65,3 +65,10 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // MediaBrowserServiceCompat ve BrowserRoot için gerekli
+    // audio_service plugini bunu implementation (api değil) ile bağlıyor,
+    // bu yüzden app modülü için açıkça eklenmesi gerekiyor
+    implementation("androidx.media:media:1.7.0")
+}

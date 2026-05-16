@@ -80,6 +80,8 @@ Future<void> _initializeAudioService() async {
           'com.google.android.gms.car.media.SLOT_RESERVATION_QUEUE': false,
           'com.google.android.gms.car.media.SLOT_RESERVATION_SKIP_TO_NEXT': false,
           'com.google.android.gms.car.media.SLOT_RESERVATION_SKIP_TO_PREV': false,
+          // Android Auto arama butonu göster
+          'android.media.browse.SEARCH_SUPPORTED': true,
         },
       ),
     );

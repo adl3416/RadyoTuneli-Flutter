@@ -160,8 +160,8 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
     try {
       print("🚗 Loading stations for Android Auto...");
       
-      // Kısa delay - stationsProvider hazır olması için
-      await Future.delayed(const Duration(milliseconds: 500));
+      // Çok kısa delay - stationsProvider'ın ilk frame'de settle olması için
+      await Future.delayed(const Duration(milliseconds: 100));
       
       // Stations provider'dan radyo listesini al
       final stations = await _ref.read(stationsProvider.future);

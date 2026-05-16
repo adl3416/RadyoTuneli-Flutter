@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/utils/radio_avatar_helper.dart';
 
@@ -21,6 +22,8 @@ class RadioLogo extends StatelessWidget {
     if (logoUrl != null && logoUrl!.isNotEmpty) {
       if (logoUrl!.startsWith('assets/')) {
         return _buildAssetLogo();
+      } else if (logoUrl!.startsWith('file://')) {
+        return _buildFileLogo();
       } else if (logoUrl!.startsWith('http://') || logoUrl!.startsWith('https://')) {
         return _buildImageLogo();
       }
@@ -83,24 +86,52 @@ class RadioLogo extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
+        child: CachedNetworkImage(
+          imageUrl: logoUrl!,
+          fit: BoxFit.contain,
+          placeholder: (context, url) => Center(
+            child: SizedBox(
+              width: size * 0.4,
+              height: size * 0.4,
+              child: const CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+          errorWidget: (context, url, error) {
+            // Hata olursa baş harf avatar'ına geç
+            return _buildLetterAvatarContent();
+          },
+        ),
+      ),
+    );
+  }
+
+  /// Local file:// logo widget'ı
+  Widget _buildFileLogo() {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: showBorder ? Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 2,
+        ) : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
         child: Image.network(
           logoUrl!,
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
-            // Hata olursa baş harf avatar'ına geç
             return _buildLetterAvatarContent();
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                    : null,
-                strokeWidth: 2,
-              ),
-            );
           },
         ),
       ),

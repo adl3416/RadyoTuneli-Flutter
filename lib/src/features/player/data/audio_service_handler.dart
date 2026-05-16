@@ -1,17 +1,38 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/services.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 import '../domain/player_state_model.dart';
 
 class RadioAudioHandler extends BaseAudioHandler
     with SeekHandler, QueueHandler {
-  final AudioPlayer _player = AudioPlayer();
+  // Buffer ayarları: live radio için hızlı başlatmayı önceliklendiren küçük buffer
+  // Default ExoPlayer 2.5s buffer bekler → bunu 800ms'e indiriyoruz
+  final AudioPlayer _player = AudioPlayer(
+    audioLoadConfiguration: AudioLoadConfiguration(
+      androidLoadControl: AndroidLoadControl(
+        minBufferDuration: const Duration(seconds: 5),
+        maxBufferDuration: const Duration(seconds: 20),
+        // ExoPlayer bu kadar buffer dolunca oynatmaya başlar (default ~2.5s → 800ms)
+        bufferForPlaybackDuration: const Duration(milliseconds: 800),
+        bufferForPlaybackAfterRebufferDuration: const Duration(seconds: 3),
+        prioritizeTimeOverSizeThresholds: true,
+      ),
+      darwinLoadControl: DarwinLoadControl(
+        preferredForwardBufferDuration: const Duration(seconds: 5),
+        // iOS'ta minimum buffer dolunca başla, stallinge kadar bekleme
+        automaticallyWaitsToMinimizeStalling: false,
+      ),
+    ),
+  );
   
   // Audio focus management
   bool _wasPlayingBeforeInterruption = false;
@@ -36,6 +57,17 @@ class RadioAudioHandler extends BaseAudioHandler
 
   // Android Auto güzel arka plan resmi cache
   String? _cachedDefaultArtworkPath;
+
+  // İstasyon logolarını yerel dosyaya indirme cache'i (http → file:// dönüşümü için)
+  // Android Auto http:// URL'lerden resim yükleyemiyor, yerel dosya gerekiyor
+  final Map<String, String> _logoFileCache = {}; // url -> local file path
+  final Map<String, String> _assetLogoFileCache = {}; // asset path -> local file path
+  final Set<String> _pendingLogoDownloads = {}; // indirilmekte olan URL'ler
+  final Map<String, String> _letterAvatarCache = {}; // harf → yerel dosya yolu (A-Z + #)
+
+  // Android Auto browse sonuçları cache - her seferinde yeniden oluşturmayı önler
+  // Key: categoryId, Value: (favoritesSnapshot, result)
+  final Map<String, _BrowseCacheEntry> _browseCache = {};
 
   // Mevcut istasyon bilgisi - play() butonundan yeniden başlatmak için
   String? _currentStreamUrl;
@@ -222,6 +254,9 @@ class RadioAudioHandler extends BaseAudioHandler
         print("❤️ Added to favorites: $stationId");
       }
       
+      // Browse cache'i temizle - favoriler değişti
+      _browseCache.clear();
+      
       // SharedPreferences'a kaydet
       final prefs = await SharedPreferences.getInstance();
       await prefs.setStringList('favorite_stations', _favoriteIds.toList());
@@ -234,44 +269,26 @@ class RadioAudioHandler extends BaseAudioHandler
     }
   }
 
-  // Kategori cache'sini test istasyonlarla initialize et (fallback)
-  void _initializeDefaultCategories() {
-    if (_radioCategories.isNotEmpty) return; // Already loaded
-    
-    print("🚗 Initializing default categories with test stations");
-    
-    // Basit test istasyonları - Android Auto UI'ı test etmek için
-    final testStations = [
-      MediaItem(
-        id: 'trt-fm-1',
-        title: 'TRT FM',
-        artist: 'Müzik',
-        genre: 'Müzik',
-        playable: true,
-        extras: {'streamUrl': 'https://radio-streaming.example.com/trt-fm'},
-      ),
-      MediaItem(
-        id: 'trt-haber-1',
-        title: 'TRT Haber',
-        artist: 'Haber',
-        genre: 'Haber',
-        playable: true,
-        extras: {'streamUrl': 'https://radio-streaming.example.com/trt-haber'},
-      ),
-    ];
-    
-    // Kategorileri initialize et
-    _radioCategories['muzik'] = [testStations[0]];
-    _radioCategories['haber'] = [testStations[1]];
-    _radioCategories['populer'] = testStations;
-    _radioCategories['tum_radyolar'] = testStations;
-    
-    print("✅ Default categories initialized with ${testStations.length} test stations");
+  // Kategori cache'sini JSON asset'inden yükle (Android Auto soğuk başlatma için)
+  Future<void> _initializeDefaultCategories() async {
+    if (_radioCategories.isNotEmpty) return;
+    print("⚠️ Categories empty — JSON asset'ten yükleniyor...");
+    try {
+      final String jsonString = await rootBundle.loadString('assets/data/TR.json');
+      final List<dynamic> jsonList = json.decode(jsonString);
+      await loadRadioStations(jsonList);
+      print("✅ JSON asset'ten ${jsonList.length} istasyon yüklendi (Android Auto soğuk başlatma)");
+    } catch (e) {
+      print('❌ JSON asset yüklenemedi: $e');
+    }
   }
 
   // Radyo listesini dışarıdan yükle (player_provider tarafından çağrılır)
   Future<void> loadRadioStations(List<dynamic> stations) async {
     print("🚗 Loading ${stations.length} stations for Android Auto");
+    
+    // Browse cache'i temizle - yeni veri geliyor
+    _browseCache.clear();
     
     // Kategorilere göre radyoları ayır
     _radioCategories.clear();
@@ -310,17 +327,31 @@ class RadioAudioHandler extends BaseAudioHandler
         category = 'dini';
       }
       
+      Uri? stationArtUri;
+      final faviconStr = favicon.toString();
+      if (faviconStr.isNotEmpty) {
+        if (faviconStr.startsWith('assets/')) {
+          final localAssetLogoPath = await _cacheAssetLogoToFile(faviconStr);
+          stationArtUri = localAssetLogoPath != null
+              ? Uri.file(localAssetLogoPath)
+              : Uri.tryParse(faviconStr);
+        } else {
+          stationArtUri = Uri.tryParse(faviconStr);
+        }
+      }
+
       final mediaItem = MediaItem(
         id: stationId,
         title: name,
         artist: genre,
         genre: genre,
-        artUri: favicon.isNotEmpty ? Uri.tryParse(favicon) : null,
+        artUri: stationArtUri,
         playable: true,
         extras: {
           'streamUrl': streamUrl,
           'category': category,
           'isLive': true,
+          'logoUrl': faviconStr,
         },
       );
       
@@ -398,6 +429,11 @@ class RadioAudioHandler extends BaseAudioHandler
       }
     });
     // Not: Canlı yayın için positionStream dinlemiyoruz (süre=0, gereksiz spam yaratır)
+
+    // Artwork'ü arka planda önceden yükle - ilk play hızlı olsun
+    _getDefaultArtUri().then((_) => print('🎨 Default artwork pre-warmed'));
+    // Android Auto browse listesi için harf avatarlarını arka planda oluştur
+    _preWarmLetterAvatars().ignore();
 
     print("✅ RadioAudioHandler initialized");
   }
@@ -542,7 +578,7 @@ class RadioAudioHandler extends BaseAudioHandler
         MediaAction.skipToPrevious,
         MediaAction.setRating,
       },
-      androidCompactActionIndices: const [0, 1, 3], // Bildirimde: prev, play/pause, next (kalp hariç)
+      androidCompactActionIndices: const [1, 2, 3], // Android Auto & bildirim: play/pause, kalp, next
       processingState: {
             ProcessingState.idle: AudioProcessingState.idle,
             ProcessingState.loading: AudioProcessingState.loading,
@@ -610,7 +646,7 @@ class RadioAudioHandler extends BaseAudioHandler
           MediaAction.skipToPrevious,
           MediaAction.setRating,
         },
-        androidCompactActionIndices: const [0, 1, 3], // Bildirimde: prev, play, next (kalp hariç)
+        androidCompactActionIndices: const [1, 2, 3], // Android Auto & bildirim: play, kalp, next
         processingState: AudioProcessingState.ready,
         playing: false,
       ));
@@ -696,7 +732,28 @@ class RadioAudioHandler extends BaseAudioHandler
     }
   }
 
-  // Android Auto favorileme desteği (Rating API)
+  /// Android Auto kalp/favori butonu — BaseAudioHandler.setRating() no-op olduğu için doğrudan override.
+  @override
+  Future<void> setRating(Rating rating, [Map<String, dynamic>? extras]) async {
+    print('⭐ setRating called: $rating');
+    final currentStation = mediaItem.value;
+    if (currentStation != null) {
+      await toggleFavorite(currentStation.id);
+      final isFavorite = _favoriteIds.contains(currentStation.id);
+      final currentArtist = currentStation.artist ?? '';
+      final updatedMediaItem = currentStation.copyWith(
+        rating: Rating.newHeartRating(isFavorite),
+        artist: isFavorite
+            ? (currentArtist.startsWith('❤️') ? currentArtist : '❤️ $currentArtist')
+            : currentArtist.replaceFirst('❤️ ', ''),
+      );
+      this.mediaItem.add(updatedMediaItem);
+      _broadcastState(_player.playerState);
+      print('❤️ Favorite toggled for \${currentStation.title}: \$isFavorite');
+    }
+  }
+
+  // Android Auto favorileme desteği (Rating API) - eski compat
   @override
   Future<void> onSetRating(Rating rating, Map<String, dynamic>? extras) async {
     print('⭐ onSetRating called with rating: $rating');
@@ -758,15 +815,31 @@ class RadioAudioHandler extends BaseAudioHandler
           !artUri.startsWith('initial://') &&
           !artUri.startsWith('assets/') &&
           (artUri.startsWith('http://') || artUri.startsWith('https://') || artUri.startsWith('file://'));
-      final artUriParsed =
-          hasValidArt ? Uri.parse(artUri!) : await _getDefaultArtUri();
+
+      // Artwork'ü BEKLEMEDEN başla - hemen launcher icon veya cache kullan, logo arka planda indirilir
+      // Android Auto http:// URL'lerden resim yükleyemiyor → yerel dosya cache kullanıyoruz
+      final Uri artUriParsed;
+      final String? capturedArtUri = hasValidArt ? artUri : null;
+      final capturedStationId = stationId;
+
+      if (hasValidArt && _logoFileCache.containsKey(artUri)) {
+        // Logo zaten local cache'de → direkt kullan, bekleme yok
+        artUriParsed = Uri.file(_logoFileCache[artUri!]!);
+        print('🖼️ Using cached logo for $title');
+      } else if (_cachedDefaultArtworkPath != null) {
+        // Pre-warmed default artwork var → hemen kullan, logo arka planda indirilir
+        artUriParsed = Uri.file(_cachedDefaultArtworkPath!);
+      } else {
+        // Hiçbir şey yok → launcher icon ile başla
+        artUriParsed = Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher');
+      }
 
       if (myId != _playRequestId) {
         print("🚫 playStation[$myId] iptal edildi (artUri sonrası): $title");
         return;
       }
 
-      final mediaItem = MediaItem(
+      final newMediaItem = MediaItem(
         id: stationId ?? streamUrl,
         title: title,
         artist: isFavorite ? '❤️ $artist' : artist,
@@ -798,15 +871,25 @@ class RadioAudioHandler extends BaseAudioHandler
       _currentStationId = stationId;
 
       // Update media item
-      this.mediaItem.add(mediaItem);
-      
-      // Son dinlenenlere ekle
-      await _addToRecentlyPlayed(mediaItem);
+      mediaItem.add(newMediaItem);
 
-      if (myId != _playRequestId) {
-        print("🚫 playStation[$myId] iptal edildi (recentlyPlayed sonrası): $title");
-        return;
+      // Arka planda logo indir (http → local file, Android Auto için gerekli)
+      if (capturedArtUri != null && !_logoFileCache.containsKey(capturedArtUri)) {
+        _downloadLogoAndUpdate(capturedArtUri, capturedStationId ?? '').ignore();
+      } else if (capturedArtUri == null && _cachedDefaultArtworkPath == null) {
+        // Logo yok ve default artwork henüz oluşturulmamış → arka planda oluştur
+        _getDefaultArtUri().then((uri) {
+          if (_currentStationId == capturedStationId) {
+            final current = mediaItem.value;
+            if (current != null) {
+              mediaItem.add(current.copyWith(artUri: uri));
+            }
+          }
+        });
       }
+      
+      // Son dinlenenlere ekle — arka planda yap, audio başlatmayı beklemesin
+      _addToRecentlyPlayed(newMediaItem).ignore();
 
       // Set loading state
       playbackState.add(PlaybackState(
@@ -824,12 +907,13 @@ class RadioAudioHandler extends BaseAudioHandler
       // require specific headers (User-Agent, Icy-MetaData) or reject default
       // player requests; on failure we retry with common headers.
       try {
+        // 8 saniye timeout: yanıt vermeyen stream'lerde takılı kalmayı önler
         await _player.setAudioSource(
           AudioSource.uri(
             Uri.parse(streamUrl),
-            tag: mediaItem,
+            tag: newMediaItem,
           ),
-        );
+        ).timeout(const Duration(seconds: 8));
         print("🎵 Audio source set (default), starting playback...");
       } catch (e) {
         // Yeni bir istek geldiyse retry yapma — zaten iptal edildi
@@ -843,14 +927,14 @@ class RadioAudioHandler extends BaseAudioHandler
           await _player.setAudioSource(
             AudioSource.uri(
               Uri.parse(streamUrl),
-              tag: mediaItem,
-              // Add headers commonly required by some streaming servers
+              tag: newMediaItem,
+              // Bazı Shoutcast/Icecast sunucuları bu header'ları gerektirir
               headers: {
                 'Icy-MetaData': '1',
                 'User-Agent': 'Mozilla/5.0 (Android)',
               },
             ),
-          );
+          ).timeout(const Duration(seconds: 8));
           print("🎵 Audio source set (with headers), starting playback...");
         } catch (e2) {
           if (myId != _playRequestId) {
@@ -936,6 +1020,12 @@ class RadioAudioHandler extends BaseAudioHandler
     _player.dispose();
   }
 
+  /// İki Set'in eşit olup olmadığını kontrol eder (browse cache invalidation için)
+  bool _setsEqual(Set<String> a, Set<String> b) {
+    if (a.length != b.length) return false;
+    return a.containsAll(b);
+  }
+
   // =====================================
   // Android Auto / CarPlay MediaBrowser Support
   // =====================================
@@ -1003,11 +1093,9 @@ class RadioAudioHandler extends BaseAudioHandler
       print("🚗🚗🚗 Total categories defined: ${_categoryInfo.length}");
       print("🚗🚗🚗 Categories with stations: ${_radioCategories.keys.length}");
       
-      // Eğer kategoriler boşsa ve ilk kez çağrılıyorsa, test kategorileri yükle
+      // Eğer kategoriler boşsa → JSON asset'ten gerçek istasyonları yükle
       if (_radioCategories.isEmpty) {
-        print("⚠️ Categories empty, loading default stations...");
-        // Fallback: test kategorilerini hızlıca yükle
-        _initializeDefaultCategories();
+        await _initializeDefaultCategories();
       }
       
       // TÜM kategorileri döndür - Modern Grid görünümü
@@ -1046,7 +1134,28 @@ class RadioAudioHandler extends BaseAudioHandler
     if (_categoryInfo.containsKey(parentMediaId)) {
       print("🚗🚗🚗 Returning stations for category: $parentMediaId");
 
-      final stations = _radioCategories[parentMediaId] ?? [];
+      final allStations = _radioCategories[parentMediaId] ?? [];
+      
+      // Android Auto pagination desteği
+      // options null ise tüm listeyi döndür (eski Android Auto sürümleri)
+      // options varsa sayfalama uygula
+      final List<MediaItem> stations;
+      if (options != null) {
+        final page = (options['android.media.extra.PAGE'] as int?) ?? 0;
+        final pageSize = (options['android.media.extra.PAGE_SIZE'] as int?) ?? 50;
+        final start = page * pageSize;
+        if (start >= allStations.length) {
+          stations = [];
+        } else {
+          final end = (start + pageSize).clamp(0, allStations.length);
+          stations = allStations.sublist(start, end);
+        }
+        print("🚗 Pagination: page=$page, pageSize=$pageSize, total=${allStations.length}, showing ${stations.length}");
+      } else {
+        // Pagination olmadan maksimum 200 istasyon döndür (Android Auto limiti)
+        stations = allStations.length > 200 ? allStations.sublist(0, 200) : allStations;
+        print("🚗 No pagination options, returning ${stations.length}/${allStations.length} stations");
+      }
 
       if (stations.isEmpty) {
         print("⚠️ Category $parentMediaId is empty, returning placeholder");
@@ -1099,7 +1208,16 @@ class RadioAudioHandler extends BaseAudioHandler
       }
       
       print("🚗 Returning ${stations.length} stations");
-      return stations.asMap().entries.map((entry) {
+
+      // Browse cache kontrolü - favoriler değişmediyse cache'den döndür
+      final cacheKey = '${parentMediaId}_${stations.length}';
+      final cached = _browseCache[cacheKey];
+      if (cached != null && _setsEqual(cached.favoritesSnapshot, _favoriteIds)) {
+        print("🚗 Browse cache hit for $parentMediaId (${cached.items.length} items)");
+        return cached.items;
+      }
+
+      final result = stations.asMap().entries.map((entry) {
         final index = entry.key;
         final station = entry.value;
         final isFav = _favoriteIds.contains(station.id);
@@ -1115,7 +1233,7 @@ class RadioAudioHandler extends BaseAudioHandler
           displayTitle: station.title,
           displaySubtitle: station.artist ?? 'Türk Radyosu',
           displayDescription: isFav ? '❤️ Favori  •  🎧 Canlı yayın' : '🎧 Canlı yayın',
-          artUri: station.artUri ?? Uri.parse('android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+          artUri: _getLocalArtUriForBrowse(station),
           playable: true,
           duration: null, // Live stream
           extras: {
@@ -1132,6 +1250,10 @@ class RadioAudioHandler extends BaseAudioHandler
           },
         );
       }).toList();
+
+      // Cache'e kaydet
+      _browseCache[cacheKey] = _BrowseCacheEntry(Set.from(_favoriteIds), result);
+      return result;
     }
     
     print("🚗🚗🚗 Unknown parentMediaId: $parentMediaId, returning empty");
@@ -1207,6 +1329,11 @@ class RadioAudioHandler extends BaseAudioHandler
   @override
   Future<void> playFromMediaId(String mediaId, [Map<String, dynamic>? extras]) async {
     print("🚗 Android Auto: playFromMediaId -> $mediaId");
+
+    // Kategoriler boşsa önce yükle (soğuk başlatma durumu)
+    if (_radioCategories.isEmpty) {
+      await _initializeDefaultCategories();
+    }
 
     // İstasyonu tüm kategorilerde ara
     MediaItem? foundStation;
@@ -1382,6 +1509,105 @@ class RadioAudioHandler extends BaseAudioHandler
   // ────────────────────────────────────────────────────────────────────
   // Android Auto güzel arka plan resmi oluşturma
   // ────────────────────────────────────────────────────────────────────
+
+  /// İstasyon logosunu arka planda indirir ve local file:// URI'ye çevirir.
+  /// Android Auto http:// URL'leri doğrudan yükleyemediği için yerel dosya gerekli.
+  /// İndirme tamamlanınca, istasyon hâlâ aynıysa MediaItem güncellenir.
+  Future<void> _downloadLogoAndUpdate(String logoUrl, String stationId) async {
+    if (_pendingLogoDownloads.contains(logoUrl)) return;
+    if (_logoFileCache.containsKey(logoUrl)) {
+      // Zaten indirilmiş - direkt güncelle
+      if (_currentStationId == stationId) {
+        final current = mediaItem.value;
+        if (current != null) {
+          mediaItem.add(current.copyWith(artUri: Uri.file(_logoFileCache[logoUrl]!)));
+          print('🖼️ Logo cache hit, updated artwork: $logoUrl');
+        }
+      }
+      return;
+    }
+
+    _pendingLogoDownloads.add(logoUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(logoUrl),
+        headers: {'User-Agent': 'Mozilla/5.0 (Android)'},
+      ).timeout(const Duration(seconds: 8));
+
+      if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
+        final dir = await getTemporaryDirectory();
+        final hash = logoUrl.hashCode.abs().toString();
+        final file = File('${dir.path}/aa_logo_$hash.jpg');
+        await file.writeAsBytes(response.bodyBytes);
+        _logoFileCache[logoUrl] = file.path;
+
+        // İstasyon hâlâ aynıysa güncelle
+        if (_currentStationId == stationId) {
+          final current = mediaItem.value;
+          if (current != null) {
+            mediaItem.add(current.copyWith(artUri: Uri.file(file.path)));
+            print('🖼️ Logo downloaded & artwork updated: $logoUrl');
+          }
+        }
+      } else {
+        print('⚠️ Logo download failed (${response.statusCode}): $logoUrl');
+        // HTTP başarısız - default artwork kullan
+        if (_currentStationId == stationId) {
+          final defaultUri = await _getDefaultArtUri();
+          final current = mediaItem.value;
+          if (current != null) {
+            mediaItem.add(current.copyWith(artUri: defaultUri));
+          }
+        }
+      }
+    } catch (e) {
+      print('❌ Logo download error: $e');
+      // Hata - default artwork kullan
+      if (_currentStationId == stationId) {
+        final defaultUri = await _getDefaultArtUri();
+        final current = mediaItem.value;
+        if (current != null) {
+          mediaItem.add(current.copyWith(artUri: defaultUri));
+        }
+      }
+    } finally {
+      _pendingLogoDownloads.remove(logoUrl);
+    }
+  }
+
+  /// assets/... logo yolunu Android Auto için file:// URI'ye çevirir.
+  Future<String?> _cacheAssetLogoToFile(String assetPath) async {
+    if (_assetLogoFileCache.containsKey(assetPath)) {
+      return _assetLogoFileCache[assetPath];
+    }
+    try {
+      final data = await rootBundle.load(assetPath);
+      final bytes = data.buffer.asUint8List();
+      if (bytes.isEmpty) return null;
+
+      final dir = await getTemporaryDirectory();
+      final hash = assetPath.hashCode.abs().toString();
+      final lower = assetPath.toLowerCase();
+      final ext = lower.endsWith('.png')
+          ? 'png'
+          : lower.endsWith('.webp')
+              ? 'webp'
+              : lower.endsWith('.jpg') || lower.endsWith('.jpeg')
+                  ? 'jpg'
+                  : 'img';
+      final file = File('${dir.path}/aa_asset_logo_$hash.$ext');
+
+      if (!await file.exists()) {
+        await file.writeAsBytes(bytes, flush: true);
+      }
+
+      _assetLogoFileCache[assetPath] = file.path;
+      return file.path;
+    } catch (e) {
+      print('⚠️ Asset logo cache error ($assetPath): $e');
+      return null;
+    }
+  }
 
   /// Logo olmayan istasyonlar için güzel bir arka plan resmi döndürür.
   /// Resim ilk çağrıda oluşturulur ve cache'lenir.
@@ -1596,4 +1822,129 @@ class RadioAudioHandler extends BaseAudioHandler
       return null;
     }
   }
+
+  // ─────────────────── Harf Avatar (Browse listesi) ────────────────────────
+
+  /// A-Z ve # için renkli daire avatarlarını temp dizine yazar ve cache'ler.
+  /// _init() tarafından arka planda çağrılır; tamamlanınca browse cache sıfırlanır.
+  Future<void> _preWarmLetterAvatars() async {
+    try {
+      final dir = await getTemporaryDirectory();
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#';
+      for (final letter in letters.split('')) {
+        if (_letterAvatarCache.containsKey(letter)) continue;
+        final file = File('${dir.path}/aa_letter_$letter.png');
+        if (!await file.exists()) {
+          final bytes = await _generateLetterAvatarBytes(letter);
+          if (bytes != null) await file.writeAsBytes(bytes);
+        }
+        if (await file.exists()) {
+          _letterAvatarCache[letter] = file.path;
+        }
+      }
+      // Avatarlar hazır → eski browse cache'i sil (artUri'ler güncellensin)
+      _browseCache.clear();
+      print('🎨 Letter avatars ready: ${_letterAvatarCache.length}/27');
+    } catch (e) {
+      print('❌ Letter avatar pre-warm error: $e');
+    }
+  }
+
+  /// Browse listesindeki bir istasyon için yerel file:// URI döndürür.
+  /// HTTP URL'leri Android Auto yükleyemez → local dosya zorunlu.
+  Uri _getLocalArtUriForBrowse(MediaItem station) {
+    final remoteUrl = station.artUri?.toString() ?? '';
+    // 1. İndirilen logo var mı?
+    if (remoteUrl.isNotEmpty &&
+        (remoteUrl.startsWith('http://') || remoteUrl.startsWith('https://')) &&
+        _logoFileCache.containsKey(remoteUrl)) {
+      return Uri.file(_logoFileCache[remoteUrl]!);
+    }
+    // 2. Zaten yerel dosya ise kullan
+    if (remoteUrl.startsWith('file://')) return station.artUri!;
+    // 3. Harf avatarı
+    final rawFirst = station.title.trim().isNotEmpty
+        ? station.title.trim()[0].toUpperCase()
+        : 'R';
+    final letter = RegExp(r'^[A-Z]$').hasMatch(rawFirst) ? rawFirst : '#';
+    final path = _letterAvatarCache[letter] ?? _letterAvatarCache['#'];
+    if (path != null) return Uri.file(path);
+    // 4. Son çare: launcher icon
+    return Uri.parse(
+        'android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher');
+  }
+
+  /// Verilen harf için 256×256 renkli daire + beyaz harf PNG baytları üretir.
+  Future<Uint8List?> _generateLetterAvatarBytes(String letter) async {
+    try {
+      const double sz = 256.0;
+      final recorder = ui.PictureRecorder();
+      final canvas = ui.Canvas(recorder, ui.Rect.fromLTWH(0, 0, sz, sz));
+
+      // Harf başına sabit renk (modülo renk paleti)
+      const List<int> palette = [
+        0xFF7C3AED, // Mor
+        0xFF2563EB, // Mavi
+        0xFF059669, // Yeşil
+        0xFFD97706, // Turuncu
+        0xFFDC2626, // Kırmızı
+        0xFF0891B2, // Cyan
+        0xFF65A30D, // Lime
+        0xFFE11D48, // Pembe
+      ];
+      final charCode = letter == '#' ? 35 : letter.codeUnitAt(0);
+      final bgColor = ui.Color(palette[charCode % palette.length]);
+
+      // Arka plan dairesi
+      canvas.drawCircle(
+          const ui.Offset(sz / 2, sz / 2), sz / 2, ui.Paint()..color = bgColor);
+
+      // Hafif iç parlaklık
+      canvas.drawCircle(
+          const ui.Offset(sz / 2, sz / 2),
+          sz / 2,
+          ui.Paint()
+            ..shader = ui.Gradient.radial(
+              const ui.Offset(sz * 0.35, sz * 0.3),
+              sz * 0.55,
+              [
+                ui.Color.fromARGB(55, 255, 255, 255),
+                ui.Color.fromARGB(0, 0, 0, 0),
+              ],
+            ));
+
+      // Harf metni
+      final displayChar = letter == '#' ? '♪' : letter;
+      final pb = ui.ParagraphBuilder(ui.ParagraphStyle(
+        textAlign: ui.TextAlign.center,
+        fontSize: sz * 0.50,
+        fontWeight: ui.FontWeight.w700,
+      ))
+        ..pushStyle(ui.TextStyle(
+          color: const ui.Color(0xFFFFFFFF),
+          fontSize: sz * 0.50,
+          fontWeight: ui.FontWeight.w700,
+        ))
+        ..addText(displayChar);
+      final para = pb.build();
+      para.layout(ui.ParagraphConstraints(width: sz));
+      canvas.drawParagraph(para, ui.Offset(0, sz * 0.23));
+
+      final picture = recorder.endRecording();
+      final image = await picture.toImage(sz.toInt(), sz.toInt());
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      image.dispose();
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      print('❌ Letter avatar generation error "$letter": $e');
+      return null;
+    }
+  }
+}
+
+/// Android Auto browse sonuç cache girdisi
+class _BrowseCacheEntry {
+  final Set<String> favoritesSnapshot;
+  final List<MediaItem> items;
+  _BrowseCacheEntry(this.favoritesSnapshot, this.items);
 }
