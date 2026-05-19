@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/vintage_radio_logo.dart';
 import '../../onboarding/ui/onboarding_screen.dart';
 import '../../../app/app_root.dart';
 
@@ -92,10 +91,10 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeOutCubic,
     ));
 
-    // Background gradient animation — tema rengiyle uyumlu açık mavi
+    // Background gradient animation — derin lacivert, logo rengiyle uyumlu
     _backgroundAnimation = ColorTween(
-      begin: const Color(0xFF3B82F6), // blue-500 (açık)
-      end: const Color(0xFF1D4ED8),   // blue-700 (tema rengi)
+      begin: const Color(0xFF1A3A6B), // navy-600 (açık)
+      end: const Color(0xFF071228),   // navy-950 (derin koyu)
     ).animate(CurvedAnimation(
       parent: _backgroundController!,
       curve: Curves.easeInOut,
@@ -184,9 +183,9 @@ class _SplashScreenState extends State<SplashScreen>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF60A5FA), // blue-400 - açık
-                Color(0xFF2563EB), // blue-600 - orta
-                Color(0xFF1D4ED8), // blue-700 - tema rengi
+                Color(0xFF1A3A6B), // navy-600 - açık
+                Color(0xFF0D2647), // navy-800 - orta
+                Color(0xFF071228), // navy-950 - derin
               ],
             ),
           ),
@@ -195,12 +194,12 @@ class _SplashScreenState extends State<SplashScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                   child: Image.asset(
-                    'assets/images/vintage_radio_logo.png',
-                    width: 110,
-                    height: 110,
-                    fit: BoxFit.cover,
+                    'assets/images/splaschscren.png',
+                    width: 130,
+                    height: 130,
+                    fit: BoxFit.contain,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -225,9 +224,9 @@ class _SplashScreenState extends State<SplashScreen>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  _backgroundAnimation!.value ?? const Color(0xFF3B82F6),
-                  const Color(0xFF2563EB), // blue-600
-                  const Color(0xFF1D4ED8), // blue-700 - tema rengi
+                  _backgroundAnimation!.value ?? const Color(0xFF1A3A6B),
+                  const Color(0xFF0D2647), // navy-800
+                  const Color(0xFF071228), // navy-950 - derin
                 ],
               ),
             ),
@@ -248,29 +247,25 @@ class _SplashScreenState extends State<SplashScreen>
                             child: Opacity(
                               opacity: _logoOpacityAnimation!.value,
                               child: Container(
-                                width: 140,
-                                height: 140,
+                                width: 150,
+                                height: 150,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(28),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 10),
+                                      color: Colors.black.withOpacity(0.45),
+                                      blurRadius: 30,
+                                      offset: const Offset(0, 12),
                                     ),
                                   ],
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: Image.asset(
-                                      'assets/images/radio_logo.png',
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
-                                    ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(28),
+                                  child: Image.asset(
+                                    'assets/images/splaschscren.png',
+                                    width: 150,
+                                    height: 150,
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
                               ),

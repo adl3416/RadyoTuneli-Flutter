@@ -359,14 +359,21 @@ class RadioAudioHandler extends BaseAudioHandler
       final faviconStr = favicon.toString();
       if (faviconStr.isNotEmpty) {
         if (faviconStr.startsWith('assets/')) {
+          // Asset logo → dosyaya kopyala (Android Auto file:// gerektirir)
           final localAssetLogoPath = await _cacheAssetLogoToFile(faviconStr);
           stationArtUri = localAssetLogoPath != null
               ? Uri.file(localAssetLogoPath)
-              : Uri.tryParse(faviconStr);
-        } else {
-          stationArtUri = Uri.tryParse(faviconStr);
+              : null;
+        } else if ((faviconStr.startsWith('http://') ||
+                faviconStr.startsWith('https://')) &&
+            _logoFileCache.containsKey(faviconStr)) {
+          // Daha önce indirilmiş → direkt kullan
+          stationArtUri = Uri.file(_logoFileCache[faviconStr]!);
         }
+        // Diğer remote URL'ler: null bırak → aşağıda letter avatar atanır
       }
+      // Android Auto remote URL gösteremiyor; hazır değilse letter avatar kullan
+      stationArtUri ??= await _getLetterAvatarUriForTitle(name);
 
       final mediaItem = MediaItem(
         id: stationId,
@@ -408,6 +415,9 @@ class RadioAudioHandler extends BaseAudioHandler
     _radioCategories.forEach((key, value) {
       print("  - $key: ${value.length} stations");
     });
+
+    // Arka planda: ilk 100 istasyonun logosunu indir, hazır olunca browse listesini güncelle
+    _preDownloadBrowseLogos(allMediaItems).ignore();
   }
 
   void _init() {
@@ -425,7 +435,6 @@ class RadioAudioHandler extends BaseAudioHandler
         MediaAction.pause,
         MediaAction.stop,
         MediaAction.playPause,
-        MediaAction.setRating, // Android Auto kalp/favori butonu
       },
       androidCompactActionIndices: const [0, 1],
       processingState: AudioProcessingState.idle,
@@ -565,16 +574,6 @@ class RadioAudioHandler extends BaseAudioHandler
     print(
         "📡 _broadcastState: playing=$isPlaying, processing=$processingState");
 
-    // Favori durumuna göre kalp ikonu seç
-    final isFavorite =
-        _currentStationId != null && _favoriteIds.contains(_currentStationId);
-    final heartControl = MediaControl(
-      androidIcon:
-          isFavorite ? 'drawable/ic_favorite' : 'drawable/ic_favorite_border',
-      label: isFavorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle',
-      action: MediaAction.setRating,
-    );
-
     List<MediaControl> controls;
 
     if (processingState == ProcessingState.loading ||
@@ -582,21 +581,18 @@ class RadioAudioHandler extends BaseAudioHandler
       controls = [
         MediaControl.skipToPrevious,
         MediaControl.pause,
-        heartControl,
         MediaControl.skipToNext,
       ];
     } else if (isPlaying) {
       controls = [
         MediaControl.skipToPrevious,
         MediaControl.pause,
-        heartControl,
         MediaControl.skipToNext,
       ];
     } else {
       controls = [
         MediaControl.skipToPrevious,
         MediaControl.play,
-        heartControl,
         MediaControl.skipToNext,
       ];
     }
@@ -610,13 +606,12 @@ class RadioAudioHandler extends BaseAudioHandler
         MediaAction.playPause,
         MediaAction.skipToNext,
         MediaAction.skipToPrevious,
-        MediaAction.setRating,
       },
       androidCompactActionIndices: const [
+        0,
         1,
-        2,
-        3
-      ], // Android Auto & bildirim: play/pause, kalp, next
+        2
+      ], // Android Auto & bildirim: prev, play/pause, next
       processingState: {
             ProcessingState.idle: AudioProcessingState.idle,
             ProcessingState.loading: AudioProcessingState.loading,
@@ -670,19 +665,10 @@ class RadioAudioHandler extends BaseAudioHandler
       await _player.stop(); // Canlı stream buffer'ını temizle
       // Bildirim'i yaşatmak için paused state yayınla (idle değil!)
       // Idle yayınlanırsa Android servisi öldürür ve radyo tamamen kapanır
-      final isFavPause =
-          _currentStationId != null && _favoriteIds.contains(_currentStationId);
-      final heartControlPause = MediaControl(
-        androidIcon:
-            isFavPause ? 'drawable/ic_favorite' : 'drawable/ic_favorite_border',
-        label: isFavPause ? 'Favorilerden Çıkar' : 'Favorilere Ekle',
-        action: MediaAction.setRating,
-      );
       playbackState.add(PlaybackState(
         controls: [
           MediaControl.skipToPrevious,
           MediaControl.play,
-          heartControlPause,
           MediaControl.skipToNext,
         ],
         systemActions: const {
@@ -691,13 +677,12 @@ class RadioAudioHandler extends BaseAudioHandler
           MediaAction.playPause,
           MediaAction.skipToNext,
           MediaAction.skipToPrevious,
-          MediaAction.setRating,
         },
         androidCompactActionIndices: const [
+          0,
           1,
-          2,
-          3
-        ], // Android Auto & bildirim: play, kalp, next
+          2
+        ], // Android Auto & bildirim: prev, play, next
         processingState: AudioProcessingState.ready,
         playing: false,
       ));
@@ -1883,6 +1868,69 @@ class RadioAudioHandler extends BaseAudioHandler
   /// İstasyon logosunu arka planda indirir ve local file:// URI'ye çevirir.
   /// Android Auto http:// URL'leri doğrudan yükleyemediği için yerel dosya gerekli.
   /// İndirme tamamlanınca, istasyon hâlâ aynıysa MediaItem güncellenir.
+  /// Android Auto browse listesi için ilk N istasyonun logosunu arka planda indirir.
+  /// İndirme tamamlanınca _radioCategories içindeki MediaItem'ı günceller.
+  Future<void> _preDownloadBrowseLogos(List<MediaItem> items) async {
+    const maxLogos = 100; // Ağı boğmamak için ilk 100
+    int downloaded = 0;
+    for (final item in items) {
+      if (downloaded >= maxLogos) break;
+      final logoUrl = item.extras?['logoUrl'] as String? ?? '';
+      if (logoUrl.isEmpty ||
+          (!logoUrl.startsWith('http://') && !logoUrl.startsWith('https://'))) {
+        continue;
+      }
+      if (_logoFileCache.containsKey(logoUrl)) {
+        // Zaten var — sadece MediaItem'ı güncelle
+        _updateBrowseItemArtUri(item.id, Uri.file(_logoFileCache[logoUrl]!));
+        continue;
+      }
+      try {
+        final localPath = await _cacheRemoteLogoToFile(logoUrl);
+        if (localPath != null) {
+          _updateBrowseItemArtUri(item.id, Uri.file(localPath));
+          downloaded++;
+        }
+      } catch (_) {
+        // Tek bir başarısızlık diğerlerini durdurmaz
+      }
+      // Her 5 indirmede bir biraz bekle - ağı aşırı yükleme
+      if (downloaded % 5 == 0) {
+        await Future.delayed(const Duration(milliseconds: 200));
+      }
+    }
+    if (downloaded > 0) {
+      _browseCache.clear(); // Güncel logolar gösterilsin
+      _updateFavoritesCategory(); // Favorileri güncel logolarla yeniden oluştur
+      _rebuildRecentlyPlayedArtwork(); // Son dinlenenleri güncelle
+      print('🖼️ Android Auto: $downloaded logo indirildi, tüm kategoriler güncellendi');
+    }
+  }
+
+  /// Son dinlenenlerin artUri'sini _logoFileCache kullanarak günceller.
+  void _rebuildRecentlyPlayedArtwork() {
+    if (_recentlyPlayed.isEmpty) return;
+    for (int i = 0; i < _recentlyPlayed.length; i++) {
+      final item = _recentlyPlayed[i];
+      final logoUrl = item.extras?['logoUrl'] as String? ?? '';
+      if (logoUrl.isNotEmpty && _logoFileCache.containsKey(logoUrl)) {
+        _recentlyPlayed[i] = item.copyWith(artUri: Uri.file(_logoFileCache[logoUrl]!));
+      }
+    }
+    _radioCategories['son_dinlenenler'] = List.from(_recentlyPlayed);
+    _browseCache.remove('son_dinlenenler');
+  }
+
+  /// Tüm kategorilerdeki bir MediaItem'ın artUri'sini günceller.
+  void _updateBrowseItemArtUri(String itemId, Uri newArtUri) {
+    for (final category in _radioCategories.values) {
+      final idx = category.indexWhere((m) => m.id == itemId);
+      if (idx != -1) {
+        category[idx] = category[idx].copyWith(artUri: newArtUri);
+      }
+    }
+  }
+
   Future<void> _downloadLogoAndUpdate(String logoUrl, String stationId) async {
     if (_pendingLogoDownloads.contains(logoUrl)) return;
     if (_logoFileCache.containsKey(logoUrl)) {
@@ -1916,6 +1964,18 @@ class RadioAudioHandler extends BaseAudioHandler
         final file = File('${dir.path}/aa_logo_$hash.jpg');
         await file.writeAsBytes(response.bodyBytes);
         _logoFileCache[logoUrl] = file.path;
+
+        // Browse listesi + son dinlenenleri de güncelle (player dışında da gösterilsin)
+        _updateBrowseItemArtUri(stationId, Uri.file(file.path));
+        for (int i = 0; i < _recentlyPlayed.length; i++) {
+          if (_recentlyPlayed[i].id == stationId) {
+            _recentlyPlayed[i] =
+                _recentlyPlayed[i].copyWith(artUri: Uri.file(file.path));
+            _radioCategories['son_dinlenenler'] = List.from(_recentlyPlayed);
+            _browseCache.remove('son_dinlenenler');
+            break;
+          }
+        }
 
         // İstasyon hâlâ aynıysa güncelle
         if (_currentStationId == stationId) {

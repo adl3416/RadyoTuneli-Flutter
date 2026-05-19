@@ -421,6 +421,6 @@ class RadioBrowserService {
 
   /// Provides a default logo URL
   String _getDefaultLogo() {
-    return 'assets/images/vintage_radio_logo.png';
+    return 'assets/images/radio_logo.png';
   }
 }

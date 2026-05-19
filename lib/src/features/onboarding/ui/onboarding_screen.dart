@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/vintage_radio_logo.dart';
 import '../../../app/app_root.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -37,18 +36,22 @@ class OnboardingScreen extends StatelessWidget {
             size: 24,
           ),
         ),
-        done: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: const Text(
-            'Başla',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: AppTheme.headerPurple,
-              fontSize: 16,
+        done: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: const Text(
+              'Başla',
+              softWrap: false,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppTheme.headerPurple,
+                fontSize: 16,
+              ),
             ),
           ),
         ),
