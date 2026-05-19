@@ -95,6 +95,40 @@ class SettingsScreen extends ConsumerWidget {
                           Icons.delete_forever_outlined,
                           () => _showDeleteAllDataDialog(context, ref),
                         ),
+                        const SizedBox(height: 40),
+                        // --- LOGO + VERSİYON ---
+                        Center(
+                          child: Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.asset(
+                                  'assets/images/splaschscren.png',
+                                  width: 72,
+                                  height: 72,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Radyo Tüneli',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Sürüm 2.0.7',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         const SizedBox(height: 120), // Bottom player payı
                       ],
                     ),

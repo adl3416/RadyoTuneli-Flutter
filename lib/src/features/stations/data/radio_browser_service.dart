@@ -15,11 +15,58 @@ class RadioBrowserService {
   // Fallback istasyonları bir kez yükle, tekrar tekrar parse etme
   static List<Station>? _cachedFallbackStations;
 
+  // Logo cache: normalize(filename) → asset path
+  static Map<String, String>? _logoCache;
+
   // Pre-compiled RegExp patterns (kept for potential future use)
   static final _reLeadingTrailing = RegExp(r'^[\s\-_\.]+|[\s\-_\.]+$');
 
+  /// TR karakter normalizasyonu (logo eşleştirme için)
+  static String _normalizeLogo(String s) {
+    return s
+        .toLowerCase()
+        .replaceAll('ğ', 'g')
+        .replaceAll('ü', 'u')
+        .replaceAll('ş', 's')
+        .replaceAll('ı', 'i')
+        .replaceAll('ö', 'o')
+        .replaceAll('ç', 'c')
+        .replaceAll(RegExp(r'[^a-z0-9 ]'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+  }
+
+  /// AssetManifest'ten logo cache'i oluşturur (bir kez çalışır)
+  static Future<void> _ensureLogoCache() async {
+    if (_logoCache != null) return;
+    _logoCache = {};
+    try {
+      final manifestContent = await rootBundle.loadString('AssetManifest.json');
+      final Map<String, dynamic> manifest = json.decode(manifestContent);
+      for (final key in manifest.keys) {
+        if (key.startsWith('assets/logos/')) {
+          final filename = key.split('/').last;
+          final nameNoExt = filename.contains('.')
+              ? filename.substring(0, filename.lastIndexOf('.'))
+              : filename;
+          final normalized = _normalizeLogo(
+              nameNoExt.replaceAll('_', ' ').replaceAll('-', ' '));
+          // Hem tam isim hem de sadece anlamlı kısım
+          if (normalized.isNotEmpty) {
+            _logoCache![normalized] = key;
+          }
+        }
+      }
+    } catch (e) {
+      print('Logo cache init failed: \$e');
+    }
+  }
+
   /// Fetches Turkish radio stations from radio-browser API with fallback
   Future<List<Station>> fetchTurkishStations() async {
+    // Logo cache'i önce hazırla (API + local istasyonlar için)
+    await _ensureLogoCache();
+
     List<Station> apiStations = [];
     bool apiSuccess = false;
 
@@ -76,10 +123,14 @@ class RadioBrowserService {
   }
 
   /// Public accessor for local stations (used for fast initial load)
-  Future<List<Station>> loadLocalStations() => _loadFallbackStations();
+  Future<List<Station>> loadLocalStations() async {
+    await _ensureLogoCache();
+    return _loadFallbackStations();
+  }
 
   /// Loads stations from local JSON asset (cached after first load)
   Future<List<Station>> _loadFallbackStations() async {
+    await _ensureLogoCache(); // cache her zaman hazır olsun
     if (_cachedFallbackStations != null) return _cachedFallbackStations!;
     try {
       final String jsonString = await rootBundle.loadString(_fallbackAssetPath);
@@ -302,8 +353,9 @@ class RadioBrowserService {
   /// Custom logo mapping for specific stations
   String _getCustomLogo(String stationName, String? originalLogo, [String? homepage]) {
     final name = stationName.toLowerCase().trim();
+    final nameNorm = _normalizeLogo(name);
     
-    // Yerel logo dosyası eşlemeleri (assets/logos/)
+    // Yerel logo dosyası eşlemeleri (assets/logos/) — özel overrides
     final logoMappings = {
       // TRT FM
       'trt fm': 'assets/logos/trt fm.png',
@@ -362,7 +414,27 @@ class RadioBrowserService {
         return entry.value;
       }
     }
-    
+
+    // Auto-cache: AssetManifest'ten oluşturulan logo eşleştirme
+    if (_logoCache != null && _logoCache!.isNotEmpty) {
+      // 1. Tam eşleşme
+      if (_logoCache!.containsKey(nameNorm)) {
+        return _logoCache![nameNorm]!;
+      }
+      // 2. Cache key'i istasyon adında var mı (en az 5 karakter)
+      for (final entry in _logoCache!.entries) {
+        if (entry.key.length >= 5 && nameNorm.contains(entry.key)) {
+          return entry.value;
+        }
+      }
+      // 3. İstasyon adı cache key'de var mı (en az 5 karakter)
+      for (final entry in _logoCache!.entries) {
+        if (nameNorm.length >= 5 && entry.key.contains(nameNorm)) {
+          return entry.value;
+        }
+      }
+    }
+
     // Eğer original logo varsa onu kullan
     if (originalLogo?.isNotEmpty == true && originalLogo != 'null' && originalLogo!.trim().isNotEmpty) {
       return originalLogo!;
