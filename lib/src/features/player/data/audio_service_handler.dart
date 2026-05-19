@@ -1001,26 +1001,45 @@ class RadioAudioHandler extends BaseAudioHandler
         updatePosition: Duration.zero,
       ));
 
-      // Canlı radyo stream'lerinde tek denemede ortak header'ları kullan.
-      // İki aşamalı retry, özellikle yavaş ağlarda açılışı gereksiz uzatıyordu.
-      try {
-        await _player
-            .setAudioSource(
-              AudioSource.uri(
-                Uri.parse(streamUrl),
-                tag: newMediaItem,
-              ),
-            )
-            .timeout(const Duration(seconds: 5));
-        print("🎵 Audio source set, starting playback...");
-      } catch (e) {
+      // İlk deneme: User-Agent header ile (birçok radyo sunucusu gerektirir)
+      bool sourceSet = false;
+      Object? lastError;
+      const _userAgent = 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36';
+
+      for (int attempt = 0; attempt < 2; attempt++) {
         if (myId != _playRequestId) {
-          print(
-              "🚫 playStation[$myId] iptal edildi (setAudioSource catch): $title");
+          print("🚫 playStation[$myId] iptal edildi (döngü $attempt): $title");
           return;
         }
-        print('❌ setAudioSource failed: $e');
-        rethrow;
+        try {
+          await _player
+              .setAudioSource(
+                AudioSource.uri(
+                  Uri.parse(streamUrl),
+                  headers: attempt == 0
+                      ? {'User-Agent': _userAgent, 'Icy-MetaData': '1'}
+                      : {'User-Agent': _userAgent},
+                  tag: newMediaItem,
+                ),
+              )
+              .timeout(const Duration(seconds: 10));
+          sourceSet = true;
+          print("🎵 Audio source set (deneme ${attempt + 1}), starting playback...");
+          break;
+        } catch (e) {
+          lastError = e;
+          if (myId != _playRequestId) {
+            print("🚫 playStation[$myId] iptal edildi (catch deneme $attempt): $title");
+            return;
+          }
+          print('⚠️ setAudioSource deneme ${attempt + 1} başarısız: $e');
+          if (attempt == 0) await Future.delayed(const Duration(milliseconds: 500));
+        }
+      }
+
+      if (!sourceSet) {
+        print('❌ setAudioSource failed (tüm denemeler): $lastError');
+        throw lastError!;
       }
 
       // setAudioSource tamamlandı — yeni bir istek geldiyse oynatma

@@ -147,15 +147,20 @@ class FavoritesScreen extends ConsumerWidget {
   }
 
   Widget _buildDrawer(BuildContext context, WidgetRef ref) {
+    final drawerBg = Theme.of(context).appBarTheme.backgroundColor ??
+        Theme.of(context).colorScheme.primary;
+    final drawerFg = Theme.of(context).appBarTheme.foregroundColor ??
+        Theme.of(context).colorScheme.onPrimary;
+
     return Drawer(
       child: Column(
         children: [
           Container(
             width: double.infinity,
             height: 150,
-            color: AppTheme.headerPurple,
+            color: drawerBg,
             padding: const EdgeInsets.only(top: 50, left: 20),
-            child: const Text('Radyo Tüneli', style: TextStyle(color: Colors.white, fontSize: 24)),
+            child: Text('Radyo Tüneli', style: TextStyle(color: drawerFg, fontSize: 24)),
           ),
           ListTile(
             leading: const Icon(Icons.home),

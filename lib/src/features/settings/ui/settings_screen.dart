@@ -21,33 +21,12 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
     final appSettings = ref.watch(appSettingsProvider);
-    final colorSchemeStr = ref.watch(colorSchemeProvider);
 
-    Color appBarBg;
-    Color appBarFg;
-
-    if (colorSchemeStr == 'karadeniz') {
-      appBarBg = AppTheme.karadenizBordo;
-      appBarFg = AppTheme.karadenizMavi;
-    } else if (colorSchemeStr == 'kartal') {
-      appBarBg = AppTheme.kartalBlack;
-      appBarFg = AppTheme.kartalWhite;
-    } else if (colorSchemeStr == 'timsah') {
-      appBarBg = AppTheme.timsahGreen;
-      appBarFg = AppTheme.timsahWhite;
-    } else if (colorSchemeStr == 'kanarya') {
-      appBarBg = AppTheme.kanaryaSecondary;
-      appBarFg = AppTheme.kanaryaPrimary;
-    } else if (colorSchemeStr == 'aslan') {
-      appBarBg = AppTheme.aslanRed;
-      appBarFg = AppTheme.aslanYellow;
-    } else if (colorSchemeStr == 'sade') {
-      appBarBg = AppTheme.sadeDarkGrey;
-      appBarFg = AppTheme.sadeWhite;
-    } else {
-      appBarBg = AppTheme.headerPurple;
-      appBarFg = Colors.white;
-    }
+    // Seçili temanın AppBar rengini doğrudan ThemeData'dan al — manuel override yok
+    final appBarBg = Theme.of(context).appBarTheme.backgroundColor ??
+        Theme.of(context).colorScheme.primary;
+    final appBarFg = Theme.of(context).appBarTheme.foregroundColor ??
+        Theme.of(context).colorScheme.onPrimary;
 
     return Scaffold(
       extendBodyBehindAppBar: false,
@@ -431,15 +410,20 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildDrawer(BuildContext context, WidgetRef ref) {
+    final drawerBg = Theme.of(context).appBarTheme.backgroundColor ??
+        Theme.of(context).colorScheme.primary;
+    final drawerFg = Theme.of(context).appBarTheme.foregroundColor ??
+        Theme.of(context).colorScheme.onPrimary;
+
     return Drawer(
       child: Column(
         children: [
           Container(
             width: double.infinity,
             height: 150,
-            color: AppTheme.headerPurple,
+            color: drawerBg,
             padding: const EdgeInsets.only(top: 50, left: 20),
-            child: const Text('Radyo Tüneli', style: TextStyle(color: Colors.white, fontSize: 24)),
+            child: Text('Radyo Tüneli', style: TextStyle(color: drawerFg, fontSize: 24)),
           ),
           ListTile(
             leading: const Icon(Icons.home),

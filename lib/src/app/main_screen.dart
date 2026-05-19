@@ -52,7 +52,7 @@ class MainScreen extends ConsumerWidget {
                 return AppTheme.timsahWhite; // Use white icons on Timsah bottom bar
               case 'varsayilan':
               default:
-                return const Color(0xFF8B5CF6); // Mor
+                return const Color(0xFF60A5FA); // Parlak mavi (dark) / elektrik mavi (light)
             }
           }
 

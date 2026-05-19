@@ -15,13 +15,8 @@ class RadioBrowserService {
   // Fallback istasyonları bir kez yükle, tekrar tekrar parse etme
   static List<Station>? _cachedFallbackStations;
 
-  // Pre-compiled RegExp patterns for station name normalization
+  // Pre-compiled RegExp patterns (kept for potential future use)
   static final _reLeadingTrailing = RegExp(r'^[\s\-_\.]+|[\s\-_\.]+$');
-  static final _reRadioFm = RegExp(r'\s*(radyo|radio|fm|am)\s*');
-  static final _reTurkiye = RegExp(r'\s*(türkiye|turkey|tr)\s*');
-  static final _reFrequency = RegExp(r'\s*\d+[\.,]?\d*\s*(mhz|khz|fm|am)\s*');
-  static final _reMultiSpace = RegExp(r'\s+');
-  static final _reSpecialChars = RegExp(r'[^\w\s]');
 
   /// Fetches Turkish radio stations from radio-browser API with fallback
   Future<List<Station>> fetchTurkishStations() async {
@@ -144,7 +139,8 @@ class RadioBrowserService {
     // For now, use a simple heuristic based on name popularity
     final name = station.name.toLowerCase();
     if (name.contains('trt')) return 10000;
-    if (name.contains('süper') || name.contains('super')) return 5000;
+    if (name.contains('süper')) return 5001; // Türkçe yazılış öncelikli
+    if (name.contains('super')) return 5000;
     if (name.contains('virgin')) return 4000;
     if (name.contains('power')) return 3000;
     if (name.contains('kral')) return 2500;
@@ -201,7 +197,7 @@ class RadioBrowserService {
     'kafa radyo': 26,
     'radyo spor': 27,
     'süper fm': 28,
-    'super fm': 28,
+    // 'super fm' (Latin) kasıtlı çıkartıldı → sona gönderilsin (9999)
     'slow türk': 29,
     'slow turk': 29,
     'radyo 7': 30,
@@ -256,37 +252,51 @@ class RadioBrowserService {
     return 9999; // Öncelik listesinde yok → sona
   }
 
-  /// Removes duplicate stations based on normalized names
+  /// Removes duplicate stations: first by stream URL, then by normalized name
   List<Station> _removeDuplicateStations(List<Station> stations) {
-    final Map<String, Station> uniqueStations = {};
-    
+    // Pass 1: deduplicate by stream URL (same URL = same station)
+    final Map<String, Station> byUrl = {};
     for (final station in stations) {
-      final normalizedName = _normalizeStationName(station.name);
-      
-      // If we haven't seen this normalized name before, or if this station
-      // has higher quality (better votes), keep it
-      if (!uniqueStations.containsKey(normalizedName) ||
-          _getVotes(station) > _getVotes(uniqueStations[normalizedName]!)) {
-        uniqueStations[normalizedName] = station;
+      final url = station.streamUrl.trim().toLowerCase();
+      if (url.isEmpty) continue;
+      if (!byUrl.containsKey(url) ||
+          _getVotes(station) > _getVotes(byUrl[url]!)) {
+        byUrl[url] = station;
       }
     }
-    
+
+    // Pass 2: deduplicate by normalized name among URL-unique stations
+    final Map<String, Station> byName = {};
+    for (final station in byUrl.values) {
+      final key = _normalizeStationName(station.name);
+      if (!byName.containsKey(key) ||
+          _getVotes(station) > _getVotes(byName[key]!)) {
+        byName[key] = station;
+      }
+    }
+
     // Önce öncelikli istasyonlar (1-50), ardından geri kalanlar
-    final result = uniqueStations.values.toList();
+    final result = byName.values.toList();
     result.sort((a, b) => _getStationPriority(a.name).compareTo(_getStationPriority(b.name)));
     return result;
   }
 
-  /// Normalizes station name for duplicate detection
+  // Turkish character map for normalization
+  static const Map<String, String> _trCharMap = {
+    'ç': 'c', 'ş': 's', 'ğ': 'g', 'ü': 'u', 'ö': 'o', 'ı': 'i', 'â': 'a', 'î': 'i', 'û': 'u',
+  };
+
+  /// Normalizes station name aggressively for duplicate detection
   String _normalizeStationName(String name) {
-    String normalized = name.toLowerCase().trim();
-    normalized = normalized.replaceAll(_reLeadingTrailing, '');
-    normalized = normalized.replaceAll(_reRadioFm, ' ');
-    normalized = normalized.replaceAll(_reTurkiye, ' ');
-    normalized = normalized.replaceAll(_reFrequency, ' ');
-    normalized = normalized.replaceAll(_reMultiSpace, ' ').trim();
-    normalized = normalized.replaceAll(_reSpecialChars, '');
-    return normalized;
+    String n = name.toLowerCase().trim();
+    // Replace Turkish chars
+    _trCharMap.forEach((tr, latin) => n = n.replaceAll(tr, latin));
+    // Remove common words
+    n = n.replaceAll(RegExp(r'\b(radyo|radio|fm|am|turk|türk|türkiye|turkey|tr)\b'), '');
+    // Remove frequencies and special chars, collapse spaces
+    n = n.replaceAll(RegExp(r'\d+[.,]?\d*\s*(mhz|khz)?'), '');
+    n = n.replaceAll(RegExp(r'[^a-z0-9]'), '');
+    return n.trim();
   }
 
   /// Custom logo mapping for specific stations

@@ -7,58 +7,60 @@ import '../../features/stations/ui/widgets/radio_logo.dart';
 class AppTheme {
   // Ana Renk Paleti
   // Gradient Renkler (RadioStationCard için)
-  static const Color gradientBlue = Color(0xFF667eea); // Mavi-mor
-  static const Color gradientPurple = Color(0xFF764ba2); // Mor
-  static const Color gradientPink = Color(0xFFf093fb); // Pembe
-  
-  // Header ve Card için Mor Renk
-  static const Color headerPurple = Color(0xFF8B5CF6); // Header için mor
-  static const Color cardPurple = Color(0xFF9333EA); // Card arkaplanı için mor
-  static const Color cardPurpleDark = Color(0xFF7C3AED); // Koyu mor variant
-  
+  static const Color gradientBlue = Color(0xFF1B3A6B); // Koyu lacivert mavi
+  static const Color gradientPurple = Color(0xFF0D2644); // Derin koyu lacivert
+  static const Color gradientPink = Color(0xFFF97316); // Canlı turuncu (vurgu)
+
+  // Header ve Card için Ana Renk
+  static const Color headerPurple = Color(0xFF1D4ED8); // Elektrik mavi (kurumsal)
+  static const Color cardPurple = Color(0xFF1E40AF); // Derin mavi
+  static const Color cardPurpleDark = Color(0xFF1E3A8A); // Çok derin mavi
+
   // Orange Renk Ailesi
   static const Color orange400 = Color(0xFFFB923C); // Orange-400
   static const Color yellowOrange = Color(0xFFFCD34D); // Sarı-turuncu
   static const Color orange100 = Color(0xFFFEF3C7); // Orange-100
-  
+
   // Gri Renk Ailesi
   static const Color white = Color(0xFFFFFFFF); // Beyaz
   static const Color lightGray = Color(0xFFF5F5F5); // Açık gri
   static const Color gray200 = Color(0xFFE5E7EB); // Gray-200
   static const Color gray500 = Color(0xFF6B7280); // Gray-500
   static const Color gray900 = Color(0xFF111827); // Gray-900
-  
+
   // Light Theme Renkleri
   static const Color lightTint = Color(0xFF2f95dc); // Light Theme Tint
   static const Color lightBackground = Color(0xFFFFFFFF); // Light Background
   static const Color lightText = Color(0xFF000000); // Light Text
-  
-  // Dark Theme Renkleri - Yeni modern dark konsept
-  static const Color darkPrimary = Color(0xFF8B5CF6); // Violet-500 - daha belirgin
-  static const Color darkSecondary = Color(0xFFFF6B35); // Orange-red - dikkat çekici  
+
+  // Dark Theme Renkleri - Derin koyu lacivert konsept
+  static const Color darkPrimary =
+      Color(0xFF60A5FA); // Blue-400 - parlak mavi
+  static const Color darkSecondary =
+      Color(0xFFFBBF24); // Amber-400 - sıcak altın kontrast
   static const Color darkBackground = Color(0xFF000000); // Tam siyah
   static const Color darkSurface = Color(0xFF121212); // Çok koyu gri
   static const Color darkSurfaceVariant = Color(0xFF1E1E1E); // Koyu gri variant
   static const Color darkText = Color(0xFFFFFFFF); // Tam beyaz
   static const Color darkTextSecondary = Color(0xFFCCCCCC); // Açık gri
   static const Color darkBorder = Color(0xFF333333); // Kenarlık rengi
-  static const Color darkAccent = Color(0xFFEF4444); // Kırmızı accent
-  
+  static const Color darkAccent = Color(0xFFFBBF24); // Altın accent
+
   // Splash & Icon
-  static const Color splashColor = Color(0xFF667eea); // Ana tema mavi-mor
+  static const Color splashColor = Color(0xFF1D4ED8); // Ana tema elektrik mavi
 
   // Gradient tanımlamaları
   static const LinearGradient radioCardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [cardPurple, cardPurpleDark, gradientPurple],
+    colors: [Color(0xFF1D4ED8), Color(0xFF1E3A8A), Color(0xFF0D2644)],
   );
 
-  // Dark mode için yeni gradient
+  // Dark mode için derin lacivert gradient
   static const LinearGradient darkCardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF4C1D95), Color(0xFF6366F1), Color(0xFF8B5CF6)],
+    colors: [Color(0xFF0D2644), Color(0xFF1E3A8A), Color(0xFF1D4ED8)],
   );
 
   static ThemeData get lightTheme {
@@ -71,20 +73,23 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.light(
-        primary: headerPurple, // Orijinal mor renk
-        secondary: orange400,
+        primary: const Color(0xFF0F1F3D), // Derin gece laciverdisi
+        secondary: const Color(0xFF1D4ED8), // Elektrik mavi aksan
         surface: white,
         onPrimary: white,
         onSecondary: white,
-        onSurface: lightText,
-        error: gradientPink,
-        background: lightBackground,
-        onBackground: lightText,
+        onSurface: const Color(0xFF0F1F3D),
+        error: const Color(0xFFDC2626),
+        background: const Color(0xFFF0F4FF), // Hafif mavi tonlu beyaz
+        onBackground: const Color(0xFF0F1F3D),
+        outline: const Color(0xFFBFD0F0),
+        surfaceVariant: const Color(0xFFE8EFFC),
+        onSurfaceVariant: const Color(0xFF3D5A8A),
       ),
-      scaffoldBackgroundColor: lightBackground,
+      scaffoldBackgroundColor: const Color(0xFFF0F4FF),
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: headerPurple,
+        backgroundColor: const Color(0xFF0F1F3D), // Derin gece laciverdisi
         foregroundColor: white,
         elevation: 0,
         centerTitle: true,
@@ -94,15 +99,15 @@ class AppTheme {
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: lightTint,
-        unselectedItemColor: gray500,
+        selectedItemColor: const Color(0xFF1D4ED8), // Elektrik mavi
+        unselectedItemColor: const Color(0xFF64748B),
         backgroundColor: white,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: orange400,
+          backgroundColor: const Color(0xFF1D4ED8), // Elektrik mavi buton
           foregroundColor: white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -111,21 +116,21 @@ class AppTheme {
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
-          foregroundColor: gray500,
+          foregroundColor: const Color(0xFF3D5A8A),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: lightGray,
+        fillColor: const Color(0xFFE8EFFC),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: lightTint),
+          borderSide: const BorderSide(color: Color(0xFF1D4ED8)),
         ),
-        hintStyle: TextStyle(color: gray500),
+        hintStyle: const TextStyle(color: Color(0xFF64748B)),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
@@ -140,11 +145,11 @@ class AppTheme {
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
       tabBarTheme: TabBarThemeData(
-        labelColor: headerPurple, // Seçili tab = Mor
+        labelColor: const Color(0xFF1D4ED8), // Seçili tab = Elektrik mavi
         unselectedLabelColor: gray500, // Seçili olmayan = Gri
-        indicatorColor: headerPurple, // Alt çizgi = Mor
+        indicatorColor: const Color(0xFF1D4ED8), // Alt çizgi = Elektrik mavi
         indicator: const UnderlineTabIndicator(
-          borderSide: BorderSide(color: headerPurple, width: 3),
+          borderSide: BorderSide(color: Color(0xFF1D4ED8), width: 3),
         ),
       ),
     );
@@ -160,20 +165,20 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: ColorScheme.dark(
-        primary: darkPrimary,
-        secondary: darkSecondary,
-        surface: darkSurface,
-        onPrimary: white,
-        onSecondary: darkBackground,
+        primary: const Color(0xFF60A5FA), // Blue-400 - parlak mavi
+        secondary: const Color(0xFFFBBF24), // Amber-400 - altın kontrast
+        surface: const Color(0xFF0D1626), // Koyu lacivert yüzey
+        onPrimary: const Color(0xFF060A12),
+        onSecondary: const Color(0xFF060A12),
         onSurface: darkText,
-        error: Color(0xFFEF4444), // Red-500
-        background: darkBackground,
+        error: const Color(0xFFF87171), // Red-400
+        background: const Color(0xFF060A12), // Neredeyse siyah lacivert
         onBackground: darkText,
-        outline: darkBorder,
-        surfaceVariant: darkSurfaceVariant,
-        onSurfaceVariant: darkTextSecondary,
+        outline: const Color(0xFF1E3A5F), // Koyu lacivert kenarlık
+        surfaceVariant: const Color(0xFF142036), // Koyu lacivert varyant
+        onSurfaceVariant: const Color(0xFF94A3B8),
       ),
-      scaffoldBackgroundColor: darkBackground,
+      scaffoldBackgroundColor: const Color(0xFF060A12),
       textTheme: textTheme.copyWith(
         headlineLarge: textTheme.headlineLarge?.copyWith(color: darkText),
         headlineMedium: textTheme.headlineMedium?.copyWith(color: darkText),
@@ -189,7 +194,7 @@ class AppTheme {
         labelSmall: textTheme.labelSmall?.copyWith(color: darkTextSecondary),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: darkBackground, // Tam siyah
+        backgroundColor: const Color(0xFF060A12), // Derin koyu lacivert siyah
         foregroundColor: darkText,
         elevation: 0,
         centerTitle: true,
@@ -203,9 +208,9 @@ class AppTheme {
         iconTheme: IconThemeData(color: darkText), // İkonlar beyaz
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: darkPrimary, // Mor seçili
+        selectedItemColor: darkPrimary, // Parlak mavi seçili
         unselectedItemColor: darkTextSecondary,
-        backgroundColor: darkBackground, // Tam siyah
+        backgroundColor: const Color(0xFF060A12), // Derin koyu lacivert
         type: BottomNavigationBarType.fixed,
         elevation: 0,
         selectedLabelStyle: TextStyle(
@@ -218,7 +223,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: darkPrimary, // Mor buton
+          backgroundColor: darkPrimary, // Mavi buton
           foregroundColor: white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -234,14 +239,14 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: darkSurface,
+        fillColor: const Color(0xFF0D1626), // Koyu lacivert dolgu
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: darkBorder),
+          borderSide: const BorderSide(color: Color(0xFF1E3A5F)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: darkBorder),
+          borderSide: const BorderSide(color: Color(0xFF1E3A5F)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -249,26 +254,27 @@ class AppTheme {
         ),
         hintStyle: TextStyle(color: darkTextSecondary),
         labelStyle: TextStyle(color: darkTextSecondary),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       cardTheme: CardThemeData(
-        color: darkSurface,
+        color: const Color(0xFF0D1626), // Koyu lacivert kart
         elevation: 4,
         surfaceTintColor: Colors.transparent,
-        shadowColor: Colors.black.withOpacity(0.4),
+        shadowColor: Colors.black.withOpacity(0.5),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(
-            color: darkBorder,
+          side: const BorderSide(
+            color: Color(0xFF1E3A5F), // Lacivert kenarlık
             width: 1,
           ),
         ),
       ),
-      listTileTheme: ListTileThemeData(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      listTileTheme: const ListTileThemeData(
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         textColor: darkText,
         iconColor: darkText,
-        tileColor: darkSurface,
+        tileColor: Color(0xFF0D1626),
       ),
       dividerTheme: DividerThemeData(
         color: darkBorder,
@@ -289,7 +295,7 @@ class AppTheme {
         }),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: darkSurface,
+        backgroundColor: const Color(0xFF0D1626), // Koyu lacivert diyalog
         surfaceTintColor: Colors.transparent,
         titleTextStyle: textTheme.titleLarge?.copyWith(color: darkText),
         contentTextStyle: textTheme.bodyMedium?.copyWith(color: darkText),
@@ -298,16 +304,16 @@ class AppTheme {
         ),
       ),
       bottomSheetTheme: BottomSheetThemeData(
-        backgroundColor: darkSurface,
+        backgroundColor: const Color(0xFF0D1626), // Koyu lacivert bottom sheet
         surfaceTintColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
       ),
       tabBarTheme: TabBarThemeData(
-        labelColor: darkPrimary, // Seçili tab = Mor
+        labelColor: darkPrimary, // Seçili tab = Parlak mavi
         unselectedLabelColor: darkTextSecondary, // Seçili olmayan = Açık gri
-        indicatorColor: darkPrimary, // Alt çizgi = Mor
+        indicatorColor: darkPrimary, // Alt çizgi = Parlak mavi
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: darkPrimary, width: 3),
         ),
@@ -372,7 +378,8 @@ class AppTheme {
           fontSize: 20,
         ),
         iconTheme: IconThemeData(color: kanaryaPrimary), // İkonlar sarı
-        actionsIconTheme: IconThemeData(color: kanaryaPrimary), // Action ikonlar sarı
+        actionsIconTheme:
+            IconThemeData(color: kanaryaPrimary), // Action ikonlar sarı
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         selectedItemColor: kanaryaPrimary, // ✅ Seçili = Sarı (#FFD700)
@@ -417,11 +424,13 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: kanaryaPrimary, width: 2), // Sarı border
+          borderSide:
+              BorderSide(color: kanaryaPrimary, width: 2), // Sarı border
         ),
         hintStyle: TextStyle(color: darkTextSecondary),
         labelStyle: TextStyle(color: darkTextSecondary),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       cardTheme: CardThemeData(
         color: darkSurface,
@@ -506,7 +515,8 @@ class AppTheme {
       ),
       tabBarTheme: TabBarThemeData(
         labelColor: kanaryaPrimary, // Seçili tab = Sarı
-        unselectedLabelColor: kanaryaSecondary.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Lacivert
+        unselectedLabelColor: kanaryaSecondary
+            .withOpacity(0.6), // Seçili olmayan = Yarı-saydam Lacivert
         indicatorColor: kanaryaPrimary, // Alt çizgi = Sarı
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: kanaryaPrimary, width: 3),
@@ -620,7 +630,8 @@ class AppTheme {
         ),
         hintStyle: TextStyle(color: darkTextSecondary),
         labelStyle: TextStyle(color: darkTextSecondary),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       cardTheme: CardThemeData(
         color: darkSurface,
@@ -697,7 +708,8 @@ class AppTheme {
       ),
       tabBarTheme: TabBarThemeData(
         labelColor: aslanYellow, // Seçili tab = Sarı
-        unselectedLabelColor: aslanRed.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Kırmızı
+        unselectedLabelColor:
+            aslanRed.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Kırmızı
         indicatorColor: aslanYellow, // Alt çizgi = Sarı
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: aslanYellow, width: 3),
@@ -753,7 +765,8 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: karadenizMavi,
           foregroundColor: karadenizBordo,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
@@ -785,7 +798,8 @@ class AppTheme {
       ),
       tabBarTheme: TabBarThemeData(
         labelColor: karadenizMavi, // Seçili tab = Mavi
-        unselectedLabelColor: karadenizBordo.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Bordo
+        unselectedLabelColor: karadenizBordo
+            .withOpacity(0.6), // Seçili olmayan = Yarı-saydam Bordo
         indicatorColor: karadenizMavi, // Alt çizgi = Mavi
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: karadenizMavi, width: 3),
@@ -824,7 +838,8 @@ class AppTheme {
       ),
       tabBarTheme: TabBarThemeData(
         labelColor: karadenizMavi, // Seçili tab = Mavi
-        unselectedLabelColor: karadenizBordo.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Bordo
+        unselectedLabelColor: karadenizBordo
+            .withOpacity(0.6), // Seçili olmayan = Yarı-saydam Bordo
         indicatorColor: karadenizMavi, // Alt çizgi = Mavi
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: karadenizMavi, width: 3),
@@ -882,7 +897,8 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: kartalWhite,
           foregroundColor: kartalBlack,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
@@ -1055,7 +1071,8 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: timsahGreen,
           foregroundColor: timsahWhite,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
@@ -1087,7 +1104,8 @@ class AppTheme {
       ),
       tabBarTheme: TabBarThemeData(
         labelColor: timsahGreen, // Seçili tab = Yeşil
-        unselectedLabelColor: timsahWhite.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Beyaz
+        unselectedLabelColor:
+            timsahWhite.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Beyaz
         indicatorColor: timsahGreen, // Alt çizgi = Yeşil
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: timsahGreen, width: 3),
@@ -1126,7 +1144,8 @@ class AppTheme {
       ),
       tabBarTheme: TabBarThemeData(
         labelColor: timsahGreen, // Seçili tab = Yeşil
-        unselectedLabelColor: timsahWhite.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Beyaz
+        unselectedLabelColor:
+            timsahWhite.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Beyaz
         indicatorColor: timsahGreen, // Alt çizgi = Yeşil
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: timsahGreen, width: 3),
@@ -1173,7 +1192,8 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: sadeDarkGrey,
           foregroundColor: sadeWhite,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
       cardTheme: CardThemeData(
@@ -1223,7 +1243,8 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: sadeDarkGrey,
           foregroundColor: sadeWhite,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
       cardTheme: CardThemeData(
@@ -1242,5 +1263,3 @@ class AppTheme {
     );
   }
 }
-
-

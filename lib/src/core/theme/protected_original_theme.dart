@@ -5,13 +5,13 @@
 
 import 'package:flutter/material.dart';
 
-// Original header / app bar purple
-const Color protectedHeaderPurple = Color(0xFF8B5CF6); // #8B5CF6
+// Original header / app bar blue
+const Color protectedHeaderPurple = Color(0xFF1D4ED8); // #1D4ED8 - Elektrik mavi
 
 // Original radio card gradient colors
-const Color protectedCardPurple = Color(0xFF9333EA);
-const Color protectedCardPurpleDark = Color(0xFF7C3AED);
-const Color protectedGradientPurple = Color(0xFF764BA2);
+const Color protectedCardPurple = Color(0xFF1E40AF);
+const Color protectedCardPurpleDark = Color(0xFF1E3A8A);
+const Color protectedGradientPurple = Color(0xFF0D2644);
 
 const LinearGradient protectedRadioCardGradient = LinearGradient(
   begin: Alignment.topLeft,
@@ -21,8 +21,8 @@ const LinearGradient protectedRadioCardGradient = LinearGradient(
 
 // Other important original colors
 const Color protectedWhite = Color(0xFFFFFFFF);
-const Color protectedLightBackground = Color(0xFFFFFFFF);
-const Color protectedLightText = Color(0xFF000000);
+const Color protectedLightBackground = Color(0xFFF0F4FF);
+const Color protectedLightText = Color(0xFF0F1F3D);
 
 // Marker name for the protected theme
 const String protectedOriginalThemeName = 'varsayilan';

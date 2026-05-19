@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../domain/station_model.dart';
 import 'radio_logo.dart';
 
@@ -14,85 +15,58 @@ class RecentlyPlayedStationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
-    final bezelColor = isDark
-        ? Color.lerp(primary, Colors.black, 0.55)!
-        : primary;
-    const screenBg = Color(0xFFF5F5F5);
+    final theme = Theme.of(context);
+    final primary =
+        theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary;
+    final themeBorderColor =
+        theme.appBarTheme.foregroundColor ?? theme.colorScheme.primary;
+    final labelColor =
+        theme.textTheme.bodySmall?.color ?? theme.colorScheme.onSurface;
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 66,
-        margin: const EdgeInsets.only(right: 6),
+      child: SizedBox(
+        width: 64,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // TV gövdesi
             Container(
               width: 56,
-              height: 46,
+              height: 56,
               decoration: BoxDecoration(
-                color: bezelColor,
-                borderRadius: BorderRadius.circular(8),
+                shape: BoxShape.circle,
+                color: primary,
+                border: Border.all(
+                  color: themeBorderColor.withValues(alpha: 0.35),
+                  width: 1.5,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: primary.withValues(alpha: 0.30),
-                    blurRadius: 6,
-                    spreadRadius: 0,
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.25),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+                    color: primary.withValues(alpha: 0.18),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(2),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Container(color: screenBg),
-                      RadioLogo(
-                        radioName: station.name,
-                        logoUrl: station.logoUrl,
-                        size: 40,
-                        showBorder: false,
-                      ),
-                      // Cam yansıması
-                      Positioned(
-                        top: 0, left: 0, right: 0,
-                        height: 16,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.white.withValues(alpha: 0.18),
-                                Colors.white.withValues(alpha: 0.0),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              child: ClipOval(
+                child: RadioLogo(
+                  radioName: station.name,
+                  logoUrl: station.logoUrl,
+                  size: 56,
+                  showBorder: false,
                 ),
               ),
             ),
-            const SizedBox(height: 3),
-            // İstasyon adı
+            const SizedBox(height: 4),
             Text(
               station.name,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 10,
-                  ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                fontSize: 8.5,
+                height: 1,
+                color: labelColor,
+              ),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -103,5 +77,3 @@ class RecentlyPlayedStationItem extends StatelessWidget {
     );
   }
 }
-
-

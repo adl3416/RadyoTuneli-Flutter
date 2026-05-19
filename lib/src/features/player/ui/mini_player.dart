@@ -1,12 +1,12 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import '../../../core/theme/app_theme.dart';
-import '../data/player_provider.dart';
-import '../../stations/ui/widgets/radio_logo.dart';
+
 import '../../favorites/data/favorites_provider.dart';
+import '../../stations/ui/widgets/radio_logo.dart';
+import '../data/player_provider.dart';
 
 class MiniPlayer extends ConsumerWidget {
   const MiniPlayer({super.key});
@@ -14,55 +14,28 @@ class MiniPlayer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playerState = ref.watch(playerStateProvider);
-    final primary = Theme.of(context).colorScheme.primary;
-    final appBarBg = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
-    final appBarFg = Theme.of(context).appBarTheme.foregroundColor ?? Colors.white;
+    final palette = _PlayerPalette.fromTheme(Theme.of(context));
     final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
-    // Mini player arkaplanı: tema rengiyle
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final playerBg = isDark
-        ? Color.lerp(appBarBg, Colors.black, 0.35)!
-        : Color.lerp(appBarBg, Colors.black, 0.10)!;
-    // Ön plan: her zaman AppBar ön plan rengi
-    final playerFg = appBarFg;
 
     if (playerState.currentStation == null) {
       return Container(
         height: 72 + bottomInset,
-        decoration: BoxDecoration(
-          color: playerBg,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          border: Border(
-            top: BorderSide(
-              color: appBarFg.withValues(alpha: 0.3),
-              width: 1.5,
-            ),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: appBarBg.withValues(alpha: 0.3),
-              blurRadius: 14,
-              offset: const Offset(0, -3),
-            ),
-            const BoxShadow(
-              color: Color(0x44000000),
-              blurRadius: 10,
-              offset: Offset(0, -2),
-            ),
-          ],
-        ),
+        decoration: palette.containerDecoration,
         child: Padding(
           padding: EdgeInsets.only(bottom: bottomInset),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.radio,
-                  color: playerFg.withValues(alpha: 0.45), size: 22),
+              Icon(
+                Icons.radio,
+                color: palette.accent.withValues(alpha: 0.78),
+                size: 22,
+              ),
               const SizedBox(width: 10),
               Text(
                 'Bir radyo seçin',
                 style: TextStyle(
-                  color: playerFg.withValues(alpha: 0.55),
+                  color: palette.muted,
                   fontSize: 14,
                   letterSpacing: 0.3,
                 ),
@@ -77,51 +50,24 @@ class MiniPlayer extends ConsumerWidget {
 
     return Container(
       height: 90 + bottomInset,
-      decoration: BoxDecoration(
-        color: playerBg,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        border: Border(
-          top: BorderSide(
-            color: playerFg.withValues(alpha: 0.3),
-            width: 1.5,
-          ),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: playerFg.withValues(alpha: 0.15),
-            blurRadius: 18,
-            offset: const Offset(0, -4),
-          ),
-          const BoxShadow(
-            color: Color(0x55000000),
-            blurRadius: 16,
-            offset: Offset(0, -4),
-          ),
-        ],
-      ),
+      decoration: palette.containerDecoration,
       child: Material(
         color: Colors.transparent,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         child: InkWell(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          onTap: () {
-            _showFullScreenPlayer(context);
-          },
+          onTap: () => _showFullScreenPlayer(context),
           child: Padding(
             padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + bottomInset),
             child: Row(
               children: [
-                // Station Logo with colorful initials
                 RadioLogo(
                   radioName: station.name,
                   logoUrl: station.logoUrl,
                   size: 58,
                   showBorder: true,
                 ),
-
                 const SizedBox(width: 16),
-
-                // Station Info with modern typography
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -129,11 +75,12 @@ class MiniPlayer extends ConsumerWidget {
                     children: [
                       Text(
                         station.name,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: playerFg,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: palette.text,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -141,53 +88,54 @@ class MiniPlayer extends ConsumerWidget {
                       Text(
                         playerState.isPlaying ? 'Çalıyor' : 'Duraklatıldı',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: playerFg.withValues(alpha: 0.7),
+                              color: palette.muted,
                               fontSize: 12,
                             ),
                       ),
                     ],
                   ),
                 ),
-
-                // Favorite Toggle Button
                 Consumer(
                   builder: (context, ref, child) {
                     final favorites = ref.watch(favoritesProvider);
                     final isFavorite = favorites.contains(station.id);
-                    
+
                     return IconButton(
                       key: ValueKey('fav_${station.id}_$isFavorite'),
                       onPressed: () {
                         HapticFeedback.heavyImpact();
-                        ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
-                        Future.microtask(() => ref.invalidate(favoritesProvider));
+                        ref.read(favoritesProvider.notifier).toggleFavorite(
+                              station.id,
+                            );
+                        Future.microtask(
+                          () => ref.invalidate(favoritesProvider),
+                        );
                       },
                       icon: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.redAccent : playerFg.withValues(alpha: 0.85),
+                        color: isFavorite
+                            ? const Color(0xFFFB7185)
+                            : palette.muted,
                         size: 26,
                       ),
                     );
                   },
                 ),
-
                 const SizedBox(width: 8),
-
-                // Loading indicator or Play/Pause Button with modern styling
                 if (playerState.isLoading)
                   Container(
                     width: 54,
                     height: 54,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.07),
+                      color: Colors.white.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(27),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.12),
+                        color: palette.accent.withValues(alpha: 0.24),
                         width: 1,
                       ),
                     ),
                     child: Center(
-                      child: _NeonSpinner(size: 36, color: playerFg),
+                      child: _NeonSpinner(size: 36, color: palette.accent),
                     ),
                   )
                 else
@@ -195,13 +143,13 @@ class MiniPlayer extends ConsumerWidget {
                     width: 54,
                     height: 54,
                     decoration: BoxDecoration(
-                      color: playerFg.withValues(alpha: 0.92),
+                      color: palette.playButton,
                       borderRadius: BorderRadius.circular(27),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.25),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                          color: palette.playButton.withValues(alpha: 0.34),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
@@ -214,15 +162,15 @@ class MiniPlayer extends ConsumerWidget {
                         }
                       },
                       icon: Icon(
-                        playerState.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                        color: playerBg,
+                        playerState.isPlaying
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_rounded,
+                        color: palette.playIcon,
                         size: 30,
                       ),
                       padding: EdgeInsets.zero,
                     ),
                   ),
-
-
               ],
             ),
           ),
@@ -237,18 +185,14 @@ class MiniPlayer extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        final primary = Theme.of(context).colorScheme.primary;
+        final palette = _PlayerPalette.fromTheme(Theme.of(context));
         return Container(
           height: MediaQuery.of(context).size.height * 0.9,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                HSLColor.fromColor(primary).withLightness(0.12).toColor(),
-                HSLColor.fromColor(primary).withLightness(0.16).toColor(),
-                HSLColor.fromColor(primary).withLightness(0.22).toColor(),
-              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [palette.background, palette.backgroundSoft],
             ),
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(24),
@@ -261,11 +205,77 @@ class MiniPlayer extends ConsumerWidget {
   }
 }
 
-// ─── Neon Spinner ───────────────────────────────────────────────────────────
+class _PlayerPalette {
+  final Color background;
+  final Color backgroundSoft;
+  final Color border;
+  final Color text;
+  final Color muted;
+  final Color accent;
+  final Color playButton;
+  final Color playIcon;
+
+  const _PlayerPalette({
+    required this.background,
+    required this.backgroundSoft,
+    required this.border,
+    required this.text,
+    required this.muted,
+    required this.accent,
+    required this.playButton,
+    required this.playIcon,
+  });
+
+  factory _PlayerPalette.fromTheme(ThemeData theme) {
+    final appBarBg =
+        theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary;
+    final appBarFg =
+        theme.appBarTheme.foregroundColor ?? theme.colorScheme.onPrimary;
+    final background = theme.brightness == Brightness.dark
+        ? Color.lerp(appBarBg, Colors.black, 0.35)!
+        : Color.lerp(appBarBg, Colors.black, 0.10)!;
+    final backgroundSoft = theme.brightness == Brightness.dark
+        ? Color.lerp(appBarBg, Colors.black, 0.18)!
+        : Color.lerp(appBarBg, Colors.white, 0.08)!;
+
+    return _PlayerPalette(
+      background: background,
+      backgroundSoft: backgroundSoft,
+      border: appBarFg.withValues(
+        alpha: theme.brightness == Brightness.dark ? 0.18 : 0.16,
+      ),
+      text: appBarFg,
+      muted: appBarFg.withValues(
+        alpha: theme.brightness == Brightness.dark ? 0.82 : 0.88,
+      ),
+      accent: appBarFg,
+      playButton: appBarFg.withValues(alpha: 0.92),
+      playIcon: background,
+    );
+  }
+
+  BoxDecoration get containerDecoration => BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [background, backgroundSoft],
+        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        border: Border(top: BorderSide(color: border, width: 1.2)),
+        boxShadow: [
+          BoxShadow(
+            color: background.withValues(alpha: 0.24),
+            blurRadius: 18,
+            offset: const Offset(0, -6),
+          ),
+        ],
+      );
+}
 
 class _NeonSpinner extends StatefulWidget {
   final double size;
   final Color color;
+
   const _NeonSpinner({required this.size, required this.color});
 
   @override
@@ -306,6 +316,7 @@ class _NeonSpinnerState extends State<_NeonSpinner>
 class _NeonRingPainter extends CustomPainter {
   final double progress;
   final Color color;
+
   _NeonRingPainter({required this.progress, required this.color});
 
   @override
@@ -314,16 +325,15 @@ class _NeonRingPainter extends CustomPainter {
     final r = (size.width - 6) / 2;
     final rotation = progress * math.pi * 2 - math.pi / 2;
 
-    // Track ring
     canvas.drawCircle(
-      c, r,
+      c,
+      r,
       Paint()
         ..color = color.withValues(alpha: 0.12)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2,
     );
 
-    // Gradient arc with tail
     final rect = Rect.fromCircle(center: c, radius: r);
     final gradPaint = Paint()
       ..shader = SweepGradient(
@@ -344,7 +354,6 @@ class _NeonRingPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
     canvas.drawCircle(c, r, gradPaint);
 
-    // Outer glow
     final glowPaint = Paint()
       ..shader = SweepGradient(
         startAngle: 0,
@@ -364,17 +373,18 @@ class _NeonRingPainter extends CustomPainter {
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
     canvas.drawCircle(c, r, glowPaint);
 
-    // Bright head dot
     final hx = c.dx + r * math.cos(rotation + math.pi / 2);
     final hy = c.dy + r * math.sin(rotation + math.pi / 2);
     canvas.drawCircle(
-      Offset(hx, hy), 4.5,
+      Offset(hx, hy),
+      4.5,
       Paint()
         ..color = color.withValues(alpha: 0.45)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
     );
     canvas.drawCircle(
-      Offset(hx, hy), 2.2,
+      Offset(hx, hy),
+      2.2,
       Paint()..color = Colors.white,
     );
   }
@@ -383,21 +393,20 @@ class _NeonRingPainter extends CustomPainter {
   bool shouldRepaint(_NeonRingPainter old) => old.progress != progress;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-
 class FullScreenPlayer extends ConsumerWidget {
   const FullScreenPlayer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playerState = ref.watch(playerStateProvider);
+    final palette = _PlayerPalette.fromTheme(Theme.of(context));
 
     if (playerState.currentStation == null) {
-      return const Center(
+      return Center(
         child: Text(
           'İstasyon çalmıyor',
           style: TextStyle(
-            color: Colors.white,
+            color: palette.text,
             fontSize: 16,
           ),
         ),
@@ -408,33 +417,28 @@ class FullScreenPlayer extends ConsumerWidget {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(16), // 24'ten 16'ya azaltıldı
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Drag Handle with modern styling
             Container(
               width: 50,
               height: 5,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.5),
+                color: palette.muted.withValues(alpha: 0.55),
                 borderRadius: BorderRadius.circular(3),
               ),
             ),
-  
             const SizedBox(height: 32),
-  
-            // Station Logo with modern styling
             Container(
-              width: 200, // 220'den 200'e küçültüldü
+              width: 200,
               height: 200,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.30),
                     offset: const Offset(0, 8),
                     blurRadius: 24,
-                    spreadRadius: 0,
                   ),
                 ],
               ),
@@ -445,38 +449,30 @@ class FullScreenPlayer extends ConsumerWidget {
                 showBorder: true,
               ),
             ),
-  
-            const SizedBox(height: 30), // 40'tan 30'a azaltıldı
-  
-            // Station Info with modern typography
+            const SizedBox(height: 30),
             Text(
               station.name,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Colors.white,
+                    color: palette.text,
                     fontWeight: FontWeight.bold,
-                    fontSize: 22, // 24'ten 22'ye küçültüldü
+                    fontSize: 22,
                   ),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-  
-            const SizedBox(height: 8), // 12'den 8'e azaltıldı
-  
+            const SizedBox(height: 8),
             Text(
               station.artist,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white70,
-                    fontSize: 16, // 18'den 16'ya küçültüldü
+                    color: palette.muted,
+                    fontSize: 16,
                   ),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-  
             const SizedBox(height: 20),
-
-            // Favorite Button
             Consumer(
               builder: (context, ref, _) {
                 final favorites = ref.watch(favoritesProvider);
@@ -484,79 +480,60 @@ class FullScreenPlayer extends ConsumerWidget {
                 return GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    ref.read(favoritesProvider.notifier).toggleFavorite(station.id);
+                    ref.read(favoritesProvider.notifier).toggleFavorite(
+                          station.id,
+                        );
                     Future.microtask(() => ref.invalidate(favoritesProvider));
                   },
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 250),
-                    transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
+                    transitionBuilder: (child, anim) =>
+                        ScaleTransition(scale: anim, child: child),
                     child: Icon(
                       isFavorite ? Icons.favorite : Icons.favorite_border,
                       key: ValueKey(isFavorite),
-                      color: isFavorite ? Colors.redAccent : Colors.white70,
+                      color:
+                          isFavorite ? const Color(0xFFFB7185) : palette.muted,
                       size: 36,
                     ),
                   ),
                 );
               },
             ),
-
             const SizedBox(height: 24),
-
-            // Control Buttons with modern styling
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Previous Button - now active
-                Container(
-                  width: 54, // 60'tan 54'e küçültüldü
-                  height: 54,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(27),
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () async {
-                        print('🔄 Previous button tapped in FullScreenPlayer');
-                        HapticFeedback.mediumImpact();
-                        try {
-                          await ref.read(playerStateProvider.notifier).previousStation();
-                          print('✅ Previous station method completed');
-                        } catch (e) {
-                          print('❌ Error calling previousStation: $e');
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(27),
-                      child: const Icon(
-                        Icons.skip_previous,
-                        size: 28, // 32'den 28'e küçültüldü
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                _GlassActionButton(
+                  icon: Icons.skip_previous,
+                  color: palette.text,
+                  backgroundColor: palette.text.withValues(alpha: 0.10),
+                  borderColor: palette.border,
+                  onTap: () async {
+                    HapticFeedback.mediumImpact();
+                    await ref
+                        .read(playerStateProvider.notifier)
+                        .previousStation();
+                  },
                 ),
-  
-                // Play/Pause with enhanced styling
                 Container(
-                  width: 70, // 80'den 70'e küçültüldü
+                  width: 70,
                   height: 70,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: palette.playButton,
                     borderRadius: BorderRadius.circular(35),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: palette.playButton.withValues(alpha: 0.30),
                         offset: const Offset(0, 4),
                         blurRadius: 16,
                       ),
                     ],
                   ),
                   child: playerState.isLoading
-                      ? const Center(
+                      ? Center(
                           child: CircularProgressIndicator(
-                            color: AppTheme.headerPurple,
+                            color: palette.playIcon,
                             strokeWidth: 3,
                           ),
                         )
@@ -576,64 +553,42 @@ class FullScreenPlayer extends ConsumerWidget {
                             playerState.isPlaying
                                 ? Icons.pause
                                 : Icons.play_arrow,
-                            color: AppTheme.headerPurple,
-                            size: 36, // 40'tan 36'ya küçültüldü
+                            color: palette.playIcon,
+                            size: 36,
                           ),
                         ),
                 ),
-  
-                // Next Button - now active
-                Container(
-                  width: 54, // 60'tan 54'e küçültüldü
-                  height: 54,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(27),
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () async {
-                        print('🔄 Next button tapped in FullScreenPlayer');
-                        HapticFeedback.mediumImpact();
-                        try {
-                          await ref.read(playerStateProvider.notifier).nextStation();
-                          print('✅ Next station method completed');
-                        } catch (e) {
-                          print('❌ Error calling nextStation: $e');
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(27),
-                      child: const Icon(
-                        Icons.skip_next,
-                        size: 28, // 32'den 28'e küçültüldü
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                _GlassActionButton(
+                  icon: Icons.skip_next,
+                  color: palette.text,
+                  backgroundColor: palette.text.withValues(alpha: 0.10),
+                  borderColor: palette.border,
+                  onTap: () async {
+                    HapticFeedback.mediumImpact();
+                    await ref.read(playerStateProvider.notifier).nextStation();
+                  },
                 ),
               ],
             ),
-  
-            const SizedBox(height: 30), // 40'tan 30'a azaltıldı
-  
-            // Stop Button with modern styling
+            const SizedBox(height: 30),
             SizedBox(
               width: double.infinity,
-              height: 50, // 56'dan 50'ye küçültüldü
+              height: 50,
               child: ElevatedButton(
                 onPressed: () async {
                   await ref.read(playerStateProvider.notifier).stop();
-                  Navigator.of(context).pop();
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.2),
-                  foregroundColor: Colors.white,
+                  backgroundColor: palette.text.withValues(alpha: 0.10),
+                  foregroundColor: palette.text,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
                     side: BorderSide(
-                      color: Colors.white.withOpacity(0.3),
+                      color: palette.border,
                       width: 1,
                     ),
                   ),
@@ -641,15 +596,57 @@ class FullScreenPlayer extends ConsumerWidget {
                 child: const Text(
                   'Durdur',
                   style: TextStyle(
-                    fontSize: 16, // 18'den 16'ya küçültüldü
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ),
-  
-            const SizedBox(height: 16), // 8'den 16'ya artırıldı (alt boşluk için)
+            const SizedBox(height: 16),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GlassActionButton extends StatelessWidget {
+  final IconData icon;
+  final Future<void> Function() onTap;
+  final Color color;
+  final Color backgroundColor;
+  final Color borderColor;
+
+  const _GlassActionButton({
+    required this.icon,
+    required this.onTap,
+    required this.color,
+    required this.backgroundColor,
+    required this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 54,
+      height: 54,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(27),
+        border: Border.fromBorderSide(
+          BorderSide(color: borderColor),
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(27),
+          child: Icon(
+            icon,
+            size: 28,
+            color: color,
+          ),
         ),
       ),
     );

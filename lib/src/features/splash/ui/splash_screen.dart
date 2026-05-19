@@ -92,10 +92,10 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeOutCubic,
     ));
 
-    // Background gradient animation
+    // Background gradient animation — tema rengiyle uyumlu açık mavi
     _backgroundAnimation = ColorTween(
-      begin: AppTheme.headerPurple,
-      end: AppTheme.cardPurpleDark,
+      begin: const Color(0xFF3B82F6), // blue-500 (açık)
+      end: const Color(0xFF1D4ED8),   // blue-700 (tema rengi)
     ).animate(CurvedAnimation(
       parent: _backgroundController!,
       curve: Curves.easeInOut,
@@ -184,9 +184,9 @@ class _SplashScreenState extends State<SplashScreen>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                AppTheme.headerPurple,
-                AppTheme.cardPurple,
-                AppTheme.gradientPurple,
+                Color(0xFF60A5FA), // blue-400 - açık
+                Color(0xFF2563EB), // blue-600 - orta
+                Color(0xFF1D4ED8), // blue-700 - tema rengi
               ],
             ),
           ),
@@ -225,9 +225,9 @@ class _SplashScreenState extends State<SplashScreen>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  _backgroundAnimation!.value ?? AppTheme.headerPurple,
-                  AppTheme.cardPurple,
-                  AppTheme.gradientPurple,
+                  _backgroundAnimation!.value ?? const Color(0xFF3B82F6),
+                  const Color(0xFF2563EB), // blue-600
+                  const Color(0xFF1D4ED8), // blue-700 - tema rengi
                 ],
               ),
             ),
