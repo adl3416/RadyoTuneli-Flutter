@@ -9,20 +9,36 @@ final stationRepositoryProvider = Provider<StationRepository>((ref) {
   return StationRepository();
 });
 
-// Provider for all stations - now async with timeout
-final stationsProvider = FutureProvider<List<Station>>((ref) async {
-  final repository = ref.read(stationRepositoryProvider);
+// Provider for all stations - local data first, API refresh in background
+class _StationsNotifier extends AsyncNotifier<List<Station>> {
+  @override
+  Future<List<Station>> build() async {
+    final repository = ref.read(stationRepositoryProvider);
 
-  // Add timeout to prevent infinite loading
-  return await repository.getTurkishStations().timeout(
-    const Duration(seconds: 12),
-    onTimeout: () {
-      // Timeout sonrası fallback’a düşür
-      throw TimeoutException(
-          'Station loading timeout', const Duration(seconds: 12));
-    },
-  );
-});
+    // 1. Load local bundled stations immediately (< 100ms, no network)
+    final localStations = await repository.getLocalStations();
+
+    // 2. Start API refresh in background - don't block the UI
+    Future(() async {
+      try {
+        final apiStations = await repository.getTurkishStations()
+            .timeout(const Duration(seconds: 10));
+        if (apiStations.isNotEmpty) {
+          state = AsyncData(apiStations);
+        }
+      } catch (_) {
+        // Local stations already shown, silently keep them
+      }
+    });
+
+    return localStations;
+  }
+}
+
+final stationsProvider =
+    AsyncNotifierProvider<_StationsNotifier, List<Station>>(
+  _StationsNotifier.new,
+);
 
 // Provider for favorite stations (will be implemented with persistent storage later)
 final favoriteStationsProvider = FutureProvider<List<Station>>((ref) async {

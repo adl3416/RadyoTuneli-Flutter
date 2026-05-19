@@ -17,6 +17,7 @@ class MiniPlayer extends ConsumerWidget {
     final primary = Theme.of(context).colorScheme.primary;
     final appBarBg = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
     final appBarFg = Theme.of(context).appBarTheme.foregroundColor ?? Colors.white;
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
     // Mini player arkaplanı: tema rengiyle
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final playerBg = isDark
@@ -27,7 +28,7 @@ class MiniPlayer extends ConsumerWidget {
 
     if (playerState.currentStation == null) {
       return Container(
-        height: 72,
+        height: 72 + bottomInset,
         decoration: BoxDecoration(
           color: playerBg,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -50,20 +51,24 @@ class MiniPlayer extends ConsumerWidget {
             ),
           ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.radio, color: playerFg.withValues(alpha: 0.45), size: 22),
-            const SizedBox(width: 10),
-            Text(
-              'Bir radyo seçin',
-              style: TextStyle(
-                color: playerFg.withValues(alpha: 0.55),
-                fontSize: 14,
-                letterSpacing: 0.3,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: bottomInset),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.radio,
+                  color: playerFg.withValues(alpha: 0.45), size: 22),
+              const SizedBox(width: 10),
+              Text(
+                'Bir radyo seçin',
+                style: TextStyle(
+                  color: playerFg.withValues(alpha: 0.55),
+                  fontSize: 14,
+                  letterSpacing: 0.3,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }
@@ -71,7 +76,7 @@ class MiniPlayer extends ConsumerWidget {
     final station = playerState.currentStation!;
 
     return Container(
-      height: 90,
+      height: 90 + bottomInset,
       decoration: BoxDecoration(
         color: playerBg,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -103,7 +108,7 @@ class MiniPlayer extends ConsumerWidget {
             _showFullScreenPlayer(context);
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + bottomInset),
             child: Row(
               children: [
                 // Station Logo with colorful initials

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 import '../../../../core/utils/radio_avatar_helper.dart';
 
 /// Radyo logosu widget'ı - Logo varsa gösterir, yoksa baş harf avatar'ı
@@ -127,8 +128,8 @@ class RadioLogo extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          logoUrl!,
+        child: Image.file(
+          File(Uri.parse(logoUrl!).toFilePath()),
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             return _buildLetterAvatarContent();

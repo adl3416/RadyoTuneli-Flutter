@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,22 +16,46 @@ class AutomotivePlayerScreen extends ConsumerWidget {
     final playerState = ref.watch(playerStateProvider);
     
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            // Adaptive paddings and sizes based on available space
-            final horizontalPad = constraints.maxWidth > 600 ? 24.0 : 16.0;
-            final spacingLarge = constraints.maxHeight < 400 ? 12.0 : 20.0;
-            final logoSize = (constraints.maxWidth * 0.25).clamp(64.0, 140.0);
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          // Music-themed background with gradient and decorative elements
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color.lerp(Colors.black, AppTheme.orange400, 0.08)!,
+                  Color.lerp(Colors.black, Colors.purple, 0.06)!,
+                  Colors.black,
+                ],
+                stops: const [0.0, 0.5, 1.0],
+              ),
+            ),
+            child: CustomPaint(
+              painter: _MusicWavesPainter(
+                color: AppTheme.orange400.withOpacity(0.03),
+              ),
+              size: Size.infinite,
+            ),
+          ),
+          // Main content
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Adaptive paddings and sizes based on available space
+                final horizontalPad = constraints.maxWidth > 600 ? 24.0 : 16.0;
+                final spacingLarge = constraints.maxHeight < 400 ? 12.0 : 20.0;
+                final logoSize = (constraints.maxWidth * 0.25).clamp(64.0, 140.0);
 
-            return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPad, vertical: spacingLarge),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight - MediaQuery.of(context).padding.vertical),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
+                return SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPad, vertical: spacingLarge),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight - MediaQuery.of(context).padding.vertical),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                     // Header
                     Row(
                       children: [
@@ -164,7 +189,59 @@ class AutomotivePlayerScreen extends ConsumerWidget {
                     ),
 
                     SizedBox(height: spacingLarge),
+                    // Favorite Button with modern styling
+                    if (playerState.currentStation != null)
+                      Consumer(
+                        builder: (context, ref, _) {
+                          final favorites = ref.watch(favoritesProvider);
+                          final isFavorite = favorites.contains(playerState.currentStation!.id);
+                          
+                          return GestureDetector(
+                            onTap: () {
+                              HapticFeedback.heavyImpact();
+                              ref.read(favoritesProvider.notifier).toggleFavorite(playerState.currentStation!.id);
+                              Future.microtask(() => ref.invalidate(favoritesProvider));
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(spacingLarge),
+                              decoration: BoxDecoration(
+                                color: isFavorite ? AppTheme.orange400.withOpacity(0.2) : Colors.grey[800],
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: isFavorite ? AppTheme.orange400 : Colors.grey[700]!,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 300),
+                                    transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
+                                    child: Icon(
+                                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                                    key: ValueKey(isFavorite),
+                                    color: isFavorite ? Colors.redAccent : Colors.grey[400],
+                                    size: 36,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  isFavorite ? 'FAVORİDEN ÇIKAR' : 'FAVORİLERE EKLE',
+                                  style: TextStyle(
+                                    color: isFavorite ? Colors.redAccent : Colors.grey[400],
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
 
+                    SizedBox(height: spacingLarge),
                     // Large Control Buttons - make them wrap if space is tight
                     Wrap(
                       alignment: WrapAlignment.spaceEvenly,
@@ -244,7 +321,9 @@ class AutomotivePlayerScreen extends ConsumerWidget {
           },
         ),
       ),
-    );
+    ],
+  ),
+);
   }
 
   Widget _buildLargeButton({
@@ -601,4 +680,45 @@ class AutomotivePlayerScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _MusicWavesPainter extends CustomPainter {
+  final Color color;
+  double waveOffset = 0.0;
+
+  _MusicWavesPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    // Draw multiple decorative wave lines
+    _drawWaveLine(canvas, size, paint, 0.25, 3);
+    _drawWaveLine(canvas, size, paint, 0.5, 2);
+    _drawWaveLine(canvas, size, paint, 0.75, 4);
+  }
+
+  void _drawWaveLine(Canvas canvas, Size size, Paint paint, double heightRatio, int frequency) {
+    final path = Path();
+    final y = size.height * heightRatio;
+    final amplitude = size.height * 0.08;
+
+    // Start from left
+    path.moveTo(0, y);
+
+    // Draw sine wave across the canvas
+    for (double x = 0; x <= size.width; x += 10) {
+      final angle = (x / size.width) * frequency * 2 * 3.14159;
+      final offsetY = y + (amplitude * sin(angle));
+      path.lineTo(x, offsetY);
+    }
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_MusicWavesPainter oldDelegate) => false;
 }

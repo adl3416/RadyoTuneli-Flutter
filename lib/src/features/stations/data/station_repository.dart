@@ -12,6 +12,16 @@ class StationRepository {
   DateTime? _cacheTime;
   static const _cacheDuration = Duration(minutes: 10);
 
+  /// Returns local bundled stations immediately (no network needed)
+  Future<List<Station>> getLocalStations() async {
+    final stations = await _apiService.loadLocalStations();
+    return stations
+        .map((station) => station.copyWith(
+              isFavorite: _favoriteStationIds.contains(station.id),
+            ))
+        .toList();
+  }
+
   /// Fetches Turkish radio stations with fallback mechanism
   Future<List<Station>> getTurkishStations() async {
     // Return cached data if valid

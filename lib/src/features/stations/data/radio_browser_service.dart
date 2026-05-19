@@ -80,6 +80,9 @@ class RadioBrowserService {
     return _removeDuplicateStations(allStations);
   }
 
+  /// Public accessor for local stations (used for fast initial load)
+  Future<List<Station>> loadLocalStations() => _loadFallbackStations();
+
   /// Loads stations from local JSON asset (cached after first load)
   Future<List<Station>> _loadFallbackStations() async {
     if (_cachedFallbackStations != null) return _cachedFallbackStations!;

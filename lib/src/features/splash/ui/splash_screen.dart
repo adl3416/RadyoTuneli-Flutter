@@ -42,19 +42,19 @@ class _SplashScreenState extends State<SplashScreen>
   void _initializeAnimations() {
     // Logo animation controller
     _logoController = AnimationController(
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 550),
       vsync: this,
     );
 
     // Text animation controller
     _textController = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 350),
       vsync: this,
     );
 
     // Background animation controller
     _backgroundController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 700),
       vsync: this,
     );
 
@@ -116,17 +116,17 @@ class _SplashScreenState extends State<SplashScreen>
     _backgroundController!.forward();
 
     // Start logo animation after short delay
-    await Future.delayed(const Duration(milliseconds: 150));
+    await Future.delayed(const Duration(milliseconds: 100));
     if (!mounted || _logoController == null) return;
     _logoController!.forward();
 
     // Start text animation after logo
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 300));
     if (!mounted || _textController == null) return;
     _textController!.forward();
 
     // Navigate after all animations complete
-    await Future.delayed(const Duration(milliseconds: 700));
+    await Future.delayed(const Duration(milliseconds: 400));
     if (!mounted) return;
     _navigateToNextScreen();
   }
@@ -179,7 +179,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (!_isInitialized || _backgroundAnimation == null) {
       return Scaffold(
         body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -187,6 +187,27 @@ class _SplashScreenState extends State<SplashScreen>
                 AppTheme.headerPurple,
                 AppTheme.cardPurple,
                 AppTheme.gradientPurple,
+              ],
+            ),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    'assets/images/vintage_radio_logo.png',
+                    width: 110,
+                    height: 110,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  strokeWidth: 2.5,
+                ),
               ],
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'src/features/splash/ui/splash_app.dart';
 import 'src/features/player/data/audio_service_handler.dart';
 
@@ -10,18 +11,17 @@ RadioAudioHandler? globalAudioHandler;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  GoogleFonts.config.allowRuntimeFetching = false;
 
-  // Lock device orientation to portrait
-  await SystemChrome.setPreferredOrientations([
+  // runApp'i bloklamadan önce sadece zorunlu minimum init
+  runApp(const ProviderScope(child: SplashApp()));
+
+  // Ekran yönü kilidi ve AudioService arka planda başlat (UI'ı bloklamaz)
+  SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
-  // AudioService'i arka planda başlat — runApp'i bloklama!
-  // PlayerNotifier zaten handler null olsa da bekleyip retry yapıyor.
   _initializeAudioService();
-
-  runApp(const ProviderScope(child: SplashApp()));
 }
 
 Future<void> _initializeAudioService() async {

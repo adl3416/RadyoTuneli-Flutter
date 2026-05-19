@@ -31,7 +31,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -64,6 +64,12 @@
         <meta-data
             android:name="com.google.android.gms.car.application"
             android:resource="@xml/automotive_app_desc" />
+
+        <provider
+            android:name=".ArtworkProvider"
+            android:authorities="com.turkradyo.bsr.de.turkradyo.artwork"
+            android:exported="true"
+            android:grantUriPermissions="true" />
             
         <!-- AudioService for media playback and Android Auto -->
         <service

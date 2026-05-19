@@ -1,91 +1,35 @@
-<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-  <!-- Radyo Gövdesi -->
-  <rect x="15" y="30" width="90" height="70" rx="8" ry="8" 
-        fill="#4A4A4A" stroke="#2A2A2A" stroke-width="2"/>
-  
-  <!-- Radyo Ön Paneli -->
-  <rect x="20" y="35" width="80" height="60" rx="4" ry="4" 
-        fill="#6B7280" stroke="#374151" stroke-width="1"/>
-  
-  <!-- Speaker Mesh -->
-  <rect x="25" y="40" width="35" height="25" rx="2" ry="2" 
-        fill="#374151"/>
-  
-  <!-- Speaker Holes -->
-  <circle cx="30" cy="47" r="1.5" fill="#1F2937"/>
-  <circle cx="35" cy="47" r="1.5" fill="#1F2937"/>
-  <circle cx="40" cy="47" r="1.5" fill="#1F2937"/>
-  <circle cx="45" cy="47" r="1.5" fill="#1F2937"/>
-  <circle cx="50" cy="47" r="1.5" fill="#1F2937"/>
-  <circle cx="55" cy="47" r="1.5" fill="#1F2937"/>
-  
-  <circle cx="30" cy="52" r="1.5" fill="#1F2937"/>
-  <circle cx="35" cy="52" r="1.5" fill="#1F2937"/>
-  <circle cx="40" cy="52" r="1.5" fill="#1F2937"/>
-  <circle cx="45" cy="52" r="1.5" fill="#1F2937"/>
-  <circle cx="50" cy="52" r="1.5" fill="#1F2937"/>
-  <circle cx="55" cy="52" r="1.5" fill="#1F2937"/>
-  
-  <circle cx="30" cy="57" r="1.5" fill="#1F2937"/>
-  <circle cx="35" cy="57" r="1.5" fill="#1F2937"/>
-  <circle cx="40" cy="57" r="1.5" fill="#1F2937"/>
-  <circle cx="45" cy="57" r="1.5" fill="#1F2937"/>
-  <circle cx="50" cy="57" r="1.5" fill="#1F2937"/>
-  <circle cx="55" cy="57" r="1.5" fill="#1F2937"/>
-  
-  <!-- Frekans Gösterge Paneli -->
-  <rect x="65" y="40" width="30" height="15" rx="2" ry="2" 
-        fill="#1F2937" stroke="#374151" stroke-width="1"/>
-  
-  <!-- Frekans Çizgileri -->
-  <line x1="68" y1="43" x2="68" y2="52" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="70" y1="45" x2="70" y2="50" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="72" y1="44" x2="72" y2="51" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="74" y1="43" x2="74" y2="52" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="76" y1="45" x2="76" y2="50" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="78" y1="44" x2="78" y2="51" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="80" y1="43" x2="80" y2="52" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="82" y1="45" x2="82" y2="50" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="84" y1="44" x2="84" y2="51" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="86" y1="43" x2="86" y2="52" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="88" y1="45" x2="88" y2="50" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="90" y1="44" x2="90" y2="51" stroke="#8B5CF6" stroke-width="0.5"/>
-  <line x1="92" y1="43" x2="92" y2="52" stroke="#8B5CF6" stroke-width="0.5"/>
-  
-  <!-- Frekans İbresi -->
-  <line x1="80" y1="47.5" x2="88" y2="47.5" stroke="#9333EA" stroke-width="2"/>
-  <circle cx="88" cy="47.5" r="1" fill="#9333EA"/>
-  
-  <!-- Volume/Tuning Knobs -->
-  <circle cx="30" cy="75" r="8" fill="#374151" stroke="#1F2937" stroke-width="2"/>
-  <circle cx="30" cy="75" r="6" fill="#4B5563"/>
-  <line x1="30" y1="69" x2="30" y2="75" stroke="#8B5CF6" stroke-width="2"/>
-  
-  <circle cx="90" cy="75" r="8" fill="#374151" stroke="#1F2937" stroke-width="2"/>
-  <circle cx="90" cy="75" r="6" fill="#4B5563"/>
-  <line x1="90" y1="69" x2="90" y2="75" stroke="#8B5CF6" stroke-width="2"/>
-  
-  <!-- Antenna -->
-  <line x1="95" y1="30" x2="95" y2="15" stroke="#6B7280" stroke-width="3"/>
-  <line x1="95" y1="15" x2="85" y2="8" stroke="#6B7280" stroke-width="2"/>
-  <line x1="95" y1="15" x2="105" y2="8" stroke="#6B5CF6" stroke-width="2"/>
-  
-  <!-- Radio Waves -->
-  <path d="M 105 25 Q 115 20 120 15" stroke="#8B5CF6" stroke-width="1.5" fill="none" opacity="0.7"/>
-  <path d="M 108 28 Q 115 25 118 20" stroke="#9333EA" stroke-width="1.5" fill="none" opacity="0.5"/>
-  <path d="M 110 31 Q 115 29 116 25" stroke="#A855F7" stroke-width="1.5" fill="none" opacity="0.3"/>
-  
-  <!-- Brand Name Area -->
-  <rect x="25" y="82" width="70" height="8" rx="2" ry="2" 
-        fill="#1F2937" stroke="#374151" stroke-width="0.5"/>
-  
-  <!-- Vintage Details -->
-  <circle cx="25" cy="40" r="1" fill="#8B5CF6"/>
-  <circle cx="95" cy="40" r="1" fill="#8B5CF6"/>
-  <circle cx="25" cy="90" r="1" fill="#8B5CF6"/>
-  <circle cx="95" cy="90" r="1" fill="#8B5CF6"/>
-  
-  <!-- Shadow/Depth -->
-  <rect x="17" y="32" width="90" height="70" rx="8" ry="8" 
-        fill="none" stroke="#000000" stroke-width="0.5" opacity="0.3"/>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="142" y1="98" x2="882" y2="926" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1D4ED8"/>
+      <stop offset="0.48" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#EC4899"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(512 420) rotate(90) scale(420)">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.30"/>
+      <stop offset="0.56" stop-color="#FFFFFF" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-12%" y="-12%" width="124%" height="124%">
+      <feDropShadow dx="0" dy="28" stdDeviation="34" flood-color="#160B3A" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <rect x="64" y="64" width="896" height="896" rx="224" fill="url(#bg)"/>
+  <rect x="64" y="64" width="896" height="896" rx="224" fill="url(#glow)"/>
+  <path d="M202 746V431c0-169 138-306 310-306s310 137 310 306v315" fill="none" stroke="#FFFFFF" stroke-width="70" stroke-linecap="round" opacity="0.94"/>
+  <path d="M314 746V444c0-108 89-196 198-196s198 88 198 196v195" fill="none" stroke="#FFFFFF" stroke-width="54" stroke-linecap="round" opacity="0.78"/>
+  <path d="M426 681V461c0-47 39-85 86-85s86 38 86 85v112" fill="none" stroke="#FFFFFF" stroke-width="42" stroke-linecap="round" opacity="0.62"/>
+
+  <g filter="url(#shadow)">
+    <rect x="286" y="524" width="452" height="244" rx="58" fill="#FFFFFF" fill-opacity="0.96"/>
+    <rect x="333" y="574" width="234" height="34" rx="17" fill="#4F46E5"/>
+    <rect x="333" y="634" width="234" height="34" rx="17" fill="#7C3AED"/>
+    <rect x="333" y="694" width="182" height="34" rx="17" fill="#EC4899"/>
+    <circle cx="647" cy="647" r="74" fill="none" stroke="#7C3AED" stroke-width="42"/>
+    <path d="M703 524L744 292" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round"/>
+    <circle cx="748" cy="267" r="28" fill="#FFFFFF"/>
+  </g>
+
+  <text x="512" y="885" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="96" font-weight="800" letter-spacing="10" fill="#FFFFFF">RT</text>
 </svg>
