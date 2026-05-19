@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import '../domain/station_model.dart';
@@ -24,6 +25,8 @@ class RadioBrowserService {
   /// TR karakter normalizasyonu (logo eşleştirme için)
   static String _normalizeLogo(String s) {
     return s
+        // NFD decomposed karakterleri temizle (u+̈ gibi dosya adlarındaki birleştirme işaretleri)
+        .replaceAll(RegExp(r'[\u0300-\u036f]'), '')
         .toLowerCase()
         .replaceAll('ğ', 'g')
         .replaceAll('ü', 'u')
@@ -41,9 +44,8 @@ class RadioBrowserService {
     if (_logoCache != null) return;
     _logoCache = {};
     try {
-      final manifestContent = await rootBundle.loadString('AssetManifest.json');
-      final Map<String, dynamic> manifest = json.decode(manifestContent);
-      for (final key in manifest.keys) {
+      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      for (final key in manifest.listAssets()) {
         if (key.startsWith('assets/logos/')) {
           final filename = key.split('/').last;
           final nameNoExt = filename.contains('.')
@@ -51,14 +53,14 @@ class RadioBrowserService {
               : filename;
           final normalized = _normalizeLogo(
               nameNoExt.replaceAll('_', ' ').replaceAll('-', ' '));
-          // Hem tam isim hem de sadece anlamlı kısım
           if (normalized.isNotEmpty) {
             _logoCache![normalized] = key;
           }
         }
       }
+      debugPrint('🎵 Logo cache: ${_logoCache!.length} logos yüklendi');
     } catch (e) {
-      print('Logo cache init failed: \$e');
+      debugPrint('Logo cache init failed: $e');
     }
   }
 
@@ -406,6 +408,9 @@ class RadioBrowserService {
       // Süper FM
       'süper fm': 'assets/logos/super.png',
       'super fm': 'assets/logos/super.png',
+      // 90lar / Doksanlar
+      '90lar': 'assets/logos/Doksanlar_FM.png',
+      'doksanlar': 'assets/logos/Doksanlar_FM.png',
     };
     
     // Önce özel mapping'leri kontrol et
@@ -419,20 +424,26 @@ class RadioBrowserService {
     if (_logoCache != null && _logoCache!.isNotEmpty) {
       // 1. Tam eşleşme
       if (_logoCache!.containsKey(nameNorm)) {
+        debugPrint('✅ Logo bulundu (tam): $stationName → ${_logoCache![nameNorm]}');
         return _logoCache![nameNorm]!;
       }
       // 2. Cache key'i istasyon adında var mı (en az 5 karakter)
       for (final entry in _logoCache!.entries) {
         if (entry.key.length >= 5 && nameNorm.contains(entry.key)) {
+          debugPrint('✅ Logo bulundu (içerir): $stationName → ${entry.value}');
           return entry.value;
         }
       }
       // 3. İstasyon adı cache key'de var mı (en az 5 karakter)
       for (final entry in _logoCache!.entries) {
         if (nameNorm.length >= 5 && entry.key.contains(nameNorm)) {
+          debugPrint('✅ Logo bulundu (ters içerir): $stationName → ${entry.value}');
           return entry.value;
         }
       }
+      debugPrint('❌ Logo bulunamadı: "$stationName" (norm: "$nameNorm")');
+    } else {
+      debugPrint('⚠️ Logo cache BOŞ! "$stationName" için logo atanamadı');
     }
 
     // Eğer original logo varsa onu kullan
