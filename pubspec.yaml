@@ -59,13 +59,13 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/radio_logo.png"
+  image_path: "assets/images/app_icon_full.png"
   adaptive_icon_background: "#0D2647"  # Deep navy
-  adaptive_icon_foreground: "assets/images/radio_logo.png"
+  adaptive_icon_foreground: "assets/images/app_icon_foreground.png"
   min_sdk_android: 21  # Android 5.0 (API Level 21) - Samsung S9 uyumluluğu
   remove_alpha_ios: true
   # Logo boyutunu ayarla ve merkeze al
-  adaptive_icon_padding: 45  # %45 — belirgin kenar boşluğu
+  adaptive_icon_padding: 8  # foreground asset already includes spacing
 
 flutter:
   uses-material-design: true

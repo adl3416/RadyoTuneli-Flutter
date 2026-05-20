@@ -193,13 +193,26 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: Image.asset(
-                    'assets/images/splaschscren.png',
-                    width: 130,
-                    height: 130,
-                    fit: BoxFit.contain,
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: const Color(0xFFE7EEF8).withOpacity(0.16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(14),
+                  child: Center(
+                    child: Image.asset(
+                      'assets/images/splaschscren.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -247,10 +260,11 @@ class _SplashScreenState extends State<SplashScreen>
                             child: Opacity(
                               opacity: _logoOpacityAnimation!.value,
                               child: Container(
-                                width: 150,
-                                height: 150,
+                                width: 76,
+                                height: 76,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(28),
+                                  borderRadius: BorderRadius.circular(22),
+                                  color: const Color(0xFFE7EEF8).withOpacity(0.16),
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.45),
@@ -259,12 +273,10 @@ class _SplashScreenState extends State<SplashScreen>
                                     ),
                                   ],
                                 ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(28),
+                                padding: const EdgeInsets.all(15),
+                                child: Center(
                                   child: Image.asset(
                                     'assets/images/splaschscren.png',
-                                    width: 150,
-                                    height: 150,
                                     fit: BoxFit.contain,
                                   ),
                                 ),

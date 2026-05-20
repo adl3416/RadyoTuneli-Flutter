@@ -359,6 +359,8 @@ class RadioBrowserService {
     
     // Yerel logo dosyası eşlemeleri (assets/logos/) — özel overrides
     final logoMappings = {
+      // Dadaş FM Erzurum
+      'dadas fm erzurum': 'https://www.canliradyodinle.fm/uploads/radyo/200/dadas-fm.png',
       // TRT FM
       'trt fm': 'assets/logos/trt fm.png',
       // TRT Memleketim
@@ -411,6 +413,9 @@ class RadioBrowserService {
       // 90lar / Doksanlar
       '90lar': 'assets/logos/Doksanlar_FM.png',
       'doksanlar': 'assets/logos/Doksanlar_FM.png',
+      // A Spor Radyo
+      'aspor': 'assets/logos/A_Spor_Radyo.png',
+      'a spor': 'assets/logos/A_Spor_Radyo.png',
     };
     
     // Önce özel mapping'leri kontrol et
@@ -439,6 +444,18 @@ class RadioBrowserService {
         if (nameNorm.length >= 5 && entry.key.contains(nameNorm)) {
           debugPrint('✅ Logo bulundu (ters içerir): $stationName → ${entry.value}');
           return entry.value;
+        }
+      }
+      // 4. Boşluksuz karşılaştırma — "efsane4lu" vs "efsane 4 lu" gibi durumlar
+      final nameCompact = nameNorm.replaceAll(' ', '');
+      if (nameCompact.length >= 5) {
+        for (final entry in _logoCache!.entries) {
+          final keyCompact = entry.key.replaceAll(' ', '');
+          if (keyCompact.length >= 5 &&
+              (nameCompact.contains(keyCompact) || keyCompact.contains(nameCompact))) {
+            debugPrint('✅ Logo bulundu (boşluksuz): $stationName → ${entry.value}');
+            return entry.value;
+          }
         }
       }
       debugPrint('❌ Logo bulunamadı: "$stationName" (norm: "$nameNorm")');

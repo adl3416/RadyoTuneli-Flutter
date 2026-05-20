@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "SM G960F (Telefon)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "22bae08123037ece",
+      "flutterMode": "debug"
+    },
+    {
+      "name": "Release (Telefon)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "22bae08123037ece",
+      "flutterMode": "release"
+    }
+  ]
+}

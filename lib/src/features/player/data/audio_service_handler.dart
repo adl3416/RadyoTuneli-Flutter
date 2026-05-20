@@ -15,6 +15,10 @@ import '../domain/player_state_model.dart';
 
 class RadioAudioHandler extends BaseAudioHandler
     with SeekHandler, QueueHandler {
+  static final Uri _androidAutoBrowseIconUri = Uri.parse(
+    'android.resource://com.turkradyo.bsr.de.turkradyo/drawable/browse_icon',
+  );
+
   // Buffer ayarları: live radio için hızlı başlatmayı önceliklendiren küçük buffer
   // Default ExoPlayer 2.5s buffer bekler → bunu 800ms'e indiriyoruz
   final AudioPlayer _player = AudioPlayer(
@@ -372,8 +376,9 @@ class RadioAudioHandler extends BaseAudioHandler
         }
         // Diğer remote URL'ler: null bırak → aşağıda letter avatar atanır
       }
-      // Android Auto remote URL gösteremiyor; hazır değilse letter avatar kullan
-      stationArtUri ??= await _getLetterAvatarUriForTitle(name);
+      // Android Auto soğuk başlatmada yüzlerce dosya üretip beklememek için
+      // hızlı content avatar URI'si kullan; gerçek artwork daha sonra upgrade edilir.
+      stationArtUri ??= _getLetterAvatarContentUriForTitle(name);
 
       final mediaItem = MediaItem(
         id: stationId,
@@ -914,6 +919,8 @@ class RadioAudioHandler extends BaseAudioHandler
         title: title,
         artUri: capturedArtUri,
       );
+      final Uri androidAutoArtUri =
+          _toAndroidAutoContentArtUri(title, artUriParsed);
 
       if (myId != _playRequestId) {
         print("🚫 playStation[$myId] iptal edildi (artUri sonrası): $title");
@@ -928,7 +935,7 @@ class RadioAudioHandler extends BaseAudioHandler
         displayTitle: title,
         displaySubtitle: '🔴 CANLI YAYIN',
         displayDescription: artist,
-        artUri: artUriParsed,
+        artUri: androidAutoArtUri,
         playable: true,
         duration: Duration.zero, // Radio streams don't have duration
         rating: Rating.newHeartRating(isFavorite), // Favori durumuna göre
@@ -1123,8 +1130,7 @@ class RadioAudioHandler extends BaseAudioHandler
         id: AudioService.browsableRootId,
         title: 'Radyo Tüneli',
         artist: 'Türk Radyo İstasyonları',
-        artUri: Uri.parse(
-            'android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+        artUri: _androidAutoBrowseIconUri,
         playable: false,
         extras: {
           'browsable': true,
@@ -1142,8 +1148,7 @@ class RadioAudioHandler extends BaseAudioHandler
         id: mediaId,
         title: categoryData['title']!,
         artist: categoryData['description']!,
-        artUri: Uri.parse(
-            'android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+        artUri: _androidAutoBrowseIconUri,
         playable: false,
         extras: {
           'browsable': true,
@@ -1199,8 +1204,7 @@ class RadioAudioHandler extends BaseAudioHandler
           artist:
               stationCount > 0 ? '$stationCount radyo istasyonu' : 'Yakında...',
           album: categoryData['description'],
-          artUri: Uri.parse(
-              'android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+          artUri: _androidAutoBrowseIconUri,
           playable: false,
           extras: {
             'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
@@ -1224,6 +1228,14 @@ class RadioAudioHandler extends BaseAudioHandler
     // Kategori seviyesi - o kategorideki istasyonları döndür
     if (_categoryInfo.containsKey(parentMediaId)) {
       print("🚗🚗🚗 Returning stations for category: $parentMediaId");
+
+      // Soğuk başlatmada root görülüp kategori verisi henüz hazır değilse
+      // bir kez daha asset'ten kategorileri doldurmayı dene.
+      final hasNoCategoryData = (_radioCategories[parentMediaId]?.isEmpty ?? true);
+      final hasNoGlobalData = (_radioCategories['tum_radyolar']?.isEmpty ?? true);
+      if ((_radioCategories.isEmpty || hasNoGlobalData) && hasNoCategoryData) {
+        await _initializeDefaultCategories();
+      }
 
       final allStations = _radioCategories[parentMediaId] ?? [];
 
@@ -1267,8 +1279,7 @@ class RadioAudioHandler extends BaseAudioHandler
                 title: '❤️ Favori Yok',
                 artist: 'Uygulamada radyo favorileyin',
                 displaySubtitle: 'Diğer kategorilere göz atın',
-                artUri: Uri.parse(
-                    'android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+                artUri: _androidAutoBrowseIconUri,
                 playable: false,
                 extras: {'isEmpty': true},
               )
@@ -1280,8 +1291,7 @@ class RadioAudioHandler extends BaseAudioHandler
                 id: 'favorites_loading',
                 title: '⏳ Yükleniyor…',
                 artist: 'Lütfen uygulamayı açın, ardından geri dönün',
-                artUri: Uri.parse(
-                    'android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+                artUri: _androidAutoBrowseIconUri,
                 playable: false,
                 extras: {'isEmpty': true},
               )
@@ -1296,8 +1306,7 @@ class RadioAudioHandler extends BaseAudioHandler
             title: '📭 Radyo Bulunamadı',
             artist: '$categoryName kategorisinde henüz radyo yok',
             displaySubtitle: 'Diğer kategorilere göz atın',
-            artUri: Uri.parse(
-                'android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+            artUri: _androidAutoBrowseIconUri,
             playable: false,
             extras: {
               'android.media.browse.CONTENT_STYLE_SUPPORTED': true,
@@ -1392,7 +1401,7 @@ class RadioAudioHandler extends BaseAudioHandler
         streamUrl,
         mediaItem.title,
         mediaItem.artist ?? 'Radio',
-        mediaItem.artUri?.toString(),
+        mediaItem.extras?['logoUrl'] as String? ?? mediaItem.artUri?.toString(),
         stationId: mediaItem.id, // Use mediaItem.id as station ID
       );
 
@@ -1476,7 +1485,8 @@ class RadioAudioHandler extends BaseAudioHandler
           streamUrl,
           foundStation.title,
           foundStation.artist ?? 'Radio',
-          foundStation.artUri?.toString(),
+          foundStation.extras?['logoUrl'] as String? ??
+              foundStation.artUri?.toString(),
           stationId: foundStation.id, // Use station ID
         );
 
@@ -1503,8 +1513,7 @@ class RadioAudioHandler extends BaseAudioHandler
         title: mediaId.replaceAll('_', ' ').toUpperCase(),
         artist: 'Turkish Radio',
         album: 'Live Stream',
-        artUri: Uri.parse(
-            'android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher'),
+        artUri: _androidAutoBrowseIconUri,
         playable: true,
         duration: null, // Live stream
         extras: {
@@ -1635,6 +1644,10 @@ class RadioAudioHandler extends BaseAudioHandler
     if (normalizedArtUri.startsWith('file://')) {
       return Uri.parse(normalizedArtUri);
     }
+    if (normalizedArtUri.startsWith('content://') ||
+        normalizedArtUri.startsWith('android.resource://')) {
+      return Uri.parse(normalizedArtUri);
+    }
     if (normalizedArtUri.startsWith('assets/')) {
       final localAssetLogoPath = await _cacheAssetLogoToFile(normalizedArtUri);
       if (localAssetLogoPath != null) {
@@ -1663,7 +1676,9 @@ class RadioAudioHandler extends BaseAudioHandler
       if (_currentStationId == stationId) {
         final current = mediaItem.value;
         if (current != null) {
-          mediaItem.add(current.copyWith(artUri: upgraded));
+          mediaItem.add(current.copyWith(
+            artUri: _toAndroidAutoContentArtUri(title, upgraded),
+          ));
         }
       }
     } catch (e) {
@@ -1674,6 +1689,10 @@ class RadioAudioHandler extends BaseAudioHandler
   Future<Uri> _getResolvedLogoOrAvatarUri(String title, String? artUri) async {
     final normalizedArtUri = (artUri ?? '').trim();
     if (normalizedArtUri.startsWith('file://')) {
+      return Uri.parse(normalizedArtUri);
+    }
+    if (normalizedArtUri.startsWith('content://') ||
+        normalizedArtUri.startsWith('android.resource://')) {
       return Uri.parse(normalizedArtUri);
     }
     if (normalizedArtUri.startsWith('assets/')) {
@@ -1944,7 +1963,9 @@ class RadioAudioHandler extends BaseAudioHandler
             stationId: stationId,
             forceRefresh: true,
           );
-          mediaItem.add(current.copyWith(artUri: artwork));
+          mediaItem.add(current.copyWith(
+            artUri: _toAndroidAutoContentArtUri(current.title, artwork),
+          ));
           print('🖼️ Logo cache hit, updated artwork: $logoUrl');
         }
       }
@@ -1987,7 +2008,9 @@ class RadioAudioHandler extends BaseAudioHandler
               stationId: stationId,
               forceRefresh: true,
             );
-            mediaItem.add(current.copyWith(artUri: artwork));
+            mediaItem.add(current.copyWith(
+              artUri: _toAndroidAutoContentArtUri(current.title, artwork),
+            ));
             print('🖼️ Logo downloaded & artwork updated: $logoUrl');
           }
         }
@@ -2073,8 +2096,7 @@ class RadioAudioHandler extends BaseAudioHandler
     } catch (e) {
       print('❌ Arka plan resmi oluşturma hatası: $e');
       // Hata durumunda launcher icon'a geri dön
-      return Uri.parse(
-          'android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher');
+      return _androidAutoBrowseIconUri;
     }
   }
 
@@ -2296,24 +2318,29 @@ class RadioAudioHandler extends BaseAudioHandler
   /// Browse listesindeki bir istasyon için yerel file:// URI döndürür.
   /// HTTP URL'leri Android Auto yükleyemez → local dosya zorunlu.
   Uri _getLocalArtUriForBrowse(MediaItem station) {
-    final remoteUrl = station.artUri?.toString() ?? '';
-    // 1. İndirilen logo var mı?
-    if (remoteUrl.isNotEmpty &&
-        (remoteUrl.startsWith('http://') || remoteUrl.startsWith('https://')) &&
-        _logoFileCache.containsKey(remoteUrl)) {
+    final stationArtUri = station.artUri;
+    if (stationArtUri != null) {
+      if (stationArtUri.scheme == 'file' ||
+          stationArtUri.scheme == 'content' ||
+          stationArtUri.scheme == 'android.resource') {
+        return _toAndroidAutoContentArtUri(station.title, stationArtUri);
+      }
+    }
+
+    final logoUrl = station.extras?['logoUrl'] as String? ?? '';
+    if (logoUrl.isNotEmpty && _logoFileCache.containsKey(logoUrl)) {
       return _toAndroidAutoContentArtUri(
         station.title,
-        Uri.file(_logoFileCache[remoteUrl]!),
+        Uri.file(_logoFileCache[logoUrl]!),
       );
     }
-    // 2. Zaten yerel dosya ise kullan
-    if (remoteUrl.startsWith('file://')) {
-      return _toAndroidAutoContentArtUri(station.title, station.artUri!);
-    }
-    // 3. Harf avatarı
-    final rawFirst = station.title.trim().isNotEmpty
-        ? station.title.trim()[0].toUpperCase()
-        : 'R';
+
+    return _getLetterAvatarContentUriForTitle(station.title);
+  }
+
+  Uri _getLetterAvatarContentUriForTitle(String title) {
+    final rawFirst =
+        title.trim().isNotEmpty ? title.trim()[0].toUpperCase() : 'R';
     final letter = RegExp(r'^[A-Z]$').hasMatch(rawFirst) ? rawFirst : '#';
     return Uri.parse(
       'content://com.turkradyo.bsr.de.turkradyo.artwork/avatar/$letter',
@@ -2365,9 +2392,7 @@ class RadioAudioHandler extends BaseAudioHandler
       return Uri.file(path);
     }
 
-    return Uri.parse(
-      'android.resource://com.turkradyo.bsr.de.turkradyo/mipmap/ic_launcher',
-    );
+    return _androidAutoBrowseIconUri;
   }
 
   /// Verilen harf için 256×256 renkli daire + beyaz harf PNG baytları üretir.
