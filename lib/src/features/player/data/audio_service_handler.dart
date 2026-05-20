@@ -172,23 +172,29 @@ class RadioAudioHandler extends BaseAudioHandler
   void _updateFavoritesCategory() {
     if (_radioCategories.isEmpty) return;
 
-    // Tüm radyolardan favorileri filtrele
+    final sourceStations = _radioCategories['tum_radyolar'] ??
+        _radioCategories.values
+            .expand((stations) => stations)
+            .where((station) => station.id.isNotEmpty)
+            .toList();
     final favoriteStations = <MediaItem>[];
+    final seenIds = <String>{};
 
-    for (var categoryStations in _radioCategories.values) {
-      for (var station in categoryStations) {
-        if (_favoriteIds.contains(station.id)) {
-          // Favori işareti ekle
-          final updatedStation = station.copyWith(
-            artist: '❤️ ${station.artist}',
-            extras: {
-              ...?station.extras,
-              'isFavorite': true,
-            },
-          );
-          favoriteStations.add(updatedStation);
-        }
+    for (final station in sourceStations) {
+      if (!_favoriteIds.contains(station.id) || !seenIds.add(station.id)) {
+        continue;
       }
+
+      final baseArtist = (station.artist ?? '').replaceFirst('❤️ ', '');
+      favoriteStations.add(
+        station.copyWith(
+          artist: baseArtist.isEmpty ? '❤️ Favori' : '❤️ $baseArtist',
+          extras: {
+            ...?station.extras,
+            'isFavorite': true,
+          },
+        ),
+      );
     }
 
     _radioCategories['favoriler'] = favoriteStations;
@@ -276,9 +282,48 @@ class RadioAudioHandler extends BaseAudioHandler
 
       // Favoriler kategorisini güncelle
       _updateFavoritesCategory();
+      _syncFavoriteState(stationId);
     } catch (e) {
       print('❌ Error toggling favorite: $e');
     }
+  }
+
+  void _syncFavoriteState(String stationId) {
+    final isFavorite = _favoriteIds.contains(stationId);
+
+    final current = mediaItem.value;
+    if (current != null && current.id == stationId) {
+      final currentArtist = (current.artist ?? '').replaceFirst('❤️ ', '');
+      mediaItem.add(
+        current.copyWith(
+          rating: Rating.newHeartRating(isFavorite),
+          artist: isFavorite
+              ? (currentArtist.isEmpty ? '❤️ Favori' : '❤️ $currentArtist')
+              : currentArtist,
+          extras: {
+            ...?current.extras,
+            'isFavorite': isFavorite,
+          },
+        ),
+      );
+    }
+
+    for (int i = 0; i < _recentlyPlayed.length; i++) {
+      final item = _recentlyPlayed[i];
+      if (item.id != stationId) continue;
+      final baseArtist = (item.artist ?? '').replaceFirst('❤️ ', '');
+      _recentlyPlayed[i] = item.copyWith(
+        rating: Rating.newHeartRating(isFavorite),
+        artist: isFavorite
+            ? (baseArtist.isEmpty ? '❤️ Favori' : '❤️ $baseArtist')
+            : baseArtist,
+        extras: {
+          ...?item.extras,
+          'isFavorite': isFavorite,
+        },
+      );
+    }
+    _radioCategories['son_dinlenenler'] = List.from(_recentlyPlayed);
   }
 
   // Kategori cache'sini JSON asset'inden yükle (Android Auto soğuk başlatma için)
