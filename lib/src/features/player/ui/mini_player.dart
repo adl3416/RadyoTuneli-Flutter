@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../../favorites/data/favorites_provider.dart';
 import '../../stations/ui/widgets/radio_logo.dart';
 import '../data/player_provider.dart';
@@ -19,7 +20,7 @@ class MiniPlayer extends ConsumerWidget {
 
     if (playerState.currentStation == null) {
       return Container(
-        height: 72 + bottomInset,
+        height: 74 + bottomInset,
         decoration: palette.containerDecoration,
         child: Padding(
           padding: EdgeInsets.only(bottom: bottomInset),
@@ -49,25 +50,43 @@ class MiniPlayer extends ConsumerWidget {
     final station = playerState.currentStation!;
 
     return Container(
-      height: 90 + bottomInset,
+      height: 96 + bottomInset,
       decoration: palette.containerDecoration,
-      child: Material(
+        child: Material(
         color: Colors.transparent,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.zero,
         child: InkWell(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.zero,
           onTap: () => _showFullScreenPlayer(context),
           child: Padding(
-            padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + bottomInset),
+            padding: EdgeInsets.fromLTRB(14, 12, 14, 12 + bottomInset),
             child: Row(
               children: [
-                RadioLogo(
-                  radioName: station.name,
-                  logoUrl: station.logoUrl,
-                  size: 58,
-                  showBorder: true,
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF7D56FF), Color(0xFFBB86FF)],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF7D56FF).withValues(alpha: 0.24),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: RadioLogo(
+                    radioName: station.name,
+                    logoUrl: station.logoUrl,
+                    size: 50,
+                    showBorder: false,
+                  ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -79,12 +98,12 @@ class MiniPlayer extends ConsumerWidget {
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   color: palette.text,
                                   fontWeight: FontWeight.w700,
-                                  fontSize: 15,
+                                   fontSize: 15.5,
                                 ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 3),
                       Text(
                         playerState.isPlaying ? 'Çalıyor' : 'Duraklatıldı',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -111,12 +130,15 @@ class MiniPlayer extends ConsumerWidget {
                           () => ref.invalidate(favoritesProvider),
                         );
                       },
+                      style: IconButton.styleFrom(
+                        fixedSize: const Size(42, 42),
+                        backgroundColor: palette.secondaryButton,
+                        side: BorderSide(color: palette.secondaryBorder),
+                      ),
                       icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite
-                            ? const Color(0xFFFB7185)
-                            : palette.muted,
-                        size: 26,
+                        isFavorite ? Icons.favorite : Icons.favorite_outline,
+                        color: isFavorite ? AppTheme.gradientPink : palette.text,
+                        size: 20,
                       ),
                     );
                   },
@@ -124,32 +146,32 @@ class MiniPlayer extends ConsumerWidget {
                 const SizedBox(width: 8),
                 if (playerState.isLoading)
                   Container(
-                    width: 54,
-                    height: 54,
+                    width: 46,
+                    height: 46,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(27),
+                      color: palette.secondaryButton,
+                      borderRadius: BorderRadius.circular(23),
                       border: Border.all(
-                        color: palette.accent.withValues(alpha: 0.24),
+                        color: palette.secondaryBorder,
                         width: 1,
                       ),
                     ),
                     child: Center(
-                      child: _NeonSpinner(size: 36, color: palette.accent),
+                      child: _NeonSpinner(size: 30, color: palette.accent),
                     ),
                   )
                 else
                   Container(
-                    width: 54,
-                    height: 54,
+                    width: 46,
+                    height: 46,
                     decoration: BoxDecoration(
                       color: palette.playButton,
-                      borderRadius: BorderRadius.circular(27),
+                      borderRadius: BorderRadius.circular(23),
                       boxShadow: [
                         BoxShadow(
                           color: palette.playButton.withValues(alpha: 0.34),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+                          blurRadius: 16,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
@@ -166,7 +188,7 @@ class MiniPlayer extends ConsumerWidget {
                             ? Icons.pause_rounded
                             : Icons.play_arrow_rounded,
                         color: palette.playIcon,
-                        size: 30,
+                        size: 26,
                       ),
                       padding: EdgeInsets.zero,
                     ),
@@ -214,6 +236,8 @@ class _PlayerPalette {
   final Color accent;
   final Color playButton;
   final Color playIcon;
+  final Color secondaryButton;
+  final Color secondaryBorder;
 
   const _PlayerPalette({
     required this.background,
@@ -224,33 +248,31 @@ class _PlayerPalette {
     required this.accent,
     required this.playButton,
     required this.playIcon,
+    required this.secondaryButton,
+    required this.secondaryBorder,
   });
 
   factory _PlayerPalette.fromTheme(ThemeData theme) {
-    final appBarBg =
-        theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary;
-    final appBarFg =
-        theme.appBarTheme.foregroundColor ?? theme.colorScheme.onPrimary;
     final background = theme.brightness == Brightness.dark
-        ? Color.lerp(appBarBg, Colors.black, 0.35)!
-        : Color.lerp(appBarBg, Colors.black, 0.10)!;
+        ? const Color(0xFF1A214F)
+        : const Color(0xFF2D235F);
     final backgroundSoft = theme.brightness == Brightness.dark
-        ? Color.lerp(appBarBg, Colors.black, 0.18)!
-        : Color.lerp(appBarBg, Colors.white, 0.08)!;
+        ? const Color(0xFF11173C)
+        : const Color(0xFF1F1944);
+    final text = Colors.white;
+    final accent = const Color(0xFF98B5FF);
 
     return _PlayerPalette(
       background: background,
       backgroundSoft: backgroundSoft,
-      border: appBarFg.withValues(
-        alpha: theme.brightness == Brightness.dark ? 0.18 : 0.16,
-      ),
-      text: appBarFg,
-      muted: appBarFg.withValues(
-        alpha: theme.brightness == Brightness.dark ? 0.82 : 0.88,
-      ),
-      accent: appBarFg,
-      playButton: appBarFg.withValues(alpha: 0.92),
-      playIcon: background,
+      border: const Color(0x66A78BFF),
+      text: text,
+      muted: const Color(0xFFD7CBFF),
+      accent: accent,
+      playButton: AppTheme.orange400,
+      playIcon: Colors.white,
+      secondaryButton: Colors.white.withValues(alpha: 0.10),
+      secondaryBorder: Colors.white.withValues(alpha: 0.14),
     );
   }
 
@@ -260,13 +282,13 @@ class _PlayerPalette {
           end: Alignment.bottomRight,
           colors: [background, backgroundSoft],
         ),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        border: Border(top: BorderSide(color: border, width: 1.2)),
+        borderRadius: BorderRadius.zero,
+        border: Border(top: BorderSide(color: border, width: 1.1)),
         boxShadow: [
           BoxShadow(
-            color: background.withValues(alpha: 0.24),
-            blurRadius: 18,
-            offset: const Offset(0, -6),
+            color: const Color(0xAA1A0F47),
+            blurRadius: 26,
+            offset: const Offset(0, -8),
           ),
         ],
       );

@@ -7,19 +7,19 @@ import '../../features/stations/ui/widgets/radio_logo.dart';
 class AppTheme {
   // Ana Renk Paleti
   // Gradient Renkler (RadioStationCard için)
-  static const Color gradientBlue = Color(0xFF1B3A6B); // Koyu lacivert mavi
-  static const Color gradientPurple = Color(0xFF0D2644); // Derin koyu lacivert
-  static const Color gradientPink = Color(0xFFF97316); // Canlı turuncu (vurgu)
+  static const Color gradientBlue = Color(0xFF3B63FF); // Afişteki elektrik mavi
+  static const Color gradientPurple = Color(0xFF8A5CFF); // Ana mor
+  static const Color gradientPink = Color(0xFFF47DE8); // Neon pembe
 
   // Header ve Card için Ana Renk
-  static const Color headerPurple = Color(0xFF0D2647); // Splash ana lacivert
-  static const Color cardPurple = Color(0xFF0D2647); // Splash ana lacivert
-  static const Color cardPurpleDark = Color(0xFF1A3A6B); // Splash açık lacivert
+  static const Color headerPurple = Color(0xFF7B56F5); // Onboarding ana moru
+  static const Color cardPurple = Color(0xFF6D47E6); // Kart moru
+  static const Color cardPurpleDark = Color(0xFF5634C7); // Kart koyu moru
 
   // Orange Renk Ailesi
-  static const Color orange400 = Color(0xFFFB923C); // Orange-400
-  static const Color yellowOrange = Color(0xFFFCD34D); // Sarı-turuncu
-  static const Color orange100 = Color(0xFFFEF3C7); // Orange-100
+  static const Color orange400 = Color(0xFFFF982E); // CTA turuncusu
+  static const Color yellowOrange = Color(0xFFFFC55D); // Sicak altin
+  static const Color orange100 = Color(0xFFFFE3BF); // Soluk turuncu yuzey
 
   // Gri Renk Ailesi
   static const Color white = Color(0xFFFFFFFF); // Beyaz
@@ -29,42 +29,42 @@ class AppTheme {
   static const Color gray900 = Color(0xFF111827); // Gray-900
 
   // Light Theme Renkleri
-  static const Color lightTint = Color(0xFF1A3A6B); // Splash açık lacivert
-  static const Color lightBackground = Color(0xFFEFF6FF); // Çok açık lacivert tonu
-  static const Color lightText = Color(0xFF0D2647); // Splash ana lacivert metin
+  static const Color lightTint = Color(0xFFB497FF); // Acik mor vurgu
+  static const Color lightBackground = Color(0xFF8A5CF5); // Ekrandaki ana mor
+  static const Color lightText = Color(0xFFFFFFFF); // Acik tema metni
 
   // Dark Theme Renkleri - Derin koyu lacivert konsept
   static const Color darkPrimary =
-      Color(0xFF60A5FA); // Blue-400 - parlak mavi
+      Color(0xFF8A5CFF); // Ana neon mor
   static const Color darkSecondary =
-      Color(0xFFFBBF24); // Amber-400 - sıcak altın kontrast
-  static const Color darkBackground = Color(0xFF000000); // Tam siyah
-  static const Color darkSurface = Color(0xFF121212); // Çok koyu gri
-  static const Color darkSurfaceVariant = Color(0xFF1E1E1E); // Koyu gri variant
+      Color(0xFFF47DE8); // Neon pembe
+  static const Color darkBackground = Color(0xFF1730A0); // Afişteki royal mavi
+  static const Color darkSurface = Color(0xFF5A35D8); // Mor kart zemini
+  static const Color darkSurfaceVariant = Color(0xFF7248EA); // Parlak kart yüzeyi
   static const Color darkText = Color(0xFFFFFFFF); // Tam beyaz
-  static const Color darkTextSecondary = Color(0xFFCCCCCC); // Açık gri
-  static const Color darkBorder = Color(0xFF333333); // Kenarlık rengi
-  static const Color darkAccent = Color(0xFFFBBF24); // Altın accent
+  static const Color darkTextSecondary = Color(0xFFD9CCFF); // Yumusanmis lavanta
+  static const Color darkBorder = Color(0xFFA58CFF); // Neon kenarlik
+  static const Color darkAccent = Color(0xFFFF982E); // Turuncu accent
 
   // Splash & Icon
-  static const Color splashColor = Color(0xFF1D4ED8); // Ana tema elektrik mavi
+  static const Color splashColor = Color(0xFF3B63FF); // Ana tema elektrik mavi
 
   // Gradient tanımlamaları
   static const LinearGradient radioCardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF1D4ED8), Color(0xFF1E3A8A), Color(0xFF0D2644)],
+    colors: [Color(0xFF2B5AFF), Color(0xFF7A4FF6), Color(0xFFF47DE8)],
   );
 
   // Dark mode için derin lacivert gradient
   static const LinearGradient darkCardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF0D2644), Color(0xFF1E3A8A), Color(0xFF1D4ED8)],
+    colors: [Color(0xFF1430A2), Color(0xFF4E34C7), Color(0xFF7A4FF6)],
   );
 
   static ThemeData get lightTheme {
-    final textTheme = GoogleFonts.interTextTheme().apply(
+    final textTheme = GoogleFonts.plusJakartaSansTextTheme().apply(
       bodyColor: lightText,
       displayColor: lightText,
     );
@@ -72,91 +72,129 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorScheme: ColorScheme.light(
-        primary: const Color(0xFF0D2647),   // Splash ana lacivert
-        secondary: const Color(0xFF1A3A6B), // Splash açık lacivert
-        surface: white,
+      colorScheme: const ColorScheme.light(
+        primary: Color(0xFF7B56F5),
+        secondary: Color(0xFFF47DE8),
+        tertiary: Color(0xFFFF982E),
+        surface: Color(0xFF6D47E6),
         onPrimary: white,
         onSecondary: white,
-        onSurface: const Color(0xFF0D2647),
-        error: const Color(0xFFDC2626),
-        background: const Color(0xFFEFF6FF), // Çok açık lacivert tonu
-        onBackground: const Color(0xFF0D2647),
-        outline: const Color(0xFFBFD0F0),
-        surfaceVariant: const Color(0xFFDBE8FF),
-        onSurfaceVariant: const Color(0xFF1A3A6B),
+        onTertiary: white,
+        onSurface: white,
+        error: Color(0xFFDC2626),
+        background: Color(0xFF8A5CF5),
+        onBackground: white,
+        outline: Color(0xFFB89BFF),
+        surfaceVariant: Color(0xFF7A54F0),
+        onSurfaceVariant: Color(0xFFF3ECFF),
       ),
-      scaffoldBackgroundColor: const Color(0xFFEFF6FF),
+      scaffoldBackgroundColor: lightBackground,
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: const Color(0xFF0D2647), // Splash ana lacivert
+        backgroundColor: headerPurple,
         foregroundColor: white,
         elevation: 0,
         centerTitle: true,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.transparent,
         titleTextStyle: textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
           color: white,
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: const Color(0xFF1A3A6B), // Splash açık lacivert
-        unselectedItemColor: const Color(0xFF64748B),
-        backgroundColor: white,
+        selectedItemColor: white,
+        unselectedItemColor: const Color(0xFFD8C9FF),
+        backgroundColor: cardPurpleDark,
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 18,
+        selectedLabelStyle: textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0D2647), // Splash ana lacivert
+          backgroundColor: orange400,
           foregroundColor: white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
-          foregroundColor: const Color(0xFF1A3A6B),
+          foregroundColor: white,
+          backgroundColor: const Color(0x1FFFFFFF),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFFDBE8FF),
+        fillColor: const Color(0x336D47E6),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Color(0xFFB89BFF)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Color(0xFFB89BFF)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF1A3A6B)),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Color(0xFFF47DE8), width: 1.8),
         ),
-        hintStyle: const TextStyle(color: Color(0xFF64748B)),
+        hintStyle: const TextStyle(color: Color(0xFFE7DDFF)),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       cardTheme: CardThemeData(
-        color: white,
-        elevation: 2,
+        color: cardPurple,
+        elevation: 0,
+        shadowColor: const Color(0x5A4A28C8),
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Color(0xFFB89BFF)),
         ),
       ),
-      listTileTheme: const ListTileThemeData(
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      listTileTheme: ListTileThemeData(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        textColor: white,
+        iconColor: white,
+        tileColor: cardPurple,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
       tabBarTheme: TabBarThemeData(
-        labelColor: const Color(0xFF0D2647), // Seçili tab = Splash lacivert
-        unselectedLabelColor: gray500,
-        indicatorColor: const Color(0xFF0D2647),
+        labelColor: white,
+        unselectedLabelColor: const Color(0xFFD8C9FF),
+        indicatorColor: gradientPink,
         indicator: const UnderlineTabIndicator(
-          borderSide: BorderSide(color: Color(0xFF0D2647), width: 3),
+          borderSide: BorderSide(color: Color(0xFFF47DE8), width: 3),
         ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: const Color(0x336D47E6),
+        selectedColor: const Color(0xCCFFFFFF),
+        secondarySelectedColor: const Color(0xCCFFFFFF),
+        side: const BorderSide(color: Color(0xFFB89BFF)),
+        labelStyle:
+            (textTheme.labelMedium ?? const TextStyle()).copyWith(color: white),
+        secondaryLabelStyle:
+            (textTheme.labelMedium ?? const TextStyle()).copyWith(
+              color: headerPurple,
+            ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: Color(0xFFFF962E),
+        foregroundColor: white,
       ),
     );
   }
 
   static ThemeData get darkTheme {
-    final textTheme = GoogleFonts.interTextTheme().apply(
+    final textTheme = GoogleFonts.plusJakartaSansTextTheme().apply(
       bodyColor: darkText,
       displayColor: darkText,
     );
@@ -164,21 +202,23 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorScheme: ColorScheme.dark(
-        primary: const Color(0xFF60A5FA),    // Blue-400 - parlak mavi
-        secondary: const Color(0xFF7BAEE8),  // Splash açık lacivert aksan
-        surface: const Color(0xFF0D2647),    // Splash ana lacivert
-        onPrimary: const Color(0xFF071228),
-        onSecondary: const Color(0xFF071228),
+      colorScheme: const ColorScheme.dark(
+        primary: Color(0xFF3B63FF),
+        secondary: Color(0xFFF47DE8),
+        tertiary: Color(0xFFFF982E),
+        surface: Color(0xFF5A35D8),
+        onPrimary: white,
+        onSecondary: white,
+        onTertiary: white,
         onSurface: darkText,
-        error: const Color(0xFFF87171),      // Red-400
-        background: const Color(0xFF071228), // Splash en koyu
+        error: Color(0xFFF87171),
+        background: Color(0xFF1730A0),
         onBackground: darkText,
-        outline: const Color(0xFF1A3A6B),    // Splash açık lacivert
-        surfaceVariant: const Color(0xFF1A3A6B), // Splash açık lacivert
-        onSurfaceVariant: const Color(0xFF94A3B8),
+        outline: Color(0xFFA58CFF),
+        surfaceVariant: Color(0xFF7248EA),
+        onSurfaceVariant: Color(0xFFD9CCFF),
       ),
-      scaffoldBackgroundColor: const Color(0xFF071228),
+      scaffoldBackgroundColor: darkBackground,
       textTheme: textTheme.copyWith(
         headlineLarge: textTheme.headlineLarge?.copyWith(color: darkText),
         headlineMedium: textTheme.headlineMedium?.copyWith(color: darkText),
@@ -194,28 +234,28 @@ class AppTheme {
         labelSmall: textTheme.labelSmall?.copyWith(color: darkTextSecondary),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: const Color(0xFF071228), // Splash en koyu
+        backgroundColor: headerPurple,
         foregroundColor: darkText,
         elevation: 0,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
         titleTextStyle: textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
           color: darkText,
           fontSize: 20,
         ),
-        iconTheme: IconThemeData(color: darkText), // İkonlar beyaz
+        iconTheme: const IconThemeData(color: darkText),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: darkPrimary, // Parlak mavi seçili
+        selectedItemColor: darkSecondary,
         unselectedItemColor: darkTextSecondary,
-        backgroundColor: const Color(0xFF071228), // Splash en koyu
+        backgroundColor: const Color(0xFF1E2766),
         type: BottomNavigationBarType.fixed,
         elevation: 0,
-        selectedLabelStyle: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: darkPrimary,
+        selectedLabelStyle: textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: gradientBlue,
         ),
         unselectedLabelStyle: TextStyle(
           color: darkTextSecondary,
@@ -223,34 +263,35 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: darkPrimary, // Mavi buton
+          backgroundColor: orange400,
           foregroundColor: white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
-          elevation: 4,
-          shadowColor: darkPrimary.withOpacity(0.4),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
-          foregroundColor: darkText, // İkonlar beyaz
+          foregroundColor: darkText,
+          backgroundColor: const Color(0x1FFFFFFF),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF0D2647), // Splash ana lacivert
+        fillColor: const Color(0xFF6A44E5),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF1A3A6B)),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Color(0xFF4E46AE)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF1A3A6B)),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Color(0xFF4E46AE)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: darkPrimary, width: 2),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: darkSecondary, width: 1.6),
         ),
         hintStyle: TextStyle(color: darkTextSecondary),
         labelStyle: TextStyle(color: darkTextSecondary),
@@ -258,14 +299,14 @@ class AppTheme {
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       cardTheme: CardThemeData(
-        color: const Color(0xFF0D2647), // Splash ana lacivert
-        elevation: 4,
+        color: const Color(0xFF5A35D8),
+        elevation: 0,
         surfaceTintColor: Colors.transparent,
-        shadowColor: Colors.black.withOpacity(0.5),
+        shadowColor: const Color(0x6630178A),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           side: const BorderSide(
-            color: Color(0xFF1A3A6B), // Splash açık lacivert kenarlık
+            color: Color(0xFF4E46AE),
             width: 1,
           ),
         ),
@@ -274,7 +315,7 @@ class AppTheme {
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         textColor: darkText,
         iconColor: darkText,
-        tileColor: Color(0xFF0D2647),
+        tileColor: Color(0xFF5A35D8),
       ),
       dividerTheme: DividerThemeData(
         color: darkBorder,
@@ -283,19 +324,19 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         thumbColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.selected)) {
-            return darkPrimary;
+            return darkSecondary;
           }
           return darkTextSecondary;
         }),
         trackColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.selected)) {
-            return darkPrimary.withOpacity(0.3);
+            return darkSecondary.withOpacity(0.35);
           }
           return darkBorder;
         }),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: const Color(0xFF0D2647), // Splash ana lacivert
+        backgroundColor: const Color(0xFF18165B),
         surfaceTintColor: Colors.transparent,
         titleTextStyle: textTheme.titleLarge?.copyWith(color: darkText),
         contentTextStyle: textTheme.bodyMedium?.copyWith(color: darkText),
@@ -304,24 +345,42 @@ class AppTheme {
         ),
       ),
       bottomSheetTheme: BottomSheetThemeData(
-        backgroundColor: const Color(0xFF0D2647), // Splash ana lacivert
+        backgroundColor: const Color(0xFF18165B),
         surfaceTintColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
       ),
       tabBarTheme: TabBarThemeData(
-        labelColor: darkPrimary, // Seçili tab = Parlak mavi
-        unselectedLabelColor: darkTextSecondary, // Seçili olmayan = Açık gri
-        indicatorColor: darkPrimary, // Alt çizgi = Parlak mavi
+        labelColor: gradientBlue,
+        unselectedLabelColor: darkTextSecondary,
+        indicatorColor: gradientPink,
         indicator: const UnderlineTabIndicator(
-          borderSide: BorderSide(color: darkPrimary, width: 3),
+          borderSide: BorderSide(color: Color(0xFFF47DE8), width: 3),
         ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: const Color(0xFF6A44E5),
+        selectedColor: const Color(0xCCFFFFFF),
+        secondarySelectedColor: const Color(0xCCFFFFFF),
+        side: const BorderSide(color: Color(0xFFA58CFF)),
+        labelStyle:
+            (textTheme.labelMedium ?? const TextStyle()).copyWith(color: darkText),
+        secondaryLabelStyle:
+            (textTheme.labelMedium ?? const TextStyle()).copyWith(
+              color: darkBackground,
+            ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: Color(0xFFFF962E),
+        foregroundColor: white,
       ),
     );
   }
 
-  // 🟡 KANARYA TEMASI - Sarı (#FFD700) + Lacivert (#001F3F)
+
+  // ðŸŸ¡ KANARYA TEMASI - Sarı (#FFD700) + Lacivert (#001F3F)
   static const Color kanaryaPrimary = Color(0xFFFFD700); // Sarı
   static const Color kanaryaSecondary = Color(0xFF001F3F); // Lacivert
   static const Color kanaryaLight = Color(0xFFFFF8DC); // Açık sarı arka plan
@@ -350,7 +409,7 @@ class AppTheme {
         surfaceVariant: darkSurfaceVariant,
         onSurfaceVariant: darkTextSecondary,
       ),
-      scaffoldBackgroundColor: darkBackground, // ✅ Siyah arka plan
+      scaffoldBackgroundColor: darkBackground, // âœ… Siyah arka plan
       textTheme: textTheme.copyWith(
         headlineLarge: textTheme.headlineLarge?.copyWith(color: darkText),
         headlineMedium: textTheme.headlineMedium?.copyWith(color: darkText),
@@ -366,8 +425,8 @@ class AppTheme {
         labelSmall: textTheme.labelSmall?.copyWith(color: darkTextSecondary),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: kanaryaSecondary, // ✅ AppBar = Lacivert (#001F3F)
-        foregroundColor: kanaryaPrimary, // ✅ Yazı/İkonlar = Sarı (#FFD700)
+        backgroundColor: kanaryaSecondary, // âœ… AppBar = Lacivert (#001F3F)
+        foregroundColor: kanaryaPrimary, // âœ… Yazı/İkonlar = Sarı (#FFD700)
         elevation: 4,
         centerTitle: true,
         surfaceTintColor: kanaryaSecondary, // Material 3 için gerekli
@@ -382,9 +441,9 @@ class AppTheme {
             IconThemeData(color: kanaryaPrimary), // Action ikonlar sarı
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: kanaryaPrimary, // ✅ Seçili = Sarı (#FFD700)
+        selectedItemColor: kanaryaPrimary, // âœ… Seçili = Sarı (#FFD700)
         unselectedItemColor: darkTextSecondary, // Seçili olmayan gri
-        backgroundColor: kanaryaSecondary, // ✅ Arka plan = Lacivert (#001F3F)
+        backgroundColor: kanaryaSecondary, // âœ… Arka plan = Lacivert (#001F3F)
         type: BottomNavigationBarType.fixed,
         elevation: 12,
         selectedLabelStyle: TextStyle(
@@ -508,7 +567,7 @@ class AppTheme {
         onSecondary: kanaryaPrimary,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: kanaryaSecondary, // 🟡 AppBar = Lacivert
+        backgroundColor: kanaryaSecondary, // ðŸŸ¡ AppBar = Lacivert
         foregroundColor: kanaryaPrimary, // Yazılar = Sarı
         elevation: 0,
         centerTitle: true,
@@ -525,7 +584,7 @@ class AppTheme {
     );
   }
 
-  // 🦁 ASLAN TEMASI - Sarı + Arı Kırmızı (orijinal renkler)
+  // ðŸ¦ ASLAN TEMASI - Sarı + Arı Kırmızı (orijinal renkler)
   static const Color aslanYellow = Color(0xFFFDB813); // Orijinal amber sarı
   // Arı kırmızı - orijinal koyu kırmızı
   static const Color aslanRed = Color(0xFFC8102E);
@@ -553,7 +612,7 @@ class AppTheme {
         surfaceVariant: darkSurfaceVariant,
         onSurfaceVariant: darkTextSecondary,
       ),
-      scaffoldBackgroundColor: darkBackground, // ✅ Siyah arka plan
+      scaffoldBackgroundColor: darkBackground, // âœ… Siyah arka plan
       textTheme: textTheme.copyWith(
         headlineLarge: textTheme.headlineLarge?.copyWith(color: darkText),
         headlineMedium: textTheme.headlineMedium?.copyWith(color: darkText),
@@ -569,8 +628,8 @@ class AppTheme {
         labelSmall: textTheme.labelSmall?.copyWith(color: darkTextSecondary),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: aslanRed, // ✅ AppBar = Kırmızı (#DC143C)
-        foregroundColor: aslanYellow, // ✅ Yazı/İkonlar = Sarı (#FFD700)
+        backgroundColor: aslanRed, // âœ… AppBar = Kırmızı (#DC143C)
+        foregroundColor: aslanYellow, // âœ… Yazı/İkonlar = Sarı (#FFD700)
         elevation: 4,
         centerTitle: true,
         surfaceTintColor: aslanRed, // Material 3 uyumlu
@@ -584,9 +643,9 @@ class AppTheme {
         actionsIconTheme: IconThemeData(color: aslanYellow),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: aslanYellow, // ✅ Seçili = Sarı (#FFD700)
+        selectedItemColor: aslanYellow, // âœ… Seçili = Sarı (#FFD700)
         unselectedItemColor: darkTextSecondary, // Seçili olmayan gri
-        backgroundColor: aslanRed, // ✅ Arka plan = Kırmızı (#DC143C)
+        backgroundColor: aslanRed, // âœ… Arka plan = Kırmızı (#DC143C)
         type: BottomNavigationBarType.fixed,
         elevation: 12,
         selectedLabelStyle: TextStyle(
@@ -718,7 +777,7 @@ class AppTheme {
     );
   }
 
-  // 🌊 KARADENIZ FIRTINASI TEMASI - Bordo (#800000) + Mavi (#4169E1)
+  // ðŸŒŠ KARADENIZ FIRTINASI TEMASI - Bordo (#800000) + Mavi (#4169E1)
   static const Color karadenizBordo = Color(0xFF800000);
   static const Color karadenizMavi = Color(0xFF1E90FF);
 
@@ -742,7 +801,7 @@ class AppTheme {
       scaffoldBackgroundColor: darkBackground,
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: karadenizBordo, // 🌊 AppBar = Bordo
+        backgroundColor: karadenizBordo, // ðŸŒŠ AppBar = Bordo
         foregroundColor: karadenizMavi, // Yazılar = Mavi
         elevation: 4,
         centerTitle: true,
@@ -848,7 +907,7 @@ class AppTheme {
     );
   }
 
-  // 🦅 KARTAL TEMASI - Siyah (#000000) + Beyaz (#FFFFFF)
+  // ðŸ¦… KARTAL TEMASI - Siyah (#000000) + Beyaz (#FFFFFF)
   static const Color kartalBlack = Color(0xFF000000);
   static const Color kartalWhite = Color(0xFFFFFFFF);
 
@@ -1024,7 +1083,7 @@ class AppTheme {
     );
   }
 
-  // 🐊 TIMSAH TEMASI - Yeşil (#228B22) + Beyaz (#FFFFFF)
+  // ðŸŠ TIMSAH TEMASI - Yeşil (#228B22) + Beyaz (#FFFFFF)
   static const Color timsahGreen = Color(0xFF228B22);
   static const Color timsahWhite = Color(0xFFFFFFFF);
 
@@ -1048,7 +1107,7 @@ class AppTheme {
       scaffoldBackgroundColor: darkBackground,
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: timsahGreen, // 🐊 AppBar = Yeşil
+        backgroundColor: timsahGreen, // ðŸŠ AppBar = Yeşil
         foregroundColor: timsahWhite, // Yazılar = Beyaz
         elevation: 4,
         centerTitle: true,
@@ -1154,7 +1213,7 @@ class AppTheme {
     );
   }
 
-  // ⬜ SADE TEMASI - Koyu Gri (#3D3D3D) + Beyaz (#FFFFFF)
+  // â¬œ SADE TEMASI - Koyu Gri (#3D3D3D) + Beyaz (#FFFFFF)
   static const Color sadeDarkGrey = Color(0xFF3D3D3D);
   static const Color sadeWhite = Color(0xFFFFFFFF);
   static const Color sadeLightGrey = Color(0xFFF0F0F0); // Zebra satır rengi

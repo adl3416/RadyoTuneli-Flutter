@@ -12,7 +12,7 @@ class OnboardingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IntroductionScreen(
-        globalBackgroundColor: AppTheme.headerPurple,
+        globalBackgroundColor: AppTheme.lightBackground,
         pages: _buildPages(context),
         onDone: () => _onIntroEnd(context),
         onSkip: () => _onIntroEnd(context),
@@ -27,8 +27,9 @@ class OnboardingScreen extends StatelessWidget {
         ),
         next: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(25),
+              color: Colors.white.withOpacity(0.16),
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(color: Colors.white.withOpacity(0.16)),
           ),
           child: const Icon(
             Icons.arrow_forward,
@@ -68,7 +69,7 @@ class OnboardingScreen extends StatelessWidget {
           ),
         ),
         dotsContainerDecorator: ShapeDecoration(
-          color: Colors.black.withOpacity(0.2),
+          color: AppTheme.cardPurpleDark.withOpacity(0.42),
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
           ),
@@ -167,7 +168,7 @@ class OnboardingScreen extends StatelessWidget {
         height: 1.4,
       ),
       imagePadding: const EdgeInsets.only(top: 60),
-      pageColor: AppTheme.headerPurple,
+      pageColor: AppTheme.lightBackground,
       contentMargin: const EdgeInsets.symmetric(horizontal: 16),
       titlePadding: const EdgeInsets.only(top: 40, bottom: 16),
       bodyPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -200,16 +201,19 @@ class OnboardingScreen extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.white.withOpacity(0.1),
-            Colors.white.withOpacity(0.05),
+            AppTheme.cardPurpleDark.withOpacity(0.72),
+            AppTheme.cardPurple.withOpacity(0.38),
           ],
         ),
         borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.08),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: AppTheme.cardPurpleDark.withOpacity(0.34),
+            blurRadius: 28,
+            offset: const Offset(0, 14),
           ),
         ],
       ),

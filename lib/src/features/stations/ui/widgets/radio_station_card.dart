@@ -36,35 +36,50 @@ class RadioStationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final primary = colorScheme.primary;
-    // Build a gradient from the theme's primary color
+    final primary = backgroundColor ?? colorScheme.primary;
+    final cardStart = backgroundColor == null
+        ? (isPlaying ? const Color(0xFF9A63FF) : const Color(0xFF7E57E7))
+        : HSLColor.fromColor(primary).withLightness(0.44).toColor();
+    final cardMid = backgroundColor == null
+        ? (isPlaying ? const Color(0xFF7744EA) : const Color(0xFF5B38D2))
+        : HSLColor.fromColor(primary).withLightness(0.37).toColor();
+    final cardEnd = backgroundColor == null
+        ? (isPlaying ? const Color(0xFF4520BE) : const Color(0xFF311C82))
+        : HSLColor.fromColor(primary).withLightness(0.27).toColor();
+    final resolvedTitleColor = titleColor ?? Colors.white;
+    final resolvedSubtitleColor =
+        subtitleColor ?? const Color(0xFFE2D9FF).withValues(alpha: 0.92);
+    final resolvedFavoriteBg = Colors.white.withValues(alpha: 0.10);
+    final resolvedFavoriteBorder = Colors.white.withValues(alpha: 0.16);
+    final resolvedPlayBg = playButtonBackgroundColor ?? AppTheme.orange400;
+    final resolvedPlayIcon = playIconColor ?? Colors.white;
+
     final themeGradient = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [
-        HSLColor.fromColor(primary).withLightness(0.35).toColor(),
-        HSLColor.fromColor(primary).withLightness(0.28).toColor(),
-        HSLColor.fromColor(primary).withLightness(0.22).toColor(),
-      ],
+      colors: [cardStart, cardMid, cardEnd],
     );
 
     return Container(
-      // keep full available width but add a small horizontal inset so cards
-      // appear slightly narrower than the screen edge
       width: double.infinity,
-      height: 68,
-      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+      height: 74,
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
       decoration: BoxDecoration(
-        // If a concrete backgroundColor is provided (e.g. for Favorites Kanarya), use it.
-        // Otherwise fall back to the theme-derived gradient.
         color: backgroundColor,
         gradient: backgroundColor == null ? themeGradient : null,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(18),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 4, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: (backgroundColor == null ? cardMid : primary).withValues(
+              alpha: isPlaying ? 0.48 : 0.34,
+            ),
+            blurRadius: isPlaying ? 24 : 18,
+            offset: const Offset(0, 12),
+          ),
         ],
-        border: Border(
-          bottom: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.4), width: 0.5),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: isPlaying ? 0.24 : 0.16),
+          width: isPlaying ? 1.2 : 1,
         ),
       ),
       child: Material(
@@ -76,15 +91,13 @@ class RadioStationCard extends StatelessWidget {
             padding: const EdgeInsets.all(6),
             child: Row(
               children: [
-                // Station Image/Icon - Modern logo with initials
                 RadioLogo(
                   radioName: title,
                   logoUrl: imageUrl,
-                  size: 40,
+                  size: 44,
                   showBorder: true,
                 ),
-                const SizedBox(width: 10),
-                // Title & Subtitle
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -95,50 +108,77 @@ class RadioStationCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: titleColor ?? colorScheme.onPrimary,
+                          fontWeight: FontWeight.w700,
+                          color: resolvedTitleColor,
+                          fontSize: 15,
                         ),
                       ),
-                      const SizedBox(height: 1),
+                      const SizedBox(height: 2),
                       Text(
                         subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: subtitleColor ?? colorScheme.onPrimary.withOpacity(0.9),
+                          color: resolvedSubtitleColor,
+                          fontSize: 12,
                         ),
                       ),
                     ],
                   ),
                 ),
-                // Buttons Row
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Favorite Button
-                    IconButton(
-                      onPressed: () {
-                        if (onFavoriteToggle != null) {
-                          HapticFeedback.lightImpact();
-                          onFavoriteToggle!();
-                        }
-                      },
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_outline,
-                        color: isFavorite ? Colors.red : Colors.pink.shade300,
-                        size: 18,
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: resolvedFavoriteBg,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: resolvedFavoriteBorder,
+                        ),
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          if (onFavoriteToggle != null) {
+                            HapticFeedback.lightImpact();
+                            onFavoriteToggle!();
+                          }
+                        },
+                        icon: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_outline,
+                          color: isFavorite
+                              ? AppTheme.gradientPink
+                              : Colors.white.withValues(alpha: 0.86),
+                          size: 18,
+                        ),
+                        padding: EdgeInsets.zero,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    // Play/Pause Button
-                    IconButton(
-                      style: IconButton.styleFrom(
-                        backgroundColor: playButtonBackgroundColor ?? Theme.of(context).colorScheme.primary,
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: resolvedPlayBg,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: resolvedPlayBg.withValues(alpha: 0.36),
+                            blurRadius: 14,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                       ),
-                      onPressed: onTap,
-                      icon: Icon(
-                        isPlaying ? Icons.pause : Icons.play_arrow,
-                        color: playIconColor ?? Theme.of(context).colorScheme.onPrimary,
+                      child: IconButton(
+                        onPressed: onTap,
+                        icon: Icon(
+                          isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                          color: resolvedPlayIcon,
+                          size: 22,
+                        ),
+                        padding: EdgeInsets.zero,
                       ),
                     ),
                   ],

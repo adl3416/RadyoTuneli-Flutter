@@ -155,7 +155,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               top: Radius.circular(19),
                             ),
                           ),
-                          padding: const EdgeInsets.fromLTRB(14, 9, 10, 6),
+                          padding: const EdgeInsets.fromLTRB(14, 5, 10, 4),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -163,11 +163,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 child: Row(
                                   children: [
                                     Container(
-                                      width: 34,
-                                      height: 34,
+                                      width: 30,
+                                      height: 30,
                                       decoration: BoxDecoration(
                                         color: appBarFg.withValues(alpha: 0.10),
-                                        borderRadius: BorderRadius.circular(11),
+                                        borderRadius: BorderRadius.circular(10),
                                         border: Border.all(
                                           color:
                                               appBarFg.withValues(alpha: 0.16),
@@ -175,17 +175,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       ),
                                       child: Icon(
                                         Icons.settings_input_antenna_rounded,
-                                        size: 18,
+                                        size: 16,
                                         color: appBarFg,
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
+                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
                                         'Son Dinlenenler',
                                         style: TextStyle(
                                           fontWeight: FontWeight.w700,
-                                          fontSize: 14,
+                                           fontSize: 13,
                                           color: appBarFg,
                                         ),
                                       ),
@@ -197,10 +197,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 data: (list) => list.isNotEmpty
                                     ? TextButton(
                                         style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 2,
-                                          ),
+                                           padding: const EdgeInsets.symmetric(
+                                             horizontal: 10,
+                                             vertical: 1,
+                                           ),
                                           minimumSize: Size.zero,
                                           tapTargetSize:
                                               MaterialTapTargetSize.shrinkWrap,
@@ -223,7 +223,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         },
                                         child: const Text(
                                           'Temizle',
-                                          style: TextStyle(fontSize: 12),
+                                           style: TextStyle(fontSize: 11),
                                         ),
                                       )
                                     : const SizedBox.shrink(),
@@ -247,7 +247,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: 78,
+                          height: 70,
                           child: recentlyPlayedAsync.when(
                             data: (recentlyPlayedStations) =>
                                 recentlyPlayedStations.isEmpty
@@ -266,7 +266,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           8,
                                           0,
                                           8,
-                                          2,
+                                          1,
                                         ),
                                         scrollDirection: Axis.horizontal,
                                         itemCount:
@@ -292,6 +292,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                 ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '\u0054\u00FCm Radyolar',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ),
               Expanded(
                 child: filteredStationsAsync.when(
                   data: (filteredStations) {
@@ -300,13 +313,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     }
                     return ListView.builder(
                       padding: EdgeInsets.zero,
-                      itemCount: filteredStations.length + 1,
+                      itemCount: filteredStations.length,
                       itemBuilder: (context, index) {
-                        if (index == 0) {
+                        if (false && index == 0) {
                           return Padding(
                             padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
                             child: Text(
-                              'Tüm Radyolar',
+                              '\u0054\u00FCm Radyolar',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 15,
@@ -314,7 +327,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           );
                         }
-                        final station = filteredStations[index - 1];
+                        final station = filteredStations[index];
                         return Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 6,
