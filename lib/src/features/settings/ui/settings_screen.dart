@@ -57,6 +57,10 @@ class SettingsScreen extends ConsumerWidget {
                     child: Row(
                       children: [
                         IconButton(
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: appBarFg,
+                          ),
                           icon: Icon(Icons.menu, color: appBarFg),
                           onPressed: () => Scaffold.of(builderContext).openDrawer(),
                         ),

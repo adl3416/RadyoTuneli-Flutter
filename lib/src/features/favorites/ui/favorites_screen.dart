@@ -61,6 +61,10 @@ class FavoritesScreen extends ConsumerWidget {
                         child: Row(
                           children: [
                             IconButton(
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                foregroundColor: appBarFg ?? Colors.white,
+                              ),
                               icon: Icon(Icons.menu, color: appBarFg ?? Colors.white),
                               onPressed: () {
                                 Scaffold.of(builderContext).openDrawer();

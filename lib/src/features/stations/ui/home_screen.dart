@@ -130,7 +130,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               if (searchQuery.isEmpty)
                 Container(
                   color: Colors.transparent,
-                  padding: const EdgeInsets.fromLTRB(2, 2, 2, 4),
+                  padding: const EdgeInsets.fromLTRB(2, 1, 2, 3),
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -151,7 +151,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 12, 14, 2),
+                          padding: const EdgeInsets.fromLTRB(14, 9, 12, 1),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -212,7 +212,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: 92,
+                          height: 84,
                           child: recentlyPlayedAsync.when(
                             data: (recentlyPlayedStations) =>
                                 recentlyPlayedStations.isEmpty
@@ -227,7 +227,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         ),
                                       )
                                     : ListView.builder(
-                                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
+                                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
                                         scrollDirection: Axis.horizontal,
                                         itemCount:
                                             recentlyPlayedStations.length,
@@ -299,7 +299,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         }
                         final station = filteredStations[index];
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
                           child: RadioStationCard(
                             title: station.name,
                             subtitle: station.genre ?? 'Turkish Radio',

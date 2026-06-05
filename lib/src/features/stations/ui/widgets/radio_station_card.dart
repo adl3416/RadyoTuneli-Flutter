@@ -73,7 +73,7 @@ class RadioStationCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 74,
-      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+      margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
       decoration: BoxDecoration(
         color: backgroundColor,
         gradient: backgroundColor == null ? themeGradient : null,
