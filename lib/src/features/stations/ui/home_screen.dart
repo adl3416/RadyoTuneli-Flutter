@@ -127,7 +127,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               ),
-              if (searchQuery.isEmpty)
+              if (false && searchQuery.isEmpty)
                 Container(
                   color: Colors.transparent,
                   padding: const EdgeInsets.fromLTRB(2, 1, 2, 3),
@@ -252,7 +252,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                 ),
-              Padding(
+              if (false)
+                Padding(
                 padding: const EdgeInsets.fromLTRB(18, 10, 18, 8),
                 child: Row(
                   children: [
@@ -282,22 +283,197 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       return _buildEmptyState(context);
                     }
                     return ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: filteredStations.length,
+                      padding: const EdgeInsets.only(bottom: 8),
+                      itemCount:
+                          filteredStations.length +
+                          (searchQuery.isEmpty ? 2 : 1),
                       itemBuilder: (context, index) {
-                        if (false && index == 0) {
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
-                            child: Text(
-                              '\u0054\u00FCm Radyolar',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15,
+                        if (searchQuery.isEmpty && index == 0) {
+                          return Container(
+                            color: Colors.transparent,
+                            padding: const EdgeInsets.fromLTRB(2, 1, 2, 3),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: const Color(0xFFE9EEF5),
+                                  width: 1,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.06),
+                                    blurRadius: 22,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      14,
+                                      9,
+                                      12,
+                                      1,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Son Dinlenenler',
+                                          style: theme.textTheme.titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 16,
+                                                color: const Color(0xFF27314D),
+                                              ),
+                                        ),
+                                        recentlyPlayedAsync.maybeWhen(
+                                          data: (list) => list.isNotEmpty
+                                              ? Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    TextButton(
+                                                      style: TextButton.styleFrom(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 0,
+                                                              vertical: 2,
+                                                            ),
+                                                        minimumSize: Size.zero,
+                                                        tapTargetSize:
+                                                            MaterialTapTargetSize
+                                                                .shrinkWrap,
+                                                        foregroundColor:
+                                                            AppTheme
+                                                                .gradientBlue,
+                                                      ),
+                                                      onPressed: () {
+                                                        HapticFeedback
+                                                            .lightImpact();
+                                                        ref
+                                                            .read(
+                                                              recentlyPlayedNotifierProvider
+                                                                  .notifier,
+                                                            )
+                                                            .clearRecent();
+                                                      },
+                                                      child: const Text(
+                                                        'Temizle',
+                                                        style: TextStyle(
+                                                          fontSize: 13,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: AppTheme
+                                                              .gradientBlue,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    const Icon(
+                                                      Icons
+                                                          .delete_outline_rounded,
+                                                      size: 18,
+                                                      color: AppTheme
+                                                          .gradientBlue,
+                                                    ),
+                                                  ],
+                                                )
+                                              : const SizedBox.shrink(),
+                                          orElse:
+                                              () => const SizedBox.shrink(),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 84,
+                                    child: recentlyPlayedAsync.when(
+                                      data: (recentlyPlayedStations) =>
+                                          recentlyPlayedStations.isEmpty
+                                              ? Center(
+                                                  child: Text(
+                                                    'HenÃ¼z radyo dinlemediniz',
+                                                    style: TextStyle(
+                                                      color: theme
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.color,
+                                                      fontSize: 13,
+                                                    ),
+                                                  ),
+                                                )
+                                              : ListView.builder(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                        8,
+                                                        0,
+                                                        8,
+                                                        4,
+                                                      ),
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  itemCount:
+                                                      recentlyPlayedStations
+                                                          .length,
+                                                  itemBuilder:
+                                                      (context, recentIndex) {
+                                                    final station =
+                                                        recentlyPlayedStations[recentIndex];
+                                                    return RecentlyPlayedStationItem(
+                                                      station: station,
+                                                      onTap: () => ref
+                                                          .read(
+                                                            playerStateProvider
+                                                                .notifier,
+                                                          )
+                                                          .playStation(station),
+                                                    );
+                                                  },
+                                                ),
+                                      loading:
+                                          () => const SizedBox.shrink(),
+                                      error:
+                                          (_, __) => const SizedBox.shrink(),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           );
                         }
-                        final station = filteredStations[index];
+                        if (index == (searchQuery.isEmpty ? 1 : 0)) {
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(18, 10, 18, 8),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.graphic_eq_rounded,
+                                  color: AppTheme.gradientBlue,
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    '\u0054\u00FCm Radyolar',
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16,
+                                          color: const Color(0xFF27314D),
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        final station =
+                            filteredStations[index - (searchQuery.isEmpty ? 2 : 1)];
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
                           child: RadioStationCard(
