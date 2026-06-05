@@ -30,8 +30,8 @@ class AppTheme {
 
   // Light Theme Renkleri
   static const Color lightTint = Color(0xFFB497FF); // Acik mor vurgu
-  static const Color lightBackground = Color(0xFF8A5CF5); // Ekrandaki ana mor
-  static const Color lightText = Color(0xFFFFFFFF); // Acik tema metni
+  static const Color lightBackground = Color(0xFFF8FAFC); // Acik gri sayfa zemini
+  static const Color lightText = Color(0xFF27314D); // Acik tema ana metni
 
   // Dark Theme Renkleri - Derin koyu lacivert konsept
   static const Color darkPrimary =
@@ -76,17 +76,17 @@ class AppTheme {
         primary: Color(0xFF7B56F5),
         secondary: Color(0xFFF47DE8),
         tertiary: Color(0xFFFF982E),
-        surface: Color(0xFF6D47E6),
+        surface: Color(0xFFFFFFFF),
         onPrimary: white,
         onSecondary: white,
         onTertiary: white,
-        onSurface: white,
+        onSurface: Color(0xFF27314D),
         error: Color(0xFFDC2626),
-        background: Color(0xFF8A5CF5),
-        onBackground: white,
-        outline: Color(0xFFB89BFF),
-        surfaceVariant: Color(0xFF7A54F0),
-        onSurfaceVariant: Color(0xFFF3ECFF),
+        background: Color(0xFFF8FAFC),
+        onBackground: Color(0xFF27314D),
+        outline: Color(0xFFE2E8F0),
+        surfaceVariant: Color(0xFFF1F5F9),
+        onSurfaceVariant: Color(0xFF667085),
       ),
       scaffoldBackgroundColor: lightBackground,
       textTheme: textTheme,
@@ -125,44 +125,44 @@ class AppTheme {
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
-          foregroundColor: white,
-          backgroundColor: const Color(0x1FFFFFFF),
+          foregroundColor: const Color(0xFF27314D),
+          backgroundColor: const Color(0xFFFFFFFF),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0x336D47E6),
+        fillColor: const Color(0xFFFFFFFF),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: Color(0xFFB89BFF)),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: Color(0xFFB89BFF)),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(color: Color(0xFFF47DE8), width: 1.8),
         ),
-        hintStyle: const TextStyle(color: Color(0xFFE7DDFF)),
+        hintStyle: const TextStyle(color: Color(0xFF98A2B3)),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       cardTheme: CardThemeData(
-        color: cardPurple,
+        color: white,
         elevation: 0,
-        shadowColor: const Color(0x5A4A28C8),
+        shadowColor: const Color(0x140F172A),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: Color(0xFFB89BFF)),
+          side: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
       ),
       listTileTheme: ListTileThemeData(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        textColor: white,
-        iconColor: white,
-        tileColor: cardPurple,
+        textColor: const Color(0xFF27314D),
+        iconColor: const Color(0xFF27314D),
+        tileColor: white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
       tabBarTheme: TabBarThemeData(

@@ -58,12 +58,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final isDark = theme.brightness == Brightness.dark;
     final appBarBg = _resolveAppBarBg(theme, colorSchemeStr);
     final appBarFg = _resolveAppBarFg(theme, colorSchemeStr);
-    final pageBottom = theme.scaffoldBackgroundColor;
-    final pageTop = Color.lerp(
-      appBarBg,
-      isDark ? Colors.black : pageBottom,
-      isDark ? 0.72 : 0.88,
-    )!;
+    final pageBottom =
+        colorSchemeStr == 'varsayilan' ? const Color(0xFFF8FAFC) : theme.scaffoldBackgroundColor;
+    final pageTop = colorSchemeStr == 'varsayilan'
+        ? pageBottom
+        : Color.lerp(
+            appBarBg,
+            isDark ? Colors.black : pageBottom,
+            isDark ? 0.72 : 0.88,
+          )!;
     final recentCardColor = Color.lerp(
       appBarBg,
       isDark ? Colors.black : Colors.white,
@@ -77,12 +80,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       drawer: _buildDrawer(appBarBg, appBarFg),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [pageTop, pageBottom, pageBottom],
-            stops: const [0.0, 0.22, 1.0],
-          ),
+          color: colorSchemeStr == 'varsayilan' ? pageBottom : null,
+          gradient: colorSchemeStr == 'varsayilan'
+              ? null
+              : LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [pageTop, pageBottom, pageBottom],
+                  stops: const [0.0, 0.22, 1.0],
+                ),
         ),
         child: SafeArea(
           bottom: false,
@@ -124,93 +130,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               if (searchQuery.isEmpty)
                 Container(
                   color: Colors.transparent,
-                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 4),
+                  padding: const EdgeInsets.fromLTRB(8, 2, 8, 4),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: recentCardColor,
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(color: recentOutline, width: 1.2),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: const Color(0xFFE9EEF5),
+                        width: 1,
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: recentShadowColor,
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                          color: Colors.black.withValues(alpha: 0.06),
+                          blurRadius: 22,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                appBarBg,
-                                Color.lerp(appBarBg, Colors.black, 0.12)!,
-                              ],
-                            ),
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(19),
-                            ),
-                          ),
-                          padding: const EdgeInsets.fromLTRB(14, 5, 10, 4),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 12, 14, 2),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Expanded(
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 30,
-                                      height: 30,
-                                      decoration: BoxDecoration(
-                                        color: appBarFg.withValues(alpha: 0.10),
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          color:
-                                              appBarFg.withValues(alpha: 0.16),
-                                        ),
-                                      ),
-                                      child: Icon(
-                                        Icons.settings_input_antenna_rounded,
-                                        size: 16,
-                                        color: appBarFg,
-                                      ),
-                                    ),
-                                     const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        'Son Dinlenenler',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                           fontSize: 13,
-                                          color: appBarFg,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                              Text(
+                                'Son Dinlenenler',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 18,
+                                  color: const Color(0xFF27314D),
                                 ),
                               ),
                               recentlyPlayedAsync.maybeWhen(
                                 data: (list) => list.isNotEmpty
-                                    ? TextButton(
+                                    ? Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextButton(
                                         style: TextButton.styleFrom(
                                            padding: const EdgeInsets.symmetric(
-                                             horizontal: 10,
-                                             vertical: 1,
+                                             horizontal: 0,
+                                             vertical: 2,
                                            ),
                                           minimumSize: Size.zero,
                                           tapTargetSize:
                                               MaterialTapTargetSize.shrinkWrap,
-                                          foregroundColor: appBarFg,
-                                          backgroundColor:
-                                              appBarFg.withValues(alpha: 0.10),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(999),
-                                          ),
+                                          foregroundColor: AppTheme.gradientBlue,
                                         ),
                                         onPressed: () {
                                           HapticFeedback.lightImpact();
@@ -222,9 +189,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               .clearRecent();
                                         },
                                         child: const Text(
-                                          'Temizle',
-                                           style: TextStyle(fontSize: 11),
+                                          'Tümünü Temizle',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppTheme.gradientBlue,
+                                          ),
                                         ),
+                                      ),
+                                          const SizedBox(width: 6),
+                                          const Icon(
+                                            Icons.delete_outline_rounded,
+                                            size: 18,
+                                            color: AppTheme.gradientBlue,
+                                          ),
+                                        ],
                                       )
                                     : const SizedBox.shrink(),
                                 orElse: () => const SizedBox.shrink(),
@@ -232,22 +211,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ],
                           ),
                         ),
-                        Container(
-                          height: 4,
-                          margin: const EdgeInsets.fromLTRB(14, 2, 14, 2),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(999),
-                            gradient: LinearGradient(
-                              colors: [
-                                appBarFg.withValues(alpha: 0.55),
-                                appBarFg,
-                                appBarFg.withValues(alpha: 0.75),
-                              ],
-                            ),
-                          ),
-                        ),
                         SizedBox(
-                          height: 70,
+                          height: 92,
                           child: recentlyPlayedAsync.when(
                             data: (recentlyPlayedStations) =>
                                 recentlyPlayedStations.isEmpty
@@ -262,12 +227,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         ),
                                       )
                                     : ListView.builder(
-                                        padding: const EdgeInsets.fromLTRB(
-                                          8,
-                                          0,
-                                          8,
-                                          1,
-                                        ),
+                                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
                                         scrollDirection: Axis.horizontal,
                                         itemCount:
                                             recentlyPlayedStations.length,
@@ -293,16 +253,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '\u0054\u00FCm Radyolar',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 8),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.graphic_eq_rounded,
+                      color: AppTheme.gradientBlue,
+                      size: 22,
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '\u0054\u00FCm Radyolar',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          color: const Color(0xFF27314D),
+                        ),
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF667085),
+                        ),
+                        children: const [
+                          TextSpan(text: 'S\u0131rala: '),
+                          TextSpan(
+                            text: 'Pop\u00FCler',
+                            style: TextStyle(
+                              color: AppTheme.gradientBlue,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: AppTheme.gradientBlue,
+                    ),
+                  ],
                 ),
               ),
               Expanded(
@@ -329,10 +322,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         }
                         final station = filteredStations[index];
                         return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 1,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                           child: RadioStationCard(
                             title: station.name,
                             subtitle: station.genre ?? 'Turkish Radio',
@@ -516,6 +506,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           Builder(
             builder: (context) => IconButton(
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                foregroundColor: headerFg,
+              ),
               onPressed: () => Scaffold.of(context).openDrawer(),
               icon: Icon(Icons.menu, color: headerFg),
             ),
@@ -531,6 +525,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           IconButton(
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              foregroundColor: headerFg,
+            ),
             onPressed: () {
               setState(() => _isSearchActive = true);
               _searchFocusNode.requestFocus();
@@ -631,6 +629,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Row(
         children: [
           IconButton(
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              foregroundColor: headerFg,
+            ),
             onPressed: () {
               setState(() => _isSearchActive = false);
               _searchController.clear();
@@ -715,6 +717,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return AppTheme.kartalBlack;
       case 'timsah':
         return AppTheme.timsahGreen;
+      case 'varsayilan':
+        return Colors.white;
       default:
         return null;
     }
@@ -732,6 +736,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return AppTheme.kartalWhite;
       case 'timsah':
         return AppTheme.timsahWhite;
+      case 'varsayilan':
+        return const Color(0xFF27314D);
       default:
         return null;
     }
@@ -749,6 +755,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return AppTheme.kartalWhite.withValues(alpha: 0.9);
       case 'timsah':
         return AppTheme.timsahGreen.withValues(alpha: 0.95);
+      case 'varsayilan':
+        return const Color(0xFF667085);
       default:
         return null;
     }

@@ -18,17 +18,13 @@ class RecentlyPlayedStationItem extends StatelessWidget {
     final theme = Theme.of(context);
     final primary =
         theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary;
-    final themeBorderColor =
-        theme.appBarTheme.foregroundColor ?? theme.colorScheme.primary;
-    final labelColor =
-        theme.textTheme.bodySmall?.color ?? theme.colorScheme.onSurface;
 
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        width: 64,
+        width: 78,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
@@ -38,13 +34,13 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: primary,
                 border: Border.all(
-                  color: themeBorderColor.withValues(alpha: 0.35),
-                  width: 1.5,
+                  color: const Color(0xFFE7EAFE),
+                  width: 2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: primary.withValues(alpha: 0.18),
-                    blurRadius: 8,
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 10,
                     offset: const Offset(0, 3),
                   ),
                 ],
@@ -58,14 +54,14 @@ class RecentlyPlayedStationItem extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
               station.name,
               style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
-                fontSize: 8.5,
-                height: 1,
-                color: labelColor,
+                fontSize: 10,
+                height: 1.2,
+                color: const Color(0xFF27314D),
               ),
               textAlign: TextAlign.center,
               maxLines: 1,

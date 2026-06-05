@@ -121,6 +121,13 @@ class MiniPlayer extends ConsumerWidget {
 
                     return IconButton(
                       key: ValueKey('fav_${station.id}_$isFavorite'),
+                      style: IconButton.styleFrom(
+                        fixedSize: const Size(42, 42),
+                        backgroundColor: palette.secondaryButton,
+                        foregroundColor:
+                            isFavorite ? AppTheme.gradientPink : palette.text,
+                        side: BorderSide(color: palette.secondaryBorder),
+                      ),
                       onPressed: () {
                         HapticFeedback.heavyImpact();
                         ref.read(favoritesProvider.notifier).toggleFavorite(
@@ -130,11 +137,6 @@ class MiniPlayer extends ConsumerWidget {
                           () => ref.invalidate(favoritesProvider),
                         );
                       },
-                      style: IconButton.styleFrom(
-                        fixedSize: const Size(42, 42),
-                        backgroundColor: palette.secondaryButton,
-                        side: BorderSide(color: palette.secondaryBorder),
-                      ),
                       icon: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_outline,
                         color: isFavorite ? AppTheme.gradientPink : palette.text,
@@ -176,6 +178,10 @@ class MiniPlayer extends ConsumerWidget {
                       ],
                     ),
                     child: IconButton(
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: palette.playIcon,
+                      ),
                       onPressed: () async {
                         if (playerState.isPlaying) {
                           await ref.read(playerStateProvider.notifier).pause();
@@ -560,6 +566,10 @@ class FullScreenPlayer extends ConsumerWidget {
                           ),
                         )
                       : IconButton(
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: palette.playIcon,
+                          ),
                           onPressed: () async {
                             if (playerState.isPlaying) {
                               await ref

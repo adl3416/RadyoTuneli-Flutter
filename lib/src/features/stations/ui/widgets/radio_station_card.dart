@@ -49,10 +49,20 @@ class RadioStationCard extends StatelessWidget {
     final resolvedTitleColor = titleColor ?? Colors.white;
     final resolvedSubtitleColor =
         subtitleColor ?? const Color(0xFFE2D9FF).withValues(alpha: 0.92);
-    final resolvedFavoriteBg = Colors.white.withValues(alpha: 0.10);
-    final resolvedFavoriteBorder = Colors.white.withValues(alpha: 0.16);
+    final isLightCard = backgroundColor != null &&
+        ThemeData.estimateBrightnessForColor(backgroundColor!) ==
+            Brightness.light;
+    final resolvedFavoriteBg = isLightCard
+        ? const Color(0xFFFFFFFF)
+        : Colors.white.withValues(alpha: 0.10);
+    final resolvedFavoriteBorder = isLightCard
+        ? const Color(0xFFDCE3EC)
+        : Colors.white.withValues(alpha: 0.16);
     final resolvedPlayBg = playButtonBackgroundColor ?? AppTheme.orange400;
     final resolvedPlayIcon = playIconColor ?? Colors.white;
+    final resolvedFavoriteIcon = isLightCard
+        ? const Color(0xFF667085)
+        : Colors.white.withValues(alpha: 0.86);
 
     final themeGradient = LinearGradient(
       begin: Alignment.topLeft,
@@ -71,14 +81,18 @@ class RadioStationCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: (backgroundColor == null ? cardMid : primary).withValues(
-              alpha: isPlaying ? 0.48 : 0.34,
+              alpha: isLightCard
+                  ? (isPlaying ? 0.10 : 0.06)
+                  : (isPlaying ? 0.48 : 0.34),
             ),
-            blurRadius: isPlaying ? 24 : 18,
-            offset: const Offset(0, 12),
+            blurRadius: isLightCard ? 16 : (isPlaying ? 24 : 18),
+            offset: Offset(0, isLightCard ? 8 : 12),
           ),
         ],
         border: Border.all(
-          color: Colors.white.withValues(alpha: isPlaying ? 0.24 : 0.16),
+          color: isLightCard
+              ? const Color(0xFFDCE3EC)
+              : Colors.white.withValues(alpha: isPlaying ? 0.24 : 0.16),
           width: isPlaying ? 1.2 : 1,
         ),
       ),
@@ -140,6 +154,12 @@ class RadioStationCard extends StatelessWidget {
                         ),
                       ),
                       child: IconButton(
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: isFavorite
+                              ? AppTheme.gradientPink
+                              : resolvedFavoriteIcon,
+                        ),
                         onPressed: () {
                           if (onFavoriteToggle != null) {
                             HapticFeedback.lightImpact();
@@ -150,7 +170,7 @@ class RadioStationCard extends StatelessWidget {
                           isFavorite ? Icons.favorite : Icons.favorite_outline,
                           color: isFavorite
                               ? AppTheme.gradientPink
-                              : Colors.white.withValues(alpha: 0.86),
+                              : resolvedFavoriteIcon,
                           size: 18,
                         ),
                         padding: EdgeInsets.zero,
@@ -172,6 +192,10 @@ class RadioStationCard extends StatelessWidget {
                         ],
                       ),
                       child: IconButton(
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: resolvedPlayIcon,
+                        ),
                         onPressed: onTap,
                         icon: Icon(
                           isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
