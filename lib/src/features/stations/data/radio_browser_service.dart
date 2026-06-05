@@ -13,6 +13,22 @@ class RadioBrowserService {
 
   static const String _fallbackAssetPath = 'assets/data/TR.json';
 
+  static const List<RadioBrowserStation> _customStations = [
+    RadioBrowserStation(
+      stationuuid: '6f7c9de0-d2cc-4c12-9f70-58d50c0cc7a8',
+      name: 'Merih FM',
+      url: 'http://s1.wohooo.net:9060/stream',
+      urlResolved: 'http://s1.wohooo.net:9060/stream',
+      country: 'TR',
+      countrycode: 'TR',
+      codec: 'MP3',
+      bitrate: 128,
+      votes: 0,
+      tags: 'dini',
+      lastcheckok: 1,
+    ),
+  ];
+
   // Fallback istasyonları bir kez yükle, tekrar tekrar parse etme
   static List<Station>? _cachedFallbackStations;
 
@@ -138,14 +154,18 @@ class RadioBrowserService {
       final String jsonString = await rootBundle.loadString(_fallbackAssetPath);
       final List<dynamic> jsonList = json.decode(jsonString);
 
-      final radioBrowserStations =
-          jsonList.map((json) => RadioBrowserStation.fromJson(json)).toList();
+      final radioBrowserStations = [
+        ...jsonList.map((json) => RadioBrowserStation.fromJson(json)),
+        ..._customStations,
+      ];
 
       final stations = radioBrowserStations.map(_toStation).toList();
       _cachedFallbackStations = _removeDuplicateStations(stations);
       return _cachedFallbackStations!;
     } catch (e) {
-      return [];
+      final stations = _customStations.map(_toStation).toList();
+      _cachedFallbackStations = _removeDuplicateStations(stations);
+      return _cachedFallbackStations!;
     }
   }
 

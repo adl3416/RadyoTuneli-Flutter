@@ -14074,6 +14074,23 @@
     "geo_long": null,
     "geo_distance": null,
     "has_extended_info": false
+  },
+  {
+    "changeuuid": "9c6e0738-35b7-4c59-9556-e44933fb7a59",
+    "stationuuid": "6f7c9de0-d2cc-4c12-9f70-58d50c0cc7a8",
+    "serveruuid": "local-custom-stations",
+    "name": "Merih FM",
+    "url": "http://s1.wohooo.net:9060/stream",
+    "url_resolved": "http://s1.wohooo.net:9060/stream",
+    "homepage": "",
+    "favicon": "",
+    "tags": "dini",
+    "country": "TR",
+    "countrycode": "TR",
+    "codec": "MP3",
+    "bitrate": 128,
+    "votes": 0,
+    "lastcheckok": 1
   }
 ]
 
