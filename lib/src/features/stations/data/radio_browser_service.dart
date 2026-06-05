@@ -362,6 +362,13 @@ class RadioBrowserService {
   /// Normalizes station name aggressively for duplicate detection
   String _normalizeStationName(String name) {
     String n = name.toLowerCase().trim();
+
+    // Keep well-known duplicate variants under one key even when source data
+    // arrives with broken Turkish encoding like "TÃ¼rkiye" / "TÃƒÂ¼rkiye".
+    if (n.contains('virgin radio')) {
+      return 'virginradio';
+    }
+
     // Replace Turkish chars
     _trCharMap.forEach((tr, latin) => n = n.replaceAll(tr, latin));
     // Remove common words

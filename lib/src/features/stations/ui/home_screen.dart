@@ -130,7 +130,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               if (searchQuery.isEmpty)
                 Container(
                   color: Colors.transparent,
-                  padding: const EdgeInsets.fromLTRB(8, 2, 8, 4),
+                  padding: const EdgeInsets.fromLTRB(2, 2, 2, 4),
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -159,7 +159,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 'Son Dinlenenler',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
-                                  fontSize: 18,
+                                  fontSize: 16,
                                   color: const Color(0xFF27314D),
                                 ),
                               ),
@@ -189,9 +189,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               .clearRecent();
                                         },
                                         child: const Text(
-                                          'Tümünü Temizle',
+                                          'Temizle',
                                           style: TextStyle(
-                                            fontSize: 14,
+                                            fontSize: 13,
                                             fontWeight: FontWeight.w600,
                                             color: AppTheme.gradientBlue,
                                           ),
@@ -271,29 +271,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           color: const Color(0xFF27314D),
                         ),
                       ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF667085),
-                        ),
-                        children: const [
-                          TextSpan(text: 'S\u0131rala: '),
-                          TextSpan(
-                            text: 'Pop\u00FCler',
-                            style: TextStyle(
-                              color: AppTheme.gradientBlue,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    const Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      color: AppTheme.gradientBlue,
                     ),
                   ],
                 ),
@@ -792,3 +769,4 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 }
+
