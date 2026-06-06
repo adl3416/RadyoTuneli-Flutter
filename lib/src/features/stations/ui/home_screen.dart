@@ -218,7 +218,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 recentlyPlayedStations.isEmpty
                                     ? Center(
                                         child: Text(
-                                          'Henüz radyo dinlemediniz',
+                                          'Hen\u00fcz radyo dinlemediniz',
                                           style: TextStyle(
                                             color: theme
                                                 .textTheme.bodyMedium?.color,
@@ -397,7 +397,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           recentlyPlayedStations.isEmpty
                                               ? Center(
                                                   child: Text(
-                                                    'HenÃ¼z radyo dinlemediniz',
+                                                    'Hen\u00fcz radyo dinlemediniz',
                                                     style: TextStyle(
                                                       color: theme
                                                           .textTheme
@@ -545,7 +545,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
           ),
           const SizedBox(height: 16),
-          const Text('İstasyon bulunamadı'),
+          const Text('\u0130stasyon bulunamad\u0131'),
         ],
       ),
     );
@@ -585,7 +585,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Icon(Icons.radio, color: appBarFg, size: 28),
                 const SizedBox(height: 6),
                 Text(
-                  'Radyo Tüneli',
+                  'Radyo T\u00fcneli',
                   style: TextStyle(
                     color: appBarFg,
                     fontSize: 22,
@@ -669,7 +669,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           Expanded(
             child: Text(
-              'Radyo Tüneli',
+              'Radyo T\u00fcneli',
               style: TextStyle(
                 color: headerFg,
                 fontSize: 20,
@@ -697,9 +697,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final selectedCategory = ref.watch(selectedCategoryProvider);
 
     final List<(String?, String, IconData)> categories = [
-      (null, 'Tümü', Icons.radio),
-      ('muzik', 'Müzik', Icons.music_note),
-      ('turku', 'Türkü', Icons.queue_music),
+      (null, 'T\u00fcm\u00fc', Icons.radio),
+      ('muzik', 'M\u00fczik', Icons.music_note),
+      ('turku', 'T\u00fcrk\u00fc', Icons.queue_music),
       ('haber', 'Haber', Icons.article),
       ('spor', 'Spor', Icons.sports_soccer),
       ('dini', 'Dini', Icons.mosque),

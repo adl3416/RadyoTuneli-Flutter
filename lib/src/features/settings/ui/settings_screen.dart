@@ -111,8 +111,8 @@ class SettingsScreen extends ConsumerWidget {
                         if (false)
                         _buildSettingsTile(
                           context,
-                          'TÃ¼m Verileri Sil',
-                          'Ayarlar ve geÃ§miÅŸi temizle',
+                          'T\u00fcm Verileri Sil',
+                          'Ayarlar ve ge\u00e7mi\u015fi temizle',
                           Icons.delete_forever_outlined,
                           () => _showDeleteAllDataDialog(context, ref),
                         ),
@@ -122,8 +122,8 @@ class SettingsScreen extends ConsumerWidget {
                         if (false)
                         _buildSettingsTile(
                           context,
-                          'Tüm Verileri Sil',
-                          'Ayarlar ve geçmişi temizle',
+                          'T\u00fcm Verileri Sil',
+                          'Ayarlar ve ge\u00e7mi\u015fi temizle',
                           Icons.delete_forever_outlined,
                           () => _showDeleteAllDataDialog(context, ref),
                         ),
@@ -131,7 +131,7 @@ class SettingsScreen extends ConsumerWidget {
                         if (false)
                         _buildSettingsTile(
                           context,
-                          'Uygulamayı Paylaş',
+                          'Uygulamay\u0131 Payla\u015f',
                           'Play Store linkini kopyala',
                           Icons.share_outlined,
                           () {
@@ -140,7 +140,7 @@ class SettingsScreen extends ConsumerWidget {
                             );
                             SnackbarHelper.showSuccess(
                               context,
-                              'Paylaşım linki panoya kopyalandı',
+                              'Payla\u015f\u0131m linki panoya kopyaland\u0131',
                             );
                           },
                         ),
@@ -148,7 +148,7 @@ class SettingsScreen extends ConsumerWidget {
                         if (false)
                         _buildSettingsTile(
                           context,
-                          'Uygulamayı Değerlendir',
+                          'Uygulamay\u0131 De\u011ferlendir',
                           'Play Store linkini kopyala',
                           Icons.star_outline_rounded,
                           () {
@@ -157,7 +157,7 @@ class SettingsScreen extends ConsumerWidget {
                             );
                             SnackbarHelper.showSuccess(
                               context,
-                              'Değerlendirme linki panoya kopyalandı',
+                              'De\u011ferlendirme linki panoya kopyaland\u0131',
                             );
                           },
                         ),
@@ -176,7 +176,7 @@ class SettingsScreen extends ConsumerWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Radyo Tüneli',
+                                'Radyo T\u00fcneli',
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
@@ -185,7 +185,7 @@ class SettingsScreen extends ConsumerWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Sürüm 2.0.7',
+                                'S\u00fcr\u00fcm 2.0.7',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: colorScheme.onSurface.withValues(
@@ -271,12 +271,12 @@ class SettingsScreen extends ConsumerWidget {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader(context, Icons.palette_outlined, 'Tema Ayarları'),
+          _buildSectionHeader(context, Icons.palette_outlined, 'Tema Ayarlar\u0131'),
           const SizedBox(height: 16),
           _buildThemeOption(
             context,
             ref,
-            'Açık Tema',
+            'A\u00e7\u0131k Tema',
             ThemeMode.light,
             Icons.light_mode_outlined,
             themeMode,
@@ -292,7 +292,7 @@ class SettingsScreen extends ConsumerWidget {
           _buildThemeOption(
             context,
             ref,
-            'Sistem Teması',
+            'Sistem Temas\u0131',
             ThemeMode.system,
             Icons.brightness_auto_outlined,
             themeMode,
@@ -360,20 +360,20 @@ class SettingsScreen extends ConsumerWidget {
           _buildSectionHeader(
             context,
             Icons.settings_suggest_outlined,
-            'Uygulama Ayarları',
+            'Uygulama Ayarlar\u0131',
           ),
           const SizedBox(height: 16),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(
-              'Otomatik Başlat',
+              'Otomatik Ba\u015flat',
               style: TextStyle(
                 color: colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),
             subtitle: Text(
-              'Uygulama açıldığında son radyoyu çal',
+              'Uygulama a\u00e7\u0131ld\u0131\u011f\u0131nda son radyoyu \u00e7al',
               style: TextStyle(
                 color: colorScheme.onSurface.withValues(alpha: 0.72),
               ),
@@ -385,7 +385,7 @@ class SettingsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Text(
-              'Varsayılan Ses Seviyesi',
+              'Varsay\u0131lan Ses Seviyesi',
               style: TextStyle(
                 fontSize: 14,
                 color: colorScheme.onSurface,
@@ -412,13 +412,13 @@ class SettingsScreen extends ConsumerWidget {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader(context, Icons.color_lens_outlined, 'Renk Şeması'),
+          _buildSectionHeader(context, Icons.color_lens_outlined, 'Renk \u015eemas\u0131'),
           const SizedBox(height: 16),
           Wrap(
             spacing: 12,
             runSpacing: 12,
             children: [
-              _buildColorOption(context, ref, 'Varsayılan', 'purple', Colors.deepPurple),
+              _buildColorOption(context, ref, 'Varsay\u0131lan', 'purple', Colors.deepPurple),
               _buildColorOption(context, ref, 'Kanarya', 'kanarya', Colors.yellow),
               _buildColorOption(context, ref, 'Aslan', 'aslan', Colors.red),
               _buildColorOption(context, ref, 'Kartal', 'kartal', Colors.black),
@@ -500,7 +500,7 @@ class SettingsScreen extends ConsumerWidget {
             size: 24,
           ),
           title: Text(
-            'Destek & İletişim',
+            'Destek & \u0130leti\u015fim',
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onSurface,
@@ -516,7 +516,7 @@ class SettingsScreen extends ConsumerWidget {
           children: [
             _buildSettingsTile(
               context,
-              'Destek & İletişim',
+              'Destek & \u0130leti\u015fim',
               'E-posta, SSS ve hata bildirimi',
               Icons.headset_mic_outlined,
               () => Navigator.push(
@@ -526,8 +526,8 @@ class SettingsScreen extends ConsumerWidget {
             ),
             _buildSettingsTile(
               context,
-              'Hakkında',
-              'Radyo Tüneli v2.0.4',
+              'Hakk\u0131nda',
+              'Radyo T\u00fcneli v2.0.4',
               Icons.info_outline,
               () => _showAboutDialog(context),
             ),
@@ -567,8 +567,8 @@ class SettingsScreen extends ConsumerWidget {
           children: [
             _buildSettingsTile(
               context,
-              'Gizlilik Politikası',
-              'Datenschutzerklärung',
+              'Gizlilik Politikas\u0131',
+              'Datenschutzerkl\u00e4rung',
               Icons.privacy_tip_outlined,
               () => Navigator.push(
                 context,
@@ -577,7 +577,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
             _buildSettingsTile(
               context,
-              'Kullanım Koşulları',
+              'Kullan\u0131m Ko\u015fullar\u0131',
               'Nutzungsbedingungen',
               Icons.description_outlined,
               () => Navigator.push(
@@ -587,7 +587,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
             _buildSettingsTile(
               context,
-              'Yasal Bilgiler (§5 TMG)',
+              'Yasal Bilgiler (\u00a75 TMG)',
               'Impressum',
               Icons.gavel_outlined,
               () => Navigator.push(
@@ -612,38 +612,38 @@ class SettingsScreen extends ConsumerWidget {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader(context, Icons.apps_rounded, 'Diğer'),
+          _buildSectionHeader(context, Icons.apps_rounded, 'Di\u011fer'),
           const SizedBox(height: 12),
           _buildSettingsTile(
             context,
-            'TÃ¼m Verileri Sil',
-            'Ayarlar ve geÃ§miÅŸi temizle',
+            'T\u00fcm Verileri Sil',
+            'Ayarlar ve ge\u00e7mi\u015fi temizle',
             Icons.delete_forever_outlined,
             () => _showDeleteAllDataDialog(context, ref),
           ),
           _buildSettingsTile(
             context,
-            'UygulamayÄ± PaylaÅŸ',
+            'Uygulamay\u0131 Payla\u015f',
             'Play Store linkini kopyala',
             Icons.share_outlined,
             () {
               Clipboard.setData(ClipboardData(text: shareUrl));
               SnackbarHelper.showSuccess(
                 context,
-                'PaylaÅŸÄ±m linki panoya kopyalandÄ±',
+                'Payla\u015f\u0131m linki panoya kopyaland\u0131',
               );
             },
           ),
           _buildSettingsTile(
             context,
-            'UygulamayÄ± DeÄŸerlendir',
+            'Uygulamay\u0131 De\u011ferlendir',
             'Play Store linkini kopyala',
             Icons.star_outline_rounded,
             () {
               Clipboard.setData(ClipboardData(text: shareUrl));
               SnackbarHelper.showSuccess(
                 context,
-                'DeÄŸerlendirme linki panoya kopyalandÄ±',
+                'De\u011ferlendirme linki panoya kopyaland\u0131',
               );
             },
           ),
@@ -695,13 +695,13 @@ class SettingsScreen extends ConsumerWidget {
   void _showAboutDialog(BuildContext context) {
     showAboutDialog(
       context: context,
-      applicationName: 'Radyo Tüneli',
+      applicationName: 'Radyo T\u00fcneli',
       applicationVersion: '2.0.4',
-      applicationLegalese: '© 2025 Radyo Tüneli. Tüm hakları saklıdır.',
+      applicationLegalese: '\u00a9 2025 Radyo T\u00fcneli. T\u00fcm haklar\u0131 sakl\u0131d\u0131r.',
       children: const [
         SizedBox(height: 12),
         Text(
-          'Türk radyo istasyonlarını dinlemek için geliştirilmiş ücretsiz bir uygulama.',
+          'T\u00fcrk radyo istasyonlar\u0131n\u0131 dinlemek i\u00e7in geli\u015ftirilmi\u015f \u00fccretsiz bir uygulama.',
         ),
       ],
     );
@@ -748,12 +748,12 @@ class SettingsScreen extends ConsumerWidget {
       builder: (context) => AlertDialog(
         title: const Text('Verileri Sil'),
         content: const Text(
-          'Tüm favorileriniz ve ayarlarınız silinecek. Bu işlem geri alınamaz.',
+          'T\u00fcm favorileriniz ve ayarlar\u0131n\u0131z silinecek. Bu i\u015flem geri al\u0131namaz.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('İPTAL'),
+            child: const Text('\u0130PTAL'),
           ),
           TextButton(
             onPressed: () async {
@@ -769,11 +769,11 @@ class SettingsScreen extends ConsumerWidget {
                 Navigator.pop(context);
                 SnackbarHelper.showSuccess(
                   context,
-                  'Tüm veriler başarıyla silindi',
+                  'T\u00fcm veriler ba\u015far\u0131yla silindi',
                 );
               }
             },
-            child: const Text('SİL', style: TextStyle(color: Colors.red)),
+            child: const Text('S\u0130L', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -798,7 +798,7 @@ class SettingsScreen extends ConsumerWidget {
             color: drawerBg,
             padding: const EdgeInsets.only(top: 50, left: 20),
             child: Text(
-              'Radyo Tüneli',
+              'Radyo T\u00fcneli',
               style: TextStyle(color: drawerFg, fontSize: 24),
             ),
           ),

@@ -176,7 +176,7 @@ class OnboardingScreen extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(28),
           child: Image.asset(
-            'assets/images/radioicon.png',
+            'assets/images/app_icon_full.png',
             width: 168,
             height: 168,
             fit: BoxFit.contain,

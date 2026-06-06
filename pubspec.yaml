@@ -79,14 +79,14 @@ flutter:
 
 # Splash Screen Configuration
 flutter_native_splash:
-  color: "#6F5EF7"
-  image: assets/images/radioicon.png
-  color_dark: "#5B4CF1"
-  image_dark: assets/images/radioicon.png
+  color: "#730EE6"
+  image: assets/images/app_icon_full.png
+  color_dark: "#730EE6"
+  image_dark: assets/images/app_icon_full.png
   fullscreen: true
   android_12:
-    image: assets/images/radioicon.png
-    icon_background_color: "#6F5EF7"
-    color: "#6F5EF7"
-    color_dark: "#5B4CF1"
+    image: assets/images/app_icon_full.png
+    icon_background_color: "#730EE6"
+    color: "#730EE6"
+    color_dark: "#730EE6"
   web: false
