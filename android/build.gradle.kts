@@ -16,6 +16,16 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+subprojects {
+    configurations.configureEach {
+        resolutionStrategy.force(
+            "androidx.browser:browser:1.8.0",
+            "androidx.core:core-ktx:1.16.0",
+            "androidx.core:core:1.16.0",
+        )
+    }
+}
+
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }

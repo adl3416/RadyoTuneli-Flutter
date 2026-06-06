@@ -32,6 +32,8 @@ dependencies:
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
   path_provider: ^2.1.1
+  share_plus: ^10.0.2
+  url_launcher: ^6.3.0
 
   # HTTP
   http: ^1.1.1
@@ -77,14 +79,14 @@ flutter:
 
 # Splash Screen Configuration
 flutter_native_splash:
-  color: "#0D2647"
-  image: assets/images/splaschscren.png
-  color_dark: "#071228"
-  image_dark: assets/images/splaschscren.png
+  color: "#6F5EF7"
+  image: assets/images/radio_logo.png
+  color_dark: "#5B4CF1"
+  image_dark: assets/images/radio_logo.png
   fullscreen: true
   android_12:
-    image: assets/images/splaschscren.png
-    icon_background_color: "#0D2647"
-    color: "#0D2647"
-    color_dark: "#071228"
+    image: assets/images/radio_logo.png
+    icon_background_color: "#6F5EF7"
+    color: "#6F5EF7"
+    color_dark: "#5B4CF1"
   web: false

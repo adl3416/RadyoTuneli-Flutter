@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/main_screen.dart';
 import '../../../core/utils/snackbar_helper.dart';
@@ -19,6 +22,8 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const shareUrl =
+        'https://play.google.com/store/apps/details?id=com.turkradyo.bsr.de.turkradyo';
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final themeMode = ref.watch(themeProvider);
@@ -98,10 +103,63 @@ class SettingsScreen extends ConsumerWidget {
                         const SizedBox(height: 24),
                         _buildSettingsTile(
                           context,
+                          'T\u00fcm Verileri Sil',
+                          'Ayarlar ve ge\u00e7mi\u015fi temizle',
+                          Icons.delete_forever_outlined,
+                          () => _showDeleteAllDataDialog(context, ref),
+                        ),
+                        if (false)
+                        _buildSettingsTile(
+                          context,
+                          'TÃ¼m Verileri Sil',
+                          'Ayarlar ve geÃ§miÅŸi temizle',
+                          Icons.delete_forever_outlined,
+                          () => _showDeleteAllDataDialog(context, ref),
+                        ),
+                        const SizedBox(height: 24),
+                        _buildStoreActionsSection(context, shareUrl),
+                        const SizedBox(height: 24),
+                        if (false)
+                        _buildSettingsTile(
+                          context,
                           'Tüm Verileri Sil',
                           'Ayarlar ve geçmişi temizle',
                           Icons.delete_forever_outlined,
                           () => _showDeleteAllDataDialog(context, ref),
+                        ),
+                        if (false) const SizedBox(height: 24),
+                        if (false)
+                        _buildSettingsTile(
+                          context,
+                          'Uygulamayı Paylaş',
+                          'Play Store linkini kopyala',
+                          Icons.share_outlined,
+                          () {
+                            Clipboard.setData(
+                              const ClipboardData(text: shareUrl),
+                            );
+                            SnackbarHelper.showSuccess(
+                              context,
+                              'Paylaşım linki panoya kopyalandı',
+                            );
+                          },
+                        ),
+                        if (false) const SizedBox(height: 24),
+                        if (false)
+                        _buildSettingsTile(
+                          context,
+                          'Uygulamayı Değerlendir',
+                          'Play Store linkini kopyala',
+                          Icons.star_outline_rounded,
+                          () {
+                            Clipboard.setData(
+                              const ClipboardData(text: shareUrl),
+                            );
+                            SnackbarHelper.showSuccess(
+                              context,
+                              'Değerlendirme linki panoya kopyalandı',
+                            );
+                          },
                         ),
                         const SizedBox(height: 40),
                         Center(
@@ -540,6 +598,96 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 4),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildMoreActionsSection(
+    BuildContext context,
+    WidgetRef ref,
+    String shareUrl,
+  ) {
+    return _buildSectionCard(
+      context,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionHeader(context, Icons.apps_rounded, 'Diğer'),
+          const SizedBox(height: 12),
+          _buildSettingsTile(
+            context,
+            'TÃ¼m Verileri Sil',
+            'Ayarlar ve geÃ§miÅŸi temizle',
+            Icons.delete_forever_outlined,
+            () => _showDeleteAllDataDialog(context, ref),
+          ),
+          _buildSettingsTile(
+            context,
+            'UygulamayÄ± PaylaÅŸ',
+            'Play Store linkini kopyala',
+            Icons.share_outlined,
+            () {
+              Clipboard.setData(ClipboardData(text: shareUrl));
+              SnackbarHelper.showSuccess(
+                context,
+                'PaylaÅŸÄ±m linki panoya kopyalandÄ±',
+              );
+            },
+          ),
+          _buildSettingsTile(
+            context,
+            'UygulamayÄ± DeÄŸerlendir',
+            'Play Store linkini kopyala',
+            Icons.star_outline_rounded,
+            () {
+              Clipboard.setData(ClipboardData(text: shareUrl));
+              SnackbarHelper.showSuccess(
+                context,
+                'DeÄŸerlendirme linki panoya kopyalandÄ±',
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStoreActionsSection(BuildContext context, String shareUrl) {
+    return _buildSectionCard(
+      context,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionHeader(context, Icons.apps_rounded, 'Di\u011fer'),
+          const SizedBox(height: 12),
+          _buildSettingsTile(
+            context,
+            'Uygulamay\u0131 Payla\u015f',
+            'WhatsApp ve di\u011fer uygulamalarda payla\u015f',
+            Icons.share_outlined,
+            () async {
+              await Share.share(shareUrl);
+            },
+          ),
+          _buildSettingsTile(
+            context,
+            'Uygulamay\u0131 De\u011ferlendir',
+            'Play Store sayfas\u0131n\u0131 a\u00e7',
+            Icons.star_outline_rounded,
+            () async {
+              final opened = await launchUrl(
+                Uri.parse(shareUrl),
+                mode: LaunchMode.externalApplication,
+              );
+              if (!opened && context.mounted) {
+                SnackbarHelper.showError(
+                  context,
+                  'Play Store linki a\u00e7\u0131lamad\u0131',
+                );
+              }
+            },
+          ),
+        ],
       ),
     );
   }

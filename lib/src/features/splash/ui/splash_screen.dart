@@ -91,10 +91,10 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeOutCubic,
     ));
 
-    // Background gradient animation — derin lacivert, logo rengiyle uyumlu
+    // Background gradient animation ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derin lacivert, logo rengiyle uyumlu
     _backgroundAnimation = ColorTween(
-      begin: const Color(0xFF1A3A6B), // navy-600 (açık)
-      end: const Color(0xFF071228),   // navy-950 (derin koyu)
+      begin: const Color(0xFF7B6CFF), // navy-600 (aÃƒÆ’Ã‚Â§Ãƒâ€žÃ‚Â±k)
+      end: const Color(0xFF5746D8),   // navy-950 (derin koyu)
     ).animate(CurvedAnimation(
       parent: _backgroundController!,
       curve: Curves.easeInOut,
@@ -183,9 +183,9 @@ class _SplashScreenState extends State<SplashScreen>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF1A3A6B), // navy-600 - açık
-                Color(0xFF0D2647), // navy-800 - orta
-                Color(0xFF071228), // navy-950 - derin
+                Color(0xFF7B6CFF),
+                Color(0xFF6F5EF7),
+                Color(0xFF5746D8),
               ],
             ),
           ),
@@ -194,28 +194,45 @@ class _SplashScreenState extends State<SplashScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 72,
-                  height: 72,
+                  width: 92,
+                  height: 92,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color(0xFFE7EEF8).withOpacity(0.16),
+                    borderRadius: BorderRadius.circular(28),
+                    color: Colors.white.withOpacity(0.16),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
+                        blurRadius: 24,
+                        offset: const Offset(0, 10),
                       ),
                     ],
                   ),
                   padding: const EdgeInsets.all(14),
                   child: Center(
                     child: Image.asset(
-                      'assets/images/splaschscren.png',
+                      'assets/images/radio_logo.png',
                       fit: BoxFit.contain,
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 18),
+                Text(
+                  'Radyo T\u00fcneli',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'T\u00fcrkiye\'nin sevilen radyolar\u0131',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white.withOpacity(0.82),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 26),
                 const CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   strokeWidth: 2.5,
@@ -237,9 +254,9 @@ class _SplashScreenState extends State<SplashScreen>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  _backgroundAnimation!.value ?? const Color(0xFF1A3A6B),
-                  const Color(0xFF0D2647), // navy-800
-                  const Color(0xFF071228), // navy-950 - derin
+                  _backgroundAnimation!.value ?? const Color(0xFF7B6CFF),
+                  const Color(0xFF6F5EF7), // navy-800
+                  const Color(0xFF5746D8),
                 ],
               ),
             ),
@@ -260,11 +277,11 @@ class _SplashScreenState extends State<SplashScreen>
                             child: Opacity(
                               opacity: _logoOpacityAnimation!.value,
                               child: Container(
-                                width: 76,
-                                height: 76,
+                                width: 96,
+                                height: 96,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(22),
-                                  color: const Color(0xFFE7EEF8).withOpacity(0.16),
+                                  borderRadius: BorderRadius.circular(28),
+                                  color: Colors.white.withOpacity(0.16),
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.45),
@@ -273,10 +290,10 @@ class _SplashScreenState extends State<SplashScreen>
                                     ),
                                   ],
                                 ),
-                                padding: const EdgeInsets.all(15),
+                                padding: const EdgeInsets.all(14),
                                 child: Center(
                                   child: Image.asset(
-                                    'assets/images/splaschscren.png',
+                                    'assets/images/radio_logo.png',
                                     fit: BoxFit.contain,
                                   ),
                                 ),
@@ -303,20 +320,20 @@ class _SplashScreenState extends State<SplashScreen>
                               children: [
                                 // App Name
                                 Text(
-                                  'Radyo Tüneli',
+                                  'Radyo T\u00fcneli',
                                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.2,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.4,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 // Tagline
                                 Text(
-                                  'Müziğin Renkli Dünyası',
+                                  'T\u00fcrkiye\'nin sevilen radyolar\u0131',
                                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                     color: Colors.white.withOpacity(0.8),
-                                    fontWeight: FontWeight.w400,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 const SizedBox(height: 40),
@@ -418,3 +435,4 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
+
