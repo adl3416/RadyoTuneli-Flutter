@@ -168,7 +168,7 @@ class SettingsScreen extends ConsumerWidget {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(16),
                                 child: Image.asset(
-                                  'assets/images/splaschscren.png',
+                                  'assets/images/icon.png',
                                   width: 72,
                                   height: 72,
                                   fit: BoxFit.contain,

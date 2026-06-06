@@ -61,9 +61,9 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/app_icon_full.png"
+  image_path: "assets/images/icon.png"
   adaptive_icon_background: "#00000000"
-  adaptive_icon_foreground: "assets/images/app_icon_full.png"
+  adaptive_icon_foreground: "assets/images/icon.png"
   min_sdk_android: 21  # Android 5.0 (API Level 21) - Samsung S9 uyumluluğu
   remove_alpha_ios: true
   # Logo boyutunu ayarla ve merkeze al
