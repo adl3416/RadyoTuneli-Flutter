@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../core/theme/app_theme.dart';
+
 import '../../../app/app_root.dart';
+import '../../../core/theme/app_theme.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -12,8 +13,8 @@ class OnboardingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IntroductionScreen(
-        globalBackgroundColor: AppTheme.lightBackground,
-        pages: _buildPages(context),
+        globalBackgroundColor: AppTheme.headerPurple,
+        pages: _buildPages(),
         onDone: () => _onIntroEnd(context),
         onSkip: () => _onIntroEnd(context),
         showSkipButton: true,
@@ -27,10 +28,11 @@ class OnboardingScreen extends StatelessWidget {
         ),
         next: Container(
           decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.16),
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: Colors.white.withOpacity(0.16)),
+            color: Colors.white.withOpacity(0.16),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: Colors.white.withOpacity(0.16)),
           ),
+          padding: const EdgeInsets.all(10),
           child: const Icon(
             Icons.arrow_forward,
             color: Colors.white,
@@ -58,68 +60,61 @@ class OnboardingScreen extends StatelessWidget {
         ),
         curve: Curves.fastLinearToSlowEaseIn,
         controlsMargin: const EdgeInsets.all(16),
-        controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+        controlsPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
         dotsDecorator: const DotsDecorator(
-          size: Size(10.0, 10.0),
+          size: Size(10, 10),
           color: Colors.white38,
-          activeSize: Size(22.0, 10.0),
+          activeSize: Size(22, 10),
           activeColor: Colors.white,
           activeShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(25.0)),
+            borderRadius: BorderRadius.all(Radius.circular(25)),
           ),
         ),
         dotsContainerDecorator: ShapeDecoration(
-          color: AppTheme.cardPurpleDark.withOpacity(0.42),
+          color: AppTheme.cardPurpleDark.withOpacity(0.35),
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
         ),
       ),
     );
   }
 
-  List<PageViewModel> _buildPages(BuildContext context) {
+  List<PageViewModel> _buildPages() {
     return [
-      // Sayfa 1: Hoş Geldiniz
       PageViewModel(
         title: "Radyo Tüneli'ne Hoş Geldiniz!",
-        body: "Türkiye'nin en iyi radyo istasyonlarını keşfedin",
-        image: _buildVintageRadioImage(),
+        body: "Türkiye'nin sevilen radyo istasyonlarını tek yerde keşfedin.",
+        image: _buildHeroImage(),
         decoration: _getPageDecoration(),
       ),
-
-      // Sayfa 2: Kategoriler
       PageViewModel(
-        title: "7 Farklı Kategori",
-        body: "Haber, müzik, spor ve daha fazlası...",
+        title: 'Farklı Kategoriler',
+        body: 'Müzik, türkü, haber ve daha fazlasına hızlıca ulaşın.',
         image: _buildPageImage(
-          icon: Icons.category,
-          color: Colors.white,
+          icon: Icons.grid_view_rounded,
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppTheme.cardPurple.withOpacity(0.8),
-              AppTheme.cardPurpleDark.withOpacity(0.6),
+              AppTheme.cardPurple.withOpacity(0.9),
+              AppTheme.cardPurpleDark.withOpacity(0.75),
             ],
           ),
         ),
         decoration: _getPageDecoration(),
       ),
-
-      // Sayfa 3: Android Auto
       PageViewModel(
-        title: "Arabada da Dinleyin",
-        body: "Android Auto ve CarPlay desteği",
+        title: 'Arabada da Dinleyin',
+        body: 'Araç kullanımına uygun pratik deneyimle yayınları sürdürebilin.',
         image: _buildPageImage(
-          icon: Icons.directions_car,
-          color: Colors.white,
+          icon: Icons.directions_car_filled_rounded,
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppTheme.orange400.withOpacity(0.8),
-              AppTheme.yellowOrange.withOpacity(0.6),
+              AppTheme.orange400.withOpacity(0.95),
+              AppTheme.yellowOrange.withOpacity(0.82),
             ],
           ),
         ),
@@ -130,59 +125,93 @@ class OnboardingScreen extends StatelessWidget {
 
   Widget _buildPageImage({
     required IconData icon,
-    required Color color,
     required Gradient gradient,
   }) {
     return Container(
-      width: 200,
-      height: 200,
+      width: 196,
+      height: 196,
       decoration: BoxDecoration(
         gradient: gradient,
-        borderRadius: BorderRadius.circular(100),
+        borderRadius: BorderRadius.circular(98),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: Colors.black.withOpacity(0.22),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Icon(
         icon,
-        size: 80,
-        color: color,
+        size: 82,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildHeroImage() {
+    return Container(
+      width: 224,
+      height: 224,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withOpacity(0.18),
+            Colors.white.withOpacity(0.08),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(36),
+        border: Border.all(color: Colors.white.withOpacity(0.16)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.18),
+            blurRadius: 32,
+            offset: const Offset(0, 16),
+          ),
+        ],
+      ),
+      child: Center(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: Image.asset(
+            'assets/images/radioicon.png',
+            width: 168,
+            height: 168,
+            fit: BoxFit.contain,
+          ),
+        ),
       ),
     );
   }
 
   PageDecoration _getPageDecoration() {
-    return PageDecoration(
-      titleTextStyle: const TextStyle(
-        fontSize: 24.0,
+    return const PageDecoration(
+      titleTextStyle: TextStyle(
+        fontSize: 24,
         fontWeight: FontWeight.w700,
         color: Colors.white,
       ),
-      bodyTextStyle: const TextStyle(
-        fontSize: 16.0,
+      bodyTextStyle: TextStyle(
+        fontSize: 16,
         color: Colors.white70,
         height: 1.4,
       ),
-      imagePadding: const EdgeInsets.only(top: 60),
-      pageColor: AppTheme.lightBackground,
-      contentMargin: const EdgeInsets.symmetric(horizontal: 16),
-      titlePadding: const EdgeInsets.only(top: 40, bottom: 16),
-      bodyPadding: const EdgeInsets.symmetric(horizontal: 16),
+      imagePadding: EdgeInsets.only(top: 40),
+      pageColor: AppTheme.headerPurple,
+      contentMargin: EdgeInsets.symmetric(horizontal: 16),
+      titlePadding: EdgeInsets.only(top: 32, bottom: 16),
+      bodyPadding: EdgeInsets.symmetric(horizontal: 16),
     );
   }
 
   void _onIntroEnd(BuildContext context) async {
     HapticFeedback.lightImpact();
-    
-    // Onboarding'in tamamlandığını kaydet
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_completed', true);
 
-    // Ana uygulamaya geç
     if (context.mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
@@ -190,44 +219,5 @@ class OnboardingScreen extends StatelessWidget {
         ),
       );
     }
-  }
-
-  Widget _buildVintageRadioImage() {
-    return Container(
-      width: 200,
-      height: 200,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppTheme.cardPurpleDark.withOpacity(0.72),
-            AppTheme.cardPurple.withOpacity(0.38),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.08),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.cardPurpleDark.withOpacity(0.34),
-            blurRadius: 28,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-      child: Center(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(25),
-          child: Image.asset(
-            'assets/images/radio_logo.png',
-            width: 120,
-            height: 120,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-    );
   }
 }

@@ -91,9 +91,9 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeOutCubic,
     ));
 
-    // Background gradient animation ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derin lacivert, logo rengiyle uyumlu
+    // Background gradient animation ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â derin lacivert, logo rengiyle uyumlu
     _backgroundAnimation = ColorTween(
-      begin: const Color(0xFF7B6CFF), // navy-600 (aÃƒÆ’Ã‚Â§Ãƒâ€žÃ‚Â±k)
+      begin: const Color(0xFF7B6CFF), // navy-600 (aÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã¢â‚¬Å¾Ãƒâ€šÃ‚Â±k)
       end: const Color(0xFF5746D8),   // navy-950 (derin koyu)
     ).animate(CurvedAnimation(
       parent: _backgroundController!,
@@ -210,7 +210,7 @@ class _SplashScreenState extends State<SplashScreen>
                   padding: const EdgeInsets.all(14),
                   child: Center(
                     child: Image.asset(
-                      'assets/images/radio_logo.png',
+                      'assets/images/radio_logo_clean.png',
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -293,7 +293,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 padding: const EdgeInsets.all(14),
                                 child: Center(
                                   child: Image.asset(
-                                    'assets/images/radio_logo.png',
+                                    'assets/images/radio_logo_clean.png',
                                     fit: BoxFit.contain,
                                   ),
                                 ),

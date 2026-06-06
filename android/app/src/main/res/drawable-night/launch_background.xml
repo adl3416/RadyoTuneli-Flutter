@@ -6,6 +6,6 @@
         </shape>
     </item>
     <item>
-        <bitmap android:gravity="center" android:src="@drawable/ic_launcher_foreground"/>
+        <bitmap android:gravity="center" android:src="@drawable/splash_mark"/>
     </item>
 </layer-list>

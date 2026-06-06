@@ -62,12 +62,12 @@ flutter_icons:
   android: true
   ios: true
   image_path: "assets/images/app_icon_full.png"
-  adaptive_icon_background: "#0D2647"  # Deep navy
-  adaptive_icon_foreground: "assets/images/app_icon_foreground.png"
+  adaptive_icon_background: "#00000000"
+  adaptive_icon_foreground: "assets/images/app_icon_full.png"
   min_sdk_android: 21  # Android 5.0 (API Level 21) - Samsung S9 uyumluluğu
   remove_alpha_ios: true
   # Logo boyutunu ayarla ve merkeze al
-  adaptive_icon_padding: 8  # foreground asset already includes spacing
+  adaptive_icon_padding: 0  # foreground asset now includes the spacing directly
 
 flutter:
   uses-material-design: true
@@ -80,12 +80,12 @@ flutter:
 # Splash Screen Configuration
 flutter_native_splash:
   color: "#6F5EF7"
-  image: assets/images/radio_logo.png
+  image: assets/images/radioicon.png
   color_dark: "#5B4CF1"
-  image_dark: assets/images/radio_logo.png
+  image_dark: assets/images/radioicon.png
   fullscreen: true
   android_12:
-    image: assets/images/radio_logo.png
+    image: assets/images/radioicon.png
     icon_background_color: "#6F5EF7"
     color: "#6F5EF7"
     color_dark: "#5B4CF1"
