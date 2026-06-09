@@ -1321,4 +1321,108 @@ class AppTheme {
       ),
     );
   }
+
+  // ⚪ BEYAZ TEMA
+  static const Color beyazBackgroundFull = Color(0xFFFFFFFF);
+  static const Color beyazCardGrey = Color(0xFFF2F4F7);
+  static const Color beyazTextDark = Color(0xFF1D2939);
+
+  static ThemeData get beyazThemeLight {
+    final textTheme = GoogleFonts.interTextTheme().apply(
+      bodyColor: beyazTextDark,
+      displayColor: beyazTextDark,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.light(
+        primary: beyazTextDark,
+        secondary: Color(0xFF667085),
+        surface: beyazBackgroundFull,
+        onPrimary: beyazBackgroundFull,
+        onSecondary: beyazBackgroundFull,
+        onSurface: beyazTextDark,
+        surfaceVariant: beyazCardGrey,
+      ),
+      scaffoldBackgroundColor: beyazBackgroundFull,
+      textTheme: textTheme,
+      appBarTheme: AppBarTheme(
+        backgroundColor: beyazBackgroundFull,
+        foregroundColor: beyazTextDark,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: beyazTextDark,
+          fontSize: 20,
+        ),
+        iconTheme: IconThemeData(color: beyazTextDark),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: beyazBackgroundFull,
+        selectedItemColor: beyazTextDark,
+        unselectedItemColor: Color(0xFF98A2B3),
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+      ),
+      cardTheme: CardThemeData(
+        color: beyazCardGrey,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Color(0xFFEAECF0)),
+        ),
+      ),
+      listTileTheme: ListTileThemeData(
+        tileColor: beyazCardGrey,
+        textColor: beyazTextDark,
+        iconColor: beyazTextDark,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
+  static ThemeData get beyazThemeDark {
+    // For "Beyaz" theme, we might still want a light-ish dark mode or just a dark variant
+    // But the user asked for white background and grey cards.
+    // So "Beyaz Dark" could be a slightly darker grey background with light grey cards?
+    // Actually, usually users expect a dark mode.
+    // I'll make it a "Soft Dark" theme.
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.dark(
+        primary: Color(0xFFF9FAFB),
+        secondary: Color(0xFF98A2B3),
+        surface: Color(0xFF101828),
+        onPrimary: Color(0xFF101828),
+        onSecondary: Color(0xFF101828),
+        onSurface: Color(0xFFF9FAFB),
+        surfaceVariant: Color(0xFF1D2939),
+      ),
+      scaffoldBackgroundColor: Color(0xFF101828),
+      appBarTheme: AppBarTheme(
+        backgroundColor: Color(0xFF101828),
+        foregroundColor: Color(0xFFF9FAFB),
+        elevation: 0,
+        centerTitle: true,
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: Color(0xFF101828),
+        selectedItemColor: Color(0xFFF9FAFB),
+        unselectedItemColor: Color(0xFF667085),
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+      ),
+      cardTheme: CardThemeData(
+        color: Color(0xFF1D2939),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Color(0xFF344054)),
+        ),
+      ),
+    );
+  }
 }

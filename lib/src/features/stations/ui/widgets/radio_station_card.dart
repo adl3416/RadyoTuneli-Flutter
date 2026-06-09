@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'radio_logo.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../shared/providers/color_scheme_provider.dart';
 
-class RadioStationCard extends StatelessWidget {
+class RadioStationCard extends ConsumerWidget {
   final String title;
   final String subtitle;
   final String? imageUrl;
@@ -34,23 +36,34 @@ class RadioStationCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-    final primary = backgroundColor ?? colorScheme.primary;
-    final cardStart = backgroundColor == null
+    final themeName = ref.watch(colorSchemeProvider);
+
+    // Beyaz veya Sade tema için özel stil
+    final isBeyazTheme = themeName == 'beyaz' || themeName == 'sade';
+    
+    final effectiveBgColor = backgroundColor ?? (isBeyazTheme ? colorScheme.surfaceVariant : null);
+    
+    final primary = effectiveBgColor ?? colorScheme.primary;
+    final cardStart = effectiveBgColor == null
         ? (isPlaying ? const Color(0xFF9A63FF) : const Color(0xFF7E57E7))
         : HSLColor.fromColor(primary).withLightness(0.44).toColor();
-    final cardMid = backgroundColor == null
+    final cardMid = effectiveBgColor == null
         ? (isPlaying ? const Color(0xFF7744EA) : const Color(0xFF5B38D2))
         : HSLColor.fromColor(primary).withLightness(0.37).toColor();
-    final cardEnd = backgroundColor == null
+    final cardEnd = effectiveBgColor == null
         ? (isPlaying ? const Color(0xFF4520BE) : const Color(0xFF311C82))
         : HSLColor.fromColor(primary).withLightness(0.27).toColor();
-    final resolvedTitleColor = titleColor ?? Colors.white;
-    final resolvedSubtitleColor =
-        subtitleColor ?? const Color(0xFFE2D9FF).withValues(alpha: 0.92);
-    final isLightCard = backgroundColor != null &&
-        ThemeData.estimateBrightnessForColor(backgroundColor!) ==
+
+    final resolvedTitleColor = titleColor ?? (isBeyazTheme ? colorScheme.onSurface : Colors.white);
+    final resolvedSubtitleColor = subtitleColor ??
+        (isBeyazTheme
+            ? colorScheme.onSurface.withValues(alpha: 0.64)
+            : const Color(0xFFE2D9FF).withValues(alpha: 0.92));
+
+    final isLightCard = effectiveBgColor != null &&
+        ThemeData.estimateBrightnessForColor(effectiveBgColor) ==
             Brightness.light;
     final resolvedFavoriteBg = isLightCard
         ? const Color(0xFFFFFFFF)
@@ -72,15 +85,15 @@ class RadioStationCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      height: 74,
-      margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+      height: 64,
+      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
       decoration: BoxDecoration(
-        color: backgroundColor,
-        gradient: backgroundColor == null ? themeGradient : null,
+        color: effectiveBgColor,
+        gradient: effectiveBgColor == null ? themeGradient : null,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: (backgroundColor == null ? cardMid : primary).withValues(
+            color: (effectiveBgColor == null ? cardMid : primary).withValues(
               alpha: isLightCard
                   ? (isPlaying ? 0.10 : 0.06)
                   : (isPlaying ? 0.48 : 0.34),

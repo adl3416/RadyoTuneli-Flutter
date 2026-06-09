@@ -425,6 +425,7 @@ class SettingsScreen extends ConsumerWidget {
               _buildColorOption(context, ref, 'Karadeniz', 'karadeniz', Colors.blue),
               _buildColorOption(context, ref, 'Timsah', 'timsah', Colors.green),
               _buildColorOption(context, ref, 'Sade', 'sade', const Color(0xFF3D3D3D)),
+              _buildColorOption(context, ref, 'Beyaz', 'beyaz', Colors.white),
             ],
           ),
         ],

@@ -107,6 +107,14 @@ class FavoritesScreen extends ConsumerWidget {
                                   final station = favorites[index];
                                   final isPlaying = ref.watch(playerStateProvider).currentStation?.id == station.id && ref.watch(playerStateProvider).isPlaying;
                                   
+                                  // Zebra effect for 'beyaz' and 'sade' themes
+                                  Color? zebraColor;
+                                  if (colorSchemeStr == 'beyaz') {
+                                    zebraColor = index % 2 == 0 ? const Color(0xFFFAFBFC) : const Color(0xFFF2F4F6);
+                                  } else if (colorSchemeStr == 'sade') {
+                                    zebraColor = index % 2 == 0 ? Colors.white : const Color(0xFFE8E8E8);
+                                  }
+
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                                     child: RadioStationCard(
@@ -127,7 +135,7 @@ class FavoritesScreen extends ConsumerWidget {
                                         }
                                       },
                                       onFavoriteToggle: () => ref.read(favoritesProvider.notifier).toggleFavorite(station.id),
-                                      backgroundColor: colorSchemeStr == 'kanarya' ? AppTheme.kanaryaSecondary : (colorSchemeStr == 'aslan' ? AppTheme.aslanRed : (colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null)))),
+                                      backgroundColor: zebraColor ?? (colorSchemeStr == 'kanarya' ? AppTheme.kanaryaSecondary : (colorSchemeStr == 'aslan' ? AppTheme.aslanRed : (colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null))))),
                                       titleColor: colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary : (colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null)))),
                                       subtitleColor: colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary.withOpacity(0.9) : (colorSchemeStr == 'aslan' ? AppTheme.aslanYellow.withOpacity(0.9) : (colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi.withOpacity(0.9) : (colorSchemeStr == 'kartal' ? AppTheme.kartalWhite.withOpacity(0.9) : (colorSchemeStr == 'timsah' ? AppTheme.timsahGreen.withOpacity(0.95) : null)))),
                                       playButtonBackgroundColor: colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null))),

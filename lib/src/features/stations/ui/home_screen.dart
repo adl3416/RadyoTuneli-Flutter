@@ -58,9 +58,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final isDark = theme.brightness == Brightness.dark;
     final appBarBg = _resolveAppBarBg(theme, colorSchemeStr);
     final appBarFg = _resolveAppBarFg(theme, colorSchemeStr);
-    final pageBottom =
-        colorSchemeStr == 'varsayilan' ? const Color(0xFFF8FAFC) : theme.scaffoldBackgroundColor;
-    final pageTop = colorSchemeStr == 'varsayilan'
+    final pageBottom = (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'beyaz')
+        ? theme.scaffoldBackgroundColor
+        : theme.scaffoldBackgroundColor;
+    final pageTop = (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'beyaz')
         ? pageBottom
         : Color.lerp(
             appBarBg,
@@ -80,8 +81,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       drawer: _buildDrawer(appBarBg, appBarFg),
       body: Container(
         decoration: BoxDecoration(
-          color: colorSchemeStr == 'varsayilan' ? pageBottom : null,
-          gradient: colorSchemeStr == 'varsayilan'
+          color: (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'beyaz')
+              ? pageBottom
+              : null,
+          gradient: (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'beyaz')
               ? null
               : LinearGradient(
                   begin: Alignment.topCenter,
@@ -328,7 +331,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               ?.copyWith(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 16,
-                                                color: const Color(0xFF27314D),
+                                                color: colorSchemeStr == 'beyaz' ? AppTheme.beyazTextDark : const Color(0xFF27314D),
                                               ),
                                         ),
                                         recentlyPlayedAsync.maybeWhen(
@@ -464,7 +467,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         ?.copyWith(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 16,
-                                          color: const Color(0xFF27314D),
+                                          color: colorSchemeStr == 'beyaz' ? AppTheme.beyazTextDark : const Color(0xFF27314D),
                                         ),
                                   ),
                                 ),
@@ -474,12 +477,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         }
                         final station =
                             filteredStations[index - (searchQuery.isEmpty ? 2 : 1)];
+                        
+                        // Zebra effect for 'beyaz' and 'sade' themes
+                        Color? zebraColor;
+                        if (colorSchemeStr == 'beyaz') {
+                          final isEven = (index - (searchQuery.isEmpty ? 2 : 1)) % 2 == 0;
+                          zebraColor = isEven ? const Color(0xFFFAFBFC) : const Color(0xFFF2F4F6);
+                        } else if (colorSchemeStr == 'sade') {
+                          final isEven = (index - (searchQuery.isEmpty ? 2 : 1)) % 2 == 0;
+                          zebraColor = isEven ? Colors.white : const Color(0xFFE8E8E8);
+                        }
+
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
                           child: RadioStationCard(
                             title: station.name,
                             subtitle: station.genre ?? 'Turkish Radio',
                             imageUrl: station.logoUrl,
+                            backgroundColor: zebraColor ?? _cardBackground(colorSchemeStr),
                             isPlaying:
                                 playerState.currentStation?.id == station.id &&
                                     playerState.isPlaying,
@@ -509,7 +524,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             onFavoriteToggle: () => ref
                                 .read(favoritesProvider.notifier)
                                 .toggleFavorite(station.id),
-                            backgroundColor: _cardBackground(colorSchemeStr),
                             titleColor: _cardTitleColor(colorSchemeStr),
                             subtitleColor: _cardSubtitleColor(colorSchemeStr),
                             playButtonBackgroundColor:
@@ -834,6 +848,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return AppTheme.timsahGreen;
       case 'sade':
         return AppTheme.sadeDarkGrey;
+      case 'beyaz':
+        return AppTheme.beyazBackgroundFull;
       default:
         return theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary;
     }
@@ -853,6 +869,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return AppTheme.timsahWhite;
       case 'sade':
         return AppTheme.sadeWhite;
+      case 'beyaz':
+        return AppTheme.beyazTextDark;
       default:
         return theme.appBarTheme.foregroundColor ?? theme.colorScheme.onPrimary;
     }
@@ -870,6 +888,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return AppTheme.kartalBlack;
       case 'timsah':
         return AppTheme.timsahGreen;
+      case 'sade':
+        return AppTheme.sadeWhite;
+      case 'beyaz':
+        return AppTheme.beyazCardGrey;
       case 'varsayilan':
         return Colors.white;
       default:
