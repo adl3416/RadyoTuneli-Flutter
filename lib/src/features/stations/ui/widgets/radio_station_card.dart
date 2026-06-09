@@ -102,12 +102,6 @@ class RadioStationCard extends ConsumerWidget {
             offset: Offset(0, isLightCard ? 8 : 12),
           ),
         ],
-        border: Border.all(
-          color: isLightCard
-              ? const Color(0xFFDCE3EC)
-              : Colors.white.withValues(alpha: isPlaying ? 0.24 : 0.16),
-          width: isPlaying ? 1.2 : 1,
-        ),
       ),
       child: Material(
         color: Colors.transparent,

@@ -52,16 +52,27 @@ class MiniPlayer extends ConsumerWidget {
     return Container(
       height: 96 + bottomInset,
       decoration: palette.containerDecoration,
-        child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.zero,
-        child: InkWell(
-          borderRadius: BorderRadius.zero,
-          onTap: () => _showFullScreenPlayer(context),
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(14, 12, 14, 12 + bottomInset),
-            child: Row(
-              children: [
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _RhythmWavePainter(
+                  color: palette.accent.withValues(alpha: 0.24),
+                ),
+              ),
+            ),
+          ),
+          Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.zero,
+            child: InkWell(
+              borderRadius: BorderRadius.zero,
+              onTap: () => _showFullScreenPlayer(context),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(14, 12, 14, 12 + bottomInset),
+                child: Row(
+                  children: [
                 Container(
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
@@ -199,10 +210,12 @@ class MiniPlayer extends ConsumerWidget {
                       padding: EdgeInsets.zero,
                     ),
                   ),
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -269,9 +282,9 @@ class _PlayerPalette {
     final accent = const Color(0xFF98B5FF);
 
     return _PlayerPalette(
-      background: background,
-      backgroundSoft: backgroundSoft,
-      border: const Color(0x66A78BFF),
+      background: background.withValues(alpha: 0.97),
+      backgroundSoft: backgroundSoft.withValues(alpha: 0.93),
+      border: const Color(0x66A78BFF).withValues(alpha: 0.84),
       text: text,
       muted: const Color(0xFFD7CBFF),
       accent: accent,
@@ -292,8 +305,8 @@ class _PlayerPalette {
         border: Border(top: BorderSide(color: border, width: 1.1)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xAA1A0F47),
-            blurRadius: 26,
+            color: const Color(0xAA1A0F47).withValues(alpha: 0.42),
+            blurRadius: 20,
             offset: const Offset(0, -8),
           ),
         ],
@@ -419,6 +432,115 @@ class _NeonRingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_NeonRingPainter old) => old.progress != progress;
+}
+
+class _RhythmWavePainter extends CustomPainter {
+  final Color color;
+
+  const _RhythmWavePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final effectWidth = size.width * 0.18;
+    final startX = size.width * 0.52 - (effectWidth / 2);
+    final endX = startX + effectWidth;
+    final baseY = size.height * 0.70;
+    final width = endX - startX;
+    const heights = [
+      6.0, 10.0, 16.0, 24.0, 30.0, 22.0, 14.0, 9.0,
+      15.0, 23.0, 32.0, 42.0, 30.0, 20.0, 12.0, 8.0,
+    ];
+    final spacing = width / (heights.length - 1);
+    const neonPink = Color(0xFFFF4FD8);
+    const neonBlue = Color(0xFF5B7CFF);
+
+    for (int i = 0; i < 4; i++) {
+      final path = Path()..moveTo(startX - 16, baseY + 4 + i * 4);
+      path.quadraticBezierTo(
+        startX + width * 0.20,
+        baseY - 18 - i * 3,
+        startX + width * 0.42,
+        baseY + 1 + i * 2,
+      );
+      path.quadraticBezierTo(
+        startX + width * 0.68,
+        baseY + 16 + i * 2,
+        endX + 8,
+        baseY - 6 + i * 3,
+      );
+
+      final wavePaint = Paint()
+        ..color = (i.isEven ? neonPink : neonBlue).withValues(alpha: 0.08 - i * 0.01)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.5);
+      canvas.drawPath(path, wavePaint);
+    }
+
+    final glowFill = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: [
+          Colors.transparent,
+          neonPink.withValues(alpha: 0.08),
+          neonBlue.withValues(alpha: 0.08),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.26, 0.74, 1.0],
+      ).createShader(Rect.fromLTWH(startX, 0, width, size.height));
+    canvas.drawRect(
+      Rect.fromLTWH(startX - 6, size.height * 0.24, width + 8, size.height * 0.40),
+      glowFill,
+    );
+
+    for (int i = 0; i < heights.length; i++) {
+      final x = startX + spacing * i;
+      final h = heights[i];
+      final top = baseY - h;
+      final barColor = Color.lerp(neonPink, neonBlue, i / (heights.length - 1))!;
+
+      final glowPaint = Paint()
+        ..color = barColor.withValues(alpha: 0.28)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 5
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+
+      final barPaint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white,
+            barColor,
+            barColor.withValues(alpha: 0.85),
+          ],
+        ).createShader(Rect.fromLTWH(x - 1.5, top, 3, h))
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.9
+        ..strokeCap = StrokeCap.round;
+
+      canvas.drawLine(Offset(x, top), Offset(x, baseY), glowPaint);
+      canvas.drawLine(Offset(x, top), Offset(x, baseY), barPaint);
+    }
+
+    final notePaint = Paint()
+      ..color = neonBlue.withValues(alpha: 0.42)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+    final noteX = endX - 8;
+    final noteY = size.height * 0.26;
+    canvas.drawLine(Offset(noteX, noteY), Offset(noteX, noteY + 10), notePaint);
+    canvas.drawLine(Offset(noteX + 4, noteY - 3), Offset(noteX + 4, noteY + 7), notePaint);
+    canvas.drawLine(Offset(noteX, noteY), Offset(noteX + 4, noteY - 3), notePaint);
+    canvas.drawCircle(Offset(noteX - 1.5, noteY + 10), 1.6, Paint()..color = neonBlue.withValues(alpha: 0.42));
+    canvas.drawCircle(Offset(noteX + 2.5, noteY + 7), 1.6, Paint()..color = neonBlue.withValues(alpha: 0.42));
+  }
+
+  @override
+  bool shouldRepaint(_RhythmWavePainter oldDelegate) =>
+      oldDelegate.color != color;
 }
 
 class FullScreenPlayer extends ConsumerWidget {
