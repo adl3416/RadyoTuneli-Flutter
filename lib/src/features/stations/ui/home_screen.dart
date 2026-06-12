@@ -118,8 +118,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ? _buildSearchHeader(appBarFg)
                             : _buildNormalHeader(appBarFg),
                       ),
-                      if (!_isSearchActive)
-                        _buildCategoryChips(appBarBg, appBarFg),
                     ],
                   ),
                 ),

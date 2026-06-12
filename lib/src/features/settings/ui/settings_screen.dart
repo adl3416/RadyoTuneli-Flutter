@@ -84,7 +84,7 @@ class SettingsScreen extends ConsumerWidget {
                 Expanded(
                   child: Container(
                     width: double.infinity,
-                    color: theme.scaffoldBackgroundColor,
+                    color: Colors.white,
                     child: ListView(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -209,11 +209,15 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionCard(BuildContext context, Widget child) {
+  Widget _buildSectionCard(
+    BuildContext context,
+    Widget child, {
+    Color? backgroundColor,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: backgroundColor ?? const Color(0xFFF3F4F6),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
@@ -409,6 +413,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget _buildColorSchemeSection(BuildContext context, WidgetRef ref) {
     return _buildSectionCard(
       context,
+      backgroundColor: const Color(0xFFF3F4F6),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -490,7 +495,7 @@ class SettingsScreen extends ConsumerWidget {
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
+          color: const Color(0xFFF3F4F6),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: theme.dividerColor.withValues(alpha: 0.5)),
         ),
@@ -545,7 +550,7 @@ class SettingsScreen extends ConsumerWidget {
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
+          color: const Color(0xFFF3F4F6),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: theme.dividerColor.withValues(alpha: 0.5)),
         ),
@@ -783,7 +788,9 @@ class SettingsScreen extends ConsumerWidget {
 
   Widget _buildDrawer(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-    final iconColor = colorScheme.onSurface.withValues(alpha: 0.88);
+    final textColor =
+        Theme.of(context).textTheme.bodyLarge?.color ?? colorScheme.onSurface;
+    final drawerIconColor = colorScheme.onSurface.withValues(alpha: 0.88);
     final drawerBg = Theme.of(context).appBarTheme.backgroundColor ??
         Theme.of(context).colorScheme.primary;
     final drawerFg = Theme.of(context).appBarTheme.foregroundColor ??
@@ -791,59 +798,147 @@ class SettingsScreen extends ConsumerWidget {
 
     return Drawer(
       backgroundColor: colorScheme.surface,
-      child: Column(
+      child: ListView(
+        padding: EdgeInsets.zero,
         children: [
           Container(
             width: double.infinity,
             height: 150,
-            color: drawerBg,
-            padding: const EdgeInsets.only(top: 50, left: 20),
-            child: Text(
-              'Radyo T\u00fcneli',
-              style: TextStyle(color: drawerFg, fontSize: 24),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [drawerBg, Color.lerp(drawerBg, Colors.black, 0.16)!],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: drawerBg.withValues(alpha: 0.18),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.only(top: 50, left: 20, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Icon(Icons.radio, color: drawerFg, size: 28),
+                const SizedBox(height: 6),
+                Text(
+                  'Radyo T\u00fcneli',
+                  style: TextStyle(
+                    color: drawerFg,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
+          const SizedBox(height: 8),
           ListTile(
-            leading: Icon(Icons.home, color: iconColor),
+            leading: Icon(Icons.home, color: drawerIconColor),
             title: Text(
               'Ana Sayfa',
-              style: TextStyle(
-                color: colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
             ),
             onTap: () {
               Navigator.pop(context);
               ref.read(selectedTabProvider.notifier).state = 0;
             },
           ),
+          Divider(
+            height: 1,
+            indent: 16,
+            endIndent: 16,
+            color: drawerFg.withValues(alpha: 0.12),
+          ),
           ListTile(
-            leading: Icon(Icons.favorite, color: iconColor),
+            leading: const Icon(Icons.favorite, color: Color(0xFFFB7185)),
             title: Text(
               'Favoriler',
-              style: TextStyle(
-                color: colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
             ),
             onTap: () {
               Navigator.pop(context);
               ref.read(selectedTabProvider.notifier).state = 1;
             },
           ),
+          Divider(
+            height: 1,
+            indent: 16,
+            endIndent: 16,
+            color: drawerFg.withValues(alpha: 0.12),
+          ),
           ListTile(
-            leading: Icon(Icons.settings, color: iconColor),
+            leading: Icon(Icons.settings, color: drawerIconColor),
             title: Text(
               'Ayarlar',
-              style: TextStyle(
-                color: colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
             ),
             onTap: () => Navigator.pop(context),
           ),
+          Divider(
+            height: 1,
+            indent: 16,
+            endIndent: 16,
+            color: drawerFg.withValues(alpha: 0.12),
+          ),
+          ExpansionTile(
+            leading: Icon(Icons.category_outlined, color: drawerIconColor),
+            iconColor: drawerIconColor,
+            collapsedIconColor: drawerIconColor,
+            title: Text(
+              'Kategoriler',
+              style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
+            ),
+            children: [
+              _buildDrawerCategoryTile(context, ref, 'muzik', 'Müzik', Icons.music_note),
+              _buildDrawerCategoryTile(context, ref, 'turku', 'Türkü', Icons.queue_music),
+              _buildDrawerCategoryTile(context, ref, 'haber', 'Haber', Icons.article),
+              _buildDrawerCategoryTile(context, ref, 'spor', 'Spor', Icons.sports_soccer),
+              _buildDrawerCategoryTile(context, ref, 'dini', 'Dini', Icons.mosque),
+              _buildDrawerCategoryTile(context, ref, 'arabesk', 'Arabesk', Icons.mic),
+              _buildDrawerCategoryTile(context, ref, 'yerel', 'Yerel', Icons.location_on),
+            ],
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDrawerCategoryTile(
+    BuildContext context,
+    WidgetRef ref,
+    String id,
+    String title,
+    IconData icon,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isSelected = ref.watch(selectedCategoryProvider) == id;
+
+    return ListTile(
+      contentPadding: const EdgeInsets.only(left: 32, right: 16),
+      leading: Icon(
+        icon,
+        size: 20,
+        color: isSelected
+            ? _resolvedSectionIconColor(context)
+            : colorScheme.onSurface.withValues(alpha: 0.88),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: colorScheme.onSurface,
+          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+        ),
+      ),
+      onTap: () {
+        ref.read(selectedCategoryProvider.notifier).state = id;
+        ref.read(selectedTabProvider.notifier).state = 0;
+        Navigator.pop(context);
+      },
     );
   }
 }

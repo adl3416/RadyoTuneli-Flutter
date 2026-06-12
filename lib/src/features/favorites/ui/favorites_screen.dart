@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../stations/data/stations_provider.dart';
 import '../../stations/ui/widgets/radio_station_card.dart';
 import '../data/favorites_provider.dart';
 import '../../player/data/player_provider.dart';
@@ -160,6 +161,8 @@ class FavoritesScreen extends ConsumerWidget {
 
   Widget _buildDrawer(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textColor =
+        Theme.of(context).textTheme.bodyLarge?.color ?? colorScheme.onSurface;
     final drawerBg = Theme.of(context).appBarTheme.backgroundColor ??
         Theme.of(context).colorScheme.primary;
     final drawerFg = Theme.of(context).appBarTheme.foregroundColor ??
@@ -168,38 +171,148 @@ class FavoritesScreen extends ConsumerWidget {
 
     return Drawer(
       backgroundColor: colorScheme.surface,
-      child: Column(
+      child: ListView(
+        padding: EdgeInsets.zero,
         children: [
           Container(
             width: double.infinity,
             height: 150,
-            color: drawerBg,
-            padding: const EdgeInsets.only(top: 50, left: 20),
-            child: Text('Radyo Tüneli', style: TextStyle(color: drawerFg, fontSize: 24)),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [drawerBg, Color.lerp(drawerBg, Colors.black, 0.16)!],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: drawerBg.withValues(alpha: 0.18),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.only(top: 50, left: 20, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Icon(Icons.radio, color: drawerFg, size: 28),
+                const SizedBox(height: 6),
+                Text(
+                  'Radyo Tüneli',
+                  style: TextStyle(
+                    color: drawerFg,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(height: 8),
           ListTile(
             leading: Icon(Icons.home, color: drawerIconColor),
-            title: const Text('Ana Sayfa'),
+            title: Text(
+              'Ana Sayfa',
+              style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
+            ),
             onTap: () {
               Navigator.pop(context);
               ref.read(selectedTabProvider.notifier).state = 0;
             },
           ),
+          Divider(
+            height: 1,
+            indent: 16,
+            endIndent: 16,
+            color: drawerFg.withValues(alpha: 0.12),
+          ),
           ListTile(
             leading: const Icon(Icons.favorite, color: Color(0xFFFB7185)),
-            title: const Text('Favoriler'),
-            onTap: () => Navigator.pop(context),
+            title: Text(
+              'Favoriler',
+              style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              ref.read(selectedTabProvider.notifier).state = 1;
+            },
+          ),
+          Divider(
+            height: 1,
+            indent: 16,
+            endIndent: 16,
+            color: drawerFg.withValues(alpha: 0.12),
           ),
           ListTile(
             leading: Icon(Icons.settings, color: drawerIconColor),
-            title: const Text('Ayarlar'),
+            title: Text(
+              'Ayarlar',
+              style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
+            ),
             onTap: () {
               Navigator.pop(context);
               ref.read(selectedTabProvider.notifier).state = 2;
             },
           ),
+          Divider(
+            height: 1,
+            indent: 16,
+            endIndent: 16,
+            color: drawerFg.withValues(alpha: 0.12),
+          ),
+          ExpansionTile(
+            leading: Icon(Icons.category_outlined, color: drawerIconColor),
+            iconColor: drawerIconColor,
+            collapsedIconColor: drawerIconColor,
+            title: Text(
+              'Kategoriler',
+              style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
+            ),
+            children: [
+              _buildDrawerCategoryTile(context, ref, 'muzik', 'Müzik', Icons.music_note, textColor),
+              _buildDrawerCategoryTile(context, ref, 'turku', 'Türkü', Icons.queue_music, textColor),
+              _buildDrawerCategoryTile(context, ref, 'haber', 'Haber', Icons.article, textColor),
+              _buildDrawerCategoryTile(context, ref, 'spor', 'Spor', Icons.sports_soccer, textColor),
+              _buildDrawerCategoryTile(context, ref, 'dini', 'Dini', Icons.mosque, textColor),
+              _buildDrawerCategoryTile(context, ref, 'arabesk', 'Arabesk', Icons.mic, textColor),
+              _buildDrawerCategoryTile(context, ref, 'yerel', 'Yerel', Icons.location_on, textColor),
+            ],
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDrawerCategoryTile(
+    BuildContext context,
+    WidgetRef ref,
+    String id,
+    String title,
+    IconData icon,
+    Color textColor,
+  ) {
+    final isSelected = ref.watch(selectedCategoryProvider) == id;
+
+    return ListTile(
+      contentPadding: const EdgeInsets.only(left: 32, right: 16),
+      leading: Icon(
+        icon,
+        size: 20,
+        color: isSelected ? AppTheme.gradientBlue : textColor,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: textColor,
+          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+        ),
+      ),
+      onTap: () {
+        ref.read(selectedCategoryProvider.notifier).state = id;
+        ref.read(selectedTabProvider.notifier).state = 0;
+        Navigator.pop(context);
+      },
     );
   }
 }
