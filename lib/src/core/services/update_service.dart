@@ -13,6 +13,7 @@ class UpdateStatus {
   const UpdateStatus({
     required this.isSupported,
     required this.isUpdateAvailable,
+    required this.checkFailed,
     required this.actionType,
     required this.availableVersionCode,
     required this.stalenessDays,
@@ -24,6 +25,7 @@ class UpdateStatus {
 
   final bool isSupported;
   final bool isUpdateAvailable;
+  final bool checkFailed;
   final UpdateActionType actionType;
   final int? availableVersionCode;
   final int? stalenessDays;
@@ -45,6 +47,7 @@ class UpdateService {
       return const UpdateStatus(
         isSupported: false,
         isUpdateAvailable: false,
+        checkFailed: false,
         actionType: UpdateActionType.none,
         availableVersionCode: null,
         stalenessDays: null,
@@ -70,6 +73,7 @@ class UpdateService {
         return const UpdateStatus(
           isSupported: true,
           isUpdateAvailable: false,
+          checkFailed: false,
           actionType: UpdateActionType.none,
           availableVersionCode: null,
           stalenessDays: null,
@@ -88,6 +92,7 @@ class UpdateService {
       return UpdateStatus(
         isSupported: true,
         isUpdateAvailable: true,
+        checkFailed: false,
         actionType: actionType,
         availableVersionCode: info.availableVersionCode,
         stalenessDays: info.clientVersionStalenessDays,
@@ -104,13 +109,14 @@ class UpdateService {
       return const UpdateStatus(
         isSupported: true,
         isUpdateAvailable: false,
+        checkFailed: true,
         actionType: UpdateActionType.none,
         availableVersionCode: null,
         stalenessDays: null,
         priority: 0,
         isInProgress: false,
         isDownloaded: false,
-        message: 'Guncelleme durumu su an kontrol edilemedi.',
+        message: 'Guncelleme durumu su an alinamadi. Google Play daha sonra tekrar kontrol edilecek.',
       );
     }
   }

@@ -579,23 +579,24 @@ class SettingsScreen extends ConsumerWidget {
     String playStoreUrl,
   ) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final sectionColor = Colors.blue[700];
+    final isDark = theme.brightness == Brightness.dark;
+    const panelTextColor = Colors.white;
 
-    return _buildSectionCard(
-      context,
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionHeader(
-            context,
-            Icons.system_update_alt_rounded,
-            'Guncelleme',
-            sectionColor,
-          ),
-          const SizedBox(height: 16),
-          updateStatusAsync.when(
-            loading: () => ListTile(
+    Widget buildLoadingCard() {
+      return _buildSectionCard(
+        context,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionHeader(
+              context,
+              Icons.system_update_alt_rounded,
+              'Güncelleme',
+              sectionColor,
+            ),
+            const SizedBox(height: 16),
+            ListTile(
               contentPadding: EdgeInsets.zero,
               leading: SizedBox(
                 width: 20,
@@ -606,151 +607,138 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
               title: Text(
-                'Guncellemeler kontrol ediliyor',
+                'Güncellemeler kontrol ediliyor',
                 style: TextStyle(
-                  color: colorScheme.onSurface,
+                  color: theme.colorScheme.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               subtitle: Text(
                 'Google Play durumu sorgulaniyor',
                 style: TextStyle(
-                  color: colorScheme.onSurface.withValues(alpha: 0.65),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
                 ),
               ),
             ),
-            error: (_, __) => _buildSettingsTile(
-              context,
-              'Guncelleme kontrol edilemedi',
-              'Tekrar denemek icin dokunun',
-              Icons.refresh_rounded,
-              () => ref.invalidate(appUpdateStatusProvider),
-              sectionColor,
-            ),
-            data: (status) {
-              final actionLabel = status.isDownloaded
-                  ? 'Kur'
-                  : (status.actionType == UpdateActionType.playStoreFallback
-                      ? 'Play Store\'u Ac'
-                      : 'Guncelle');
-              final detailParts = <String>[
-                if (status.availableVersionCode != null)
-                  'Surum kodu: ${status.availableVersionCode}',
-                if (status.stalenessDays != null)
-                  '${status.stalenessDays} gundur mevcut',
-              ];
+          ],
+        ),
+      );
+    }
 
-              return Column(
-                children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: (status.isUpdateAvailable
-                                ? Colors.orange
-                                : sectionColor!)
-                            .withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        status.isUpdateAvailable
-                            ? Icons.notification_important_outlined
-                            : Icons.verified_outlined,
-                        color: status.isUpdateAvailable
-                            ? Colors.orange[700]
-                            : sectionColor,
-                        size: 22,
-                      ),
-                    ),
-                    title: Text(
-                      status.isUpdateAvailable
-                          ? 'Yeni guncelleme bulundu'
-                          : 'Uygulama guncel',
-                      style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        [
-                          status.message,
-                          if (detailParts.isNotEmpty) detailParts.join(' • '),
-                        ].join('\n'),
-                        style: TextStyle(
-                          color: colorScheme.onSurface.withValues(alpha: 0.68),
-                          height: 1.35,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () => ref.invalidate(appUpdateStatusProvider),
-                          icon: const Icon(Icons.refresh_rounded, size: 18),
-                          label: const Text('Yenile'),
-                        ),
-                      ),
-                      if (status.isUpdateAvailable && status.canTriggerUpdate) ...[
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: FilledButton.icon(
-                            onPressed: () async {
-                              if (status.actionType ==
-                                  UpdateActionType.playStoreFallback) {
-                                final opened = await launchUrl(
-                                  Uri.parse(playStoreUrl),
-                                  mode: LaunchMode.externalApplication,
-                                );
-                                if (!opened && context.mounted) {
-                                  SnackbarHelper.showError(
-                                    context,
-                                    'Play Store acilamadi',
-                                  );
-                                }
-                                return;
-                              }
+    return updateStatusAsync.when(
+      skipLoadingOnRefresh: false,
+      loading: buildLoadingCard,
+      error: (_, __) => const SizedBox.shrink(),
+      data: (status) {
+        final actionLabel = status.isDownloaded
+            ? 'Kur'
+            : (status.actionType == UpdateActionType.playStoreFallback
+                ? 'Play Store\'u Aç'
+                : 'Güncelle');
+        final buttonText = status.isUpdateAvailable
+            ? 'Uygulamanızı güncelleyin'
+            : 'Uygulama güncel';
+        final panelColor = status.isUpdateAvailable
+            ? (isDark
+                ? const Color(0xFF171717)
+                : Color.lerp(sectionColor, Colors.black, 0.32) ?? const Color(0xFF174EA6))
+            : null;
 
-                              final started = await UpdateService.startUpdate();
-                              if (!context.mounted) return;
-
-                              if (!started) {
-                                SnackbarHelper.showError(
-                                  context,
-                                  'Guncelleme baslatilamadi',
-                                );
-                                return;
-                              }
-
-                              SnackbarHelper.showSuccess(
+        return _buildSectionCard(
+          context,
+          backgroundColor: panelColor,
+          showBorder: !status.isUpdateAvailable,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionHeader(
+                context,
+                Icons.system_update_alt_rounded,
+                'Güncelleme',
+                sectionColor,
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: status.isUpdateAvailable && status.canTriggerUpdate
+                      ? () async {
+                          if (status.actionType ==
+                              UpdateActionType.playStoreFallback) {
+                            final opened = await launchUrl(
+                              Uri.parse(playStoreUrl),
+                              mode: LaunchMode.externalApplication,
+                            );
+                            if (!opened && context.mounted) {
+                              SnackbarHelper.showError(
                                 context,
-                                status.isDownloaded
-                                    ? 'Kurulum baslatildi'
-                                    : 'Guncelleme akisi baslatildi',
+                                'Play Store açılamadı',
                               );
-                              ref.invalidate(appUpdateStatusProvider);
-                            },
-                            icon: const Icon(Icons.system_update_alt_rounded, size: 18),
-                            label: Text(actionLabel),
-                          ),
-                        ),
-                      ],
-                    ],
+                            }
+                            return;
+                          }
+
+                          final started = await UpdateService.startUpdate();
+                          if (!context.mounted) return;
+
+                          if (!started) {
+                            SnackbarHelper.showError(
+                              context,
+                              'Güncelleme başlatılamadı',
+                            );
+                            return;
+                          }
+
+                          SnackbarHelper.showSuccess(
+                            context,
+                            status.isDownloaded
+                                ? 'Kurulum başlatıldı'
+                                : 'Güncelleme akışı başlatıldı',
+                          );
+                          ref.invalidate(appUpdateStatusProvider);
+                        }
+                      : null,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: panelColor ?? theme.colorScheme.surface,
+                    foregroundColor:
+                        panelColor == null ? theme.colorScheme.onSurface : Colors.white,
+                    disabledBackgroundColor:
+                        panelColor ?? theme.colorScheme.surface,
+                    disabledForegroundColor:
+                        panelColor == null
+                            ? theme.colorScheme.onSurface
+                            : Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(
+                        color: panelColor == null
+                            ? theme.colorScheme.outline.withValues(alpha: 0.18)
+                            : Colors.white.withValues(alpha: 0.08),
+                      ),
+                    ),
                   ),
-                ],
-              );
-            },
+                  icon: Icon(
+                    status.isUpdateAvailable
+                        ? Icons.system_update_alt_rounded
+                        : Icons.verified_outlined,
+                    size: 18,
+                  ),
+                  label: Text(
+                    status.isUpdateAvailable ? buttonText : 'Uygulama güncel',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
-
   Widget _buildColorSchemeOption(
     BuildContext context,
     WidgetRef ref,
@@ -1342,6 +1330,8 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 }
+
+
 
 
 
