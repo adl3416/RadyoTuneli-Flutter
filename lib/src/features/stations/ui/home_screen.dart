@@ -488,7 +488,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
                           child: RadioStationCard(
                             title: station.name,
-                            subtitle: station.genre ?? 'Turkish Radio',
+                            subtitle: station.genre ?? 'Müzik',
                             imageUrl: station.logoUrl,
                             backgroundColor: zebraColor ?? _cardBackground(colorSchemeStr),
                             isPlaying:
@@ -521,7 +521,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 .read(favoritesProvider.notifier)
                                 .toggleFavorite(station.id),
                             titleColor: _cardTitleColor(colorSchemeStr),
-                            subtitleColor: _cardSubtitleColor(colorSchemeStr),
                             playButtonBackgroundColor:
                                 _cardPlayButtonBg(colorSchemeStr),
                             playIconColor: _cardPlayIconColor(colorSchemeStr),
@@ -562,10 +561,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildDrawer(Color appBarBg, Color appBarFg) {
+    final colorSchemeStr = ref.watch(colorSchemeProvider);
     final textColor = Theme.of(context).textTheme.bodyLarge?.color ??
         Theme.of(context).colorScheme.onSurface;
-    final drawerIconColor =
-        appBarBg.computeLuminance() > 0.85 ? const Color(0xFF344054) : appBarBg;
+    final drawerIconColor = colorSchemeStr == 'beyaz'
+        ? AppTheme.gradientBlue
+        : (appBarBg.computeLuminance() > 0.85
+              ? const Color(0xFF344054)
+              : appBarBg);
 
     return Drawer(
       backgroundColor: Theme.of(context).drawerTheme.backgroundColor ??
@@ -765,6 +768,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildNormalHeader(Color headerFg) {
+    final colorSchemeStr = ref.watch(colorSchemeProvider);
+    final headerIconColor =
+        colorSchemeStr == 'beyaz' ? AppTheme.gradientBlue : headerFg;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
@@ -773,10 +779,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             builder: (context) => IconButton(
               style: IconButton.styleFrom(
                 backgroundColor: Colors.transparent,
-                foregroundColor: headerFg,
+                foregroundColor: headerIconColor,
               ),
               onPressed: () => Scaffold.of(context).openDrawer(),
-              icon: Icon(Icons.menu, color: headerFg),
+              icon: Icon(Icons.menu, color: headerIconColor),
             ),
           ),
           Expanded(
@@ -792,13 +798,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           IconButton(
             style: IconButton.styleFrom(
               backgroundColor: Colors.transparent,
-              foregroundColor: headerFg,
+              foregroundColor: headerIconColor,
             ),
             onPressed: () {
               setState(() => _isSearchActive = true);
               _searchFocusNode.requestFocus();
             },
-            icon: Icon(Icons.search, color: headerFg),
+            icon: Icon(Icons.search, color: headerIconColor),
           ),
         ],
       ),
@@ -947,7 +953,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       case 'sade':
         return AppTheme.sadeDarkGrey;
       case 'beyaz':
-        return AppTheme.beyazBackgroundFull;
+        return AppTheme.beyazPrimaryBlue;
       default:
         return theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary;
     }
@@ -968,7 +974,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       case 'sade':
         return AppTheme.sadeWhite;
       case 'beyaz':
-        return AppTheme.beyazTextDark;
+        return Colors.white;
       default:
         return theme.appBarTheme.foregroundColor ?? theme.colorScheme.onPrimary;
     }

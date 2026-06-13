@@ -173,7 +173,10 @@ class SettingsScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: backgroundColor ?? (isDark ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4) : const Color(0xFFF8F9FA)),
+        color: backgroundColor ??
+            (isDark
+                ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                : (theme.cardTheme.color ?? const Color(0xFFF8F9FA))),
         borderRadius: BorderRadius.circular(20),
         border: showBorder ? Border.all(
           color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.04),

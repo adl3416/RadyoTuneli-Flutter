@@ -44,7 +44,7 @@ class StationListTile extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 2),
       child: RadioStationCard(
         title: station.name,
-        subtitle: station.genre ?? 'Radio',
+        subtitle: station.genre ?? 'Müzik',
         imageUrl: station.logoUrl,
         isPlaying: isPlaying,
         isFavorite: ref.watch(favoritesProvider).contains(station.id),

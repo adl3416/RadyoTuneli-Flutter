@@ -82,9 +82,16 @@ class RadioStationCard extends ConsumerWidget {
             ? (isDark ? Colors.white : colorScheme.onSurface) 
             : Colors.white);
     final resolvedSubtitleColor = subtitleColor ??
-        (isNeutralTheme
-            ? (isDark ? Colors.white.withValues(alpha: 0.7) : colorScheme.onSurface.withValues(alpha: 0.64))
-            : const Color(0xFFE2D9FF).withValues(alpha: 0.92));
+        (isDark
+            ? const Color(0xFFD1D5DB)
+            : const Color(0xFF6B7280));
+    final normalizedSubtitle = subtitle.trim();
+    final categoryText =
+        normalizedSubtitle.isEmpty ||
+            normalizedSubtitle.toLowerCase() == 'radio' ||
+            normalizedSubtitle.toLowerCase() == 'turkish radio'
+        ? 'Müzik'
+        : normalizedSubtitle;
 
     final isLightCard = effectiveBgColor != null &&
         ThemeData.estimateBrightnessForColor(effectiveBgColor) ==
@@ -114,7 +121,7 @@ class RadioStationCard extends ConsumerWidget {
 
     return Container(
       width: double.infinity,
-      height: 64,
+      height: 68,
       margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
       decoration: BoxDecoration(
         color: effectiveBgColor,
@@ -169,12 +176,13 @@ class RadioStationCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        subtitle,
+                        categoryText,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: (Theme.of(context).textTheme.bodySmall ?? const TextStyle()).copyWith(
                           color: resolvedSubtitleColor,
-                          fontSize: 12,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ],

@@ -1323,8 +1323,10 @@ class AppTheme {
   }
 
   // ⚪ BEYAZ TEMA
-  static const Color beyazBackgroundFull = Color(0xFFFFFFFF);
-  static const Color beyazCardGrey = Color(0xFFF2F4F7);
+  static const Color beyazPrimaryBlue = Color(0xFF3B82F6);
+  static const Color beyazPrimaryBlueDark = Color(0xFF2563EB);
+  static const Color beyazBackgroundFull = Color(0xFFEFF6FF);
+  static const Color beyazCardGrey = Color(0xFFDBEAFE);
   static const Color beyazTextDark = Color(0xFF1D2939);
 
   static ThemeData get beyazThemeLight {
@@ -1337,32 +1339,32 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.light(
-        primary: beyazTextDark,
-        secondary: Color(0xFF667085),
+        primary: beyazPrimaryBlue,
+        secondary: beyazPrimaryBlueDark,
         surface: beyazBackgroundFull,
-        onPrimary: beyazBackgroundFull,
-        onSecondary: beyazBackgroundFull,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
         onSurface: beyazTextDark,
         surfaceVariant: beyazCardGrey,
       ),
       scaffoldBackgroundColor: beyazBackgroundFull,
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: beyazBackgroundFull,
-        foregroundColor: beyazTextDark,
+        backgroundColor: beyazPrimaryBlue,
+        foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
-          color: beyazTextDark,
+          color: Colors.white,
           fontSize: 20,
         ),
-        iconTheme: IconThemeData(color: beyazTextDark),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: beyazBackgroundFull,
-        selectedItemColor: beyazTextDark,
-        unselectedItemColor: Color(0xFF98A2B3),
+        selectedItemColor: beyazPrimaryBlueDark,
+        unselectedItemColor: const Color(0xFF7C8AA5),
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),
@@ -1371,7 +1373,7 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Color(0xFFEAECF0)),
+          side: BorderSide(color: beyazPrimaryBlue.withValues(alpha: 0.14)),
         ),
       ),
       listTileTheme: ListTileThemeData(

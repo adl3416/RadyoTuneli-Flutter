@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/providers/color_scheme_provider.dart';
 import '../../favorites/data/favorites_provider.dart';
 import '../../stations/ui/widgets/radio_logo.dart';
 import '../data/player_provider.dart';
@@ -16,7 +17,8 @@ class MiniPlayer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playerState = ref.watch(playerStateProvider);
-    final palette = _PlayerPalette.fromTheme(Theme.of(context));
+    final colorSchemeStr = ref.watch(colorSchemeProvider);
+    final palette = _PlayerPalette.fromTheme(Theme.of(context), colorSchemeStr);
     final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
 
     if (playerState.currentStation == null) {
@@ -63,7 +65,7 @@ class MiniPlayer extends ConsumerWidget {
             borderRadius: BorderRadius.zero,
             child: InkWell(
               borderRadius: BorderRadius.zero,
-              onTap: () => _showFullScreenPlayer(context),
+              onTap: () => _showFullScreenPlayer(context, colorSchemeStr),
               child: Padding(
                 padding: EdgeInsets.fromLTRB(14, 12, 14, 12 + bottomInset),
                 child: Row(
@@ -217,13 +219,16 @@ class MiniPlayer extends ConsumerWidget {
     );
   }
 
-  void _showFullScreenPlayer(BuildContext context) {
+  void _showFullScreenPlayer(BuildContext context, String colorSchemeStr) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        final palette = _PlayerPalette.fromTheme(Theme.of(context));
+        final palette = _PlayerPalette.fromTheme(
+          Theme.of(context),
+          colorSchemeStr,
+        );
         return DraggableScrollableSheet(
           initialChildSize: 0.9,
           minChildSize: 0.12,
@@ -264,6 +269,7 @@ class _PlayerPalette {
   final Color playIcon;
   final Color secondaryButton;
   final Color secondaryBorder;
+  final bool useSolidBackground;
 
   const _PlayerPalette({
     required this.background,
@@ -276,26 +282,44 @@ class _PlayerPalette {
     required this.playIcon,
     required this.secondaryButton,
     required this.secondaryBorder,
+    required this.useSolidBackground,
   });
 
-  factory _PlayerPalette.fromTheme(ThemeData theme) {
+  factory _PlayerPalette.fromTheme(ThemeData theme, String colorSchemeStr) {
+    if (colorSchemeStr == 'beyaz') {
+      return _PlayerPalette(
+        background: const Color(0xFF3B82F6),
+        backgroundSoft: const Color(0xFF2563EB),
+        border: const Color(0xFF2563EB).withValues(alpha: 0.20),
+        text: Colors.white,
+        muted: Colors.white.withValues(alpha: 0.78),
+        accent: const Color(0xFFBFDBFE),
+        playButton: const Color(0xFF1D4ED8),
+        playIcon: Colors.white,
+        secondaryButton: Colors.white.withValues(alpha: 0.14),
+        secondaryBorder: Colors.white.withValues(alpha: 0.18),
+        useSolidBackground: true,
+      );
+    }
+
     if (theme.brightness == Brightness.light) {
       return _PlayerPalette(
-        background: const Color(0xFFFB8C00), // Koyu Turuncu
-        backgroundSoft: const Color(0xFFF57C00),
+        background: const Color(0xFF1E3A8A),
+        backgroundSoft: const Color(0xFF172554),
         border: Colors.black.withValues(alpha: 0.08),
         text: Colors.white,
         muted: Colors.white.withValues(alpha: 0.8),
         accent: Colors.white,
         playButton: Colors.white,
-        playIcon: const Color(0xFFFB8C00),
+        playIcon: const Color(0xFF1E3A8A),
         secondaryButton: Colors.white.withValues(alpha: 0.1),
         secondaryBorder: Colors.white.withValues(alpha: 0.2),
+        useSolidBackground: false,
       );
     }
 
-    const background = Color(0xFF131525);
-    const backgroundSoft = Color(0xFF0F1121);
+    const background = Color(0xFF142C6E);
+    const backgroundSoft = Color(0xFF0F1F4A);
 
     return _PlayerPalette(
       background: background,
@@ -303,11 +327,12 @@ class _PlayerPalette {
       border: Colors.white.withValues(alpha: 0.08),
       text: Colors.white,
       muted: Colors.white.withValues(alpha: 0.64),
-      accent: const Color(0xFFFB8C00),
-      playButton: const Color(0xFFFB8C00),
+      accent: const Color(0xFF93C5FD),
+      playButton: const Color(0xFF1E3A8A),
       playIcon: Colors.white,
       secondaryButton: Colors.white.withValues(alpha: 0.10),
       secondaryBorder: Colors.white.withValues(alpha: 0.14),
+      useSolidBackground: false,
     );
   }
 
@@ -317,8 +342,8 @@ class _PlayerPalette {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          background.withValues(alpha: 0.75),
-          backgroundSoft.withValues(alpha: 0.65),
+          background.withValues(alpha: useSolidBackground ? 0.96 : 0.75),
+          backgroundSoft.withValues(alpha: useSolidBackground ? 0.92 : 0.65),
         ],
       ),
       borderRadius: BorderRadius.zero,
@@ -461,7 +486,8 @@ class FullScreenPlayer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playerState = ref.watch(playerStateProvider);
-    final palette = _PlayerPalette.fromTheme(Theme.of(context));
+    final colorSchemeStr = ref.watch(colorSchemeProvider);
+    final palette = _PlayerPalette.fromTheme(Theme.of(context), colorSchemeStr);
 
     if (playerState.currentStation == null) {
       return Center(
