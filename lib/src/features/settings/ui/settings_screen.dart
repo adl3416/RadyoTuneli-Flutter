@@ -94,6 +94,8 @@ class SettingsScreen extends ConsumerWidget {
                         vertical: 20,
                       ),
                       children: [
+                        _buildThemeSection(context, ref, themeMode),
+                        const SizedBox(height: 24),
                         _buildAppSettingsSection(context, ref, appSettings),
                         const SizedBox(height: 24),
                         _buildUpdateSection(
@@ -509,7 +511,7 @@ class SettingsScreen extends ConsumerWidget {
                 _buildColorSchemeOption(
                   context,
                   ref,
-                  'Varsay\u0131lan',
+                  'Mor',
                   'varsayilan',
                   const Color(0xFF7B56F5),
                   currentScheme == 'varsayilan',
@@ -517,7 +519,7 @@ class SettingsScreen extends ConsumerWidget {
                 _buildColorSchemeOption(
                   context,
                   ref,
-                  'Beyaz',
+                  'Varsayilan',
                   'beyaz',
                   Colors.white,
                   currentScheme == 'beyaz',

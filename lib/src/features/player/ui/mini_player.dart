@@ -287,6 +287,22 @@ class _PlayerPalette {
   });
 
   factory _PlayerPalette.fromTheme(ThemeData theme, String colorSchemeStr) {
+    if (theme.brightness == Brightness.dark) {
+      return _PlayerPalette(
+        background: const Color(0xFF171717),
+        backgroundSoft: const Color(0xFF202020),
+        border: Colors.white.withValues(alpha: 0.08),
+        text: Colors.white,
+        muted: Colors.white.withValues(alpha: 0.64),
+        accent: Colors.white,
+        playButton: const Color(0xFF111111),
+        playIcon: Colors.white,
+        secondaryButton: Colors.white.withValues(alpha: 0.08),
+        secondaryBorder: Colors.white.withValues(alpha: 0.14),
+        useSolidBackground: false,
+      );
+    }
+
     if (colorSchemeStr == 'beyaz') {
       return _PlayerPalette(
         background: const Color(0xFF3B82F6),
@@ -319,12 +335,9 @@ class _PlayerPalette {
       );
     }
 
-    const background = Color(0xFF050505);
-    const backgroundSoft = Color(0xFF000000);
-
     return _PlayerPalette(
-      background: background,
-      backgroundSoft: backgroundSoft,
+      background: const Color(0xFF171717),
+      backgroundSoft: const Color(0xFF202020),
       border: Colors.white.withValues(alpha: 0.08),
       text: Colors.white,
       muted: Colors.white.withValues(alpha: 0.64),

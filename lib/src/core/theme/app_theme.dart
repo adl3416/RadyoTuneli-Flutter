@@ -724,9 +724,9 @@ class AppTheme {
   }
 
   // ðŸ¦ ASLAN TEMASI - Sarı + Arı Kırmızı (orijinal renkler)
-  static const Color aslanYellow = Color(0xFFFDB813); // Orijinal amber sarı
+  static const Color aslanOfficialYellow = Color(0xFFFCB514); // Orijinal amber sarı
   // Arı kırmızı - orijinal koyu kırmızı
-  static const Color aslanRed = Color(0xFFC8102E);
+  static const Color aslanRed = Color(0xFFA32638);
 
   static ThemeData get aslanThemeDark {
     final textTheme = GoogleFonts.interTextTheme().apply(
@@ -738,11 +738,11 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: ColorScheme.dark(
-        primary: aslanYellow, // Sarı
+        primary: aslanOfficialYellow, // Sarı
         secondary: aslanRed, // Kırmızı
         surface: darkSurface,
         onPrimary: aslanRed, // Kırmızı yazı sarı üzerinde
-        onSecondary: aslanYellow, // Sarı yazı kırmızı üzerinde
+        onSecondary: aslanOfficialYellow, // Sarı yazı kırmızı üzerinde
         onSurface: darkText,
         error: Color(0xFFEF4444),
         background: darkBackground,
@@ -768,28 +768,28 @@ class AppTheme {
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: aslanRed, // âœ… AppBar = Kırmızı (#DC143C)
-        foregroundColor: aslanYellow, // âœ… Yazı/İkonlar = Sarı (#FFD700)
+        foregroundColor: aslanOfficialYellow, // âœ… Yazı/İkonlar = Sarı (#FFD700)
         elevation: 4,
         centerTitle: true,
         surfaceTintColor: aslanRed, // Material 3 uyumlu
         shadowColor: aslanRed.withOpacity(0.5),
         titleTextStyle: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
-          color: aslanYellow, // Başlık sarı
+          color: aslanOfficialYellow, // Başlık sarı
           fontSize: 20,
         ),
-        iconTheme: IconThemeData(color: aslanYellow), // İkonlar sarı
-        actionsIconTheme: IconThemeData(color: aslanYellow),
+        iconTheme: IconThemeData(color: aslanOfficialYellow), // İkonlar sarı
+        actionsIconTheme: IconThemeData(color: aslanOfficialYellow),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: aslanYellow, // âœ… Seçili = Sarı (#FFD700)
+        selectedItemColor: aslanOfficialYellow, // âœ… Seçili = Sarı (#FFD700)
         unselectedItemColor: darkTextSecondary, // Seçili olmayan gri
         backgroundColor: aslanRed, // âœ… Arka plan = Kırmızı (#DC143C)
         type: BottomNavigationBarType.fixed,
         elevation: 12,
         selectedLabelStyle: TextStyle(
           fontWeight: FontWeight.bold,
-          color: aslanYellow,
+          color: aslanOfficialYellow,
         ),
         unselectedLabelStyle: TextStyle(
           color: darkTextSecondary,
@@ -797,18 +797,18 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: aslanYellow, // Sarı buton
+          backgroundColor: aslanOfficialYellow, // Sarı buton
           foregroundColor: aslanRed, // Kırmızı yazı
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           elevation: 4,
-          shadowColor: aslanYellow.withOpacity(0.4),
+          shadowColor: aslanOfficialYellow.withOpacity(0.4),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
-          foregroundColor: aslanYellow, // İkonlar sarı
+          foregroundColor: aslanOfficialYellow, // İkonlar sarı
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -824,7 +824,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: aslanYellow, width: 2), // Sarı border
+          borderSide: BorderSide(color: aslanOfficialYellow, width: 2), // Sarı border
         ),
         hintStyle: TextStyle(color: darkTextSecondary),
         labelStyle: TextStyle(color: darkTextSecondary),
@@ -856,22 +856,22 @@ class AppTheme {
       ),
       switchTheme: SwitchThemeData(
         thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) return aslanYellow;
+          if (states.contains(MaterialState.selected)) return aslanOfficialYellow;
           return darkTextSecondary;
         }),
         trackColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.selected)) {
-            return aslanYellow.withOpacity(0.3);
+            return aslanOfficialYellow.withOpacity(0.3);
           }
           return darkBorder;
         }),
       ),
       tabBarTheme: TabBarThemeData(
-        labelColor: aslanYellow, // Seçili tab = Sarı
+        labelColor: aslanOfficialYellow, // Seçili tab = Sarı
         unselectedLabelColor: darkTextSecondary, // Seçili olmayan = Gri
-        indicatorColor: aslanYellow, // Alt çizgi = Sarı
+        indicatorColor: aslanOfficialYellow, // Alt çizgi = Sarı
         indicator: const UnderlineTabIndicator(
-          borderSide: BorderSide(color: aslanYellow, width: 3),
+          borderSide: BorderSide(color: aslanOfficialYellow, width: 3),
         ),
       ),
     );
@@ -882,17 +882,17 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.light(
-        primary: aslanYellow,
+        primary: aslanOfficialYellow,
         secondary: aslanRed,
         surface: Colors.white,
         onPrimary: aslanRed,
-        onSecondary: aslanYellow,
+        onSecondary: aslanOfficialYellow,
       ),
       scaffoldBackgroundColor: Colors.white,
       // Bottom nav styling for Aslan light theme
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: aslanYellow,
-        unselectedItemColor: aslanYellow.withOpacity(0.5),
+        selectedItemColor: aslanOfficialYellow,
+        unselectedItemColor: aslanOfficialYellow.withOpacity(0.5),
         backgroundColor: aslanRed,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
@@ -900,17 +900,17 @@ class AppTheme {
       // Ensure AppBar matches the provided colors
       appBarTheme: AppBarTheme(
         backgroundColor: aslanRed,
-        foregroundColor: aslanYellow,
+        foregroundColor: aslanOfficialYellow,
         elevation: 0,
         centerTitle: true,
       ),
       tabBarTheme: TabBarThemeData(
-        labelColor: aslanYellow, // Seçili tab = Sarı
+        labelColor: aslanOfficialYellow, // Seçili tab = Sarı
         unselectedLabelColor:
             aslanRed.withOpacity(0.6), // Seçili olmayan = Yarı-saydam Kırmızı
-        indicatorColor: aslanYellow, // Alt çizgi = Sarı
+        indicatorColor: aslanOfficialYellow, // Alt çizgi = Sarı
         indicator: const UnderlineTabIndicator(
-          borderSide: BorderSide(color: aslanYellow, width: 3),
+          borderSide: BorderSide(color: aslanOfficialYellow, width: 3),
         ),
       ),
     );
@@ -1567,3 +1567,4 @@ class AppTheme {
     );
   }
 }
+

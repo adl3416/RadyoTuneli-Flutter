@@ -44,7 +44,7 @@ class _AppRootState extends ConsumerState<AppRoot> {
       title: 'Radyo Tüneli',
       theme: selectedTheme,
       darkTheme: selectedTheme,
-      themeMode: ThemeMode.light, // Her zaman light mode kullan çünkü tema kendisi dark/light belirliyor
+      themeMode: themeMode,
       home: const MainScreen(),
       debugShowCheckedModeBanner: false,
     );

@@ -288,15 +288,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             padding: const EdgeInsets.fromLTRB(2, 1, 2, 3),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFFFFFF),
+                                color: recentCardColor,
                                 border: Border.all(
-                                  color: const Color(0xFFFDFEFF),
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.10)
+                                      : const Color(0xFFFDFEFF),
                                   width: 1,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.03),
-                                    blurRadius: 14,
+                                    color: isDark
+                                        ? Colors.black.withValues(alpha: 0.22)
+                                        : Colors.black.withValues(alpha: 0.03),
+                                    blurRadius: isDark ? 18 : 14,
                                     offset: const Offset(0, 4),
                                   ),
                                 ],
@@ -321,7 +325,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               ?.copyWith(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 16,
-                                                color: colorSchemeStr == 'beyaz' ? AppTheme.beyazTextDark : const Color(0xFF27314D),
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : (colorSchemeStr == 'beyaz'
+                                                        ? AppTheme.beyazTextDark
+                                                        : const Color(0xFF27314D)),
                                               ),
                                         ),
                                         recentlyPlayedAsync.maybeWhen(
@@ -470,7 +478,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         
                         // Zebra effect for neutral themes
                         Color? zebraColor;
-                        if (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'purple') {
+                        if (isDark) {
+                          final isEven = (index - (searchQuery.isEmpty ? 2 : 1)) % 2 == 0;
+                          zebraColor = isEven
+                              ? const Color(0xFF171717)
+                              : const Color(0xFF202020);
+                        } else if (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'purple') {
                           final isEven = (index - (searchQuery.isEmpty ? 2 : 1)) % 2 == 0;
                           zebraColor = isEven
                               ? const Color(0xFFF1F3F5)
@@ -481,9 +494,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               : const Color(0xFFF2F4F6);
                         } else if (colorSchemeStr == 'sade') {
                           final isEven = (index - (searchQuery.isEmpty ? 2 : 1)) % 2 == 0;
-                          zebraColor = isDark
-                              ? (isEven ? const Color(0xFF050505) : const Color(0xFF101010))
-                              : (isEven ? Colors.white : const Color(0xFFE8E8E8));
+                          zebraColor = isEven ? Colors.white : const Color(0xFFE8E8E8);
                         }
 
                         return Padding(
@@ -974,7 +985,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       case 'kanarya':
         return AppTheme.kanaryaPrimary;
       case 'aslan':
-        return AppTheme.aslanYellow;
+        return AppTheme.aslanOfficialYellow;
       case 'karadeniz':
         return AppTheme.karadenizMavi;
       case 'kartal':
@@ -992,7 +1003,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Color? _cardBackground(String colorSchemeStr) {
     if (Theme.of(context).brightness == Brightness.dark) {
-      return const Color(0xFF050505);
+      return const Color(0xFF171717);
     }
     switch (colorSchemeStr) {
       case 'kanarya':
@@ -1025,7 +1036,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       case 'kanarya':
         return AppTheme.kanaryaPrimary;
       case 'aslan':
-        return AppTheme.aslanYellow;
+        return AppTheme.aslanOfficialYellow;
       case 'karadeniz':
         return AppTheme.karadenizMavi;
       case 'kartal':
@@ -1047,7 +1058,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       case 'kanarya':
         return AppTheme.kanaryaPrimary.withValues(alpha: 0.9);
       case 'aslan':
-        return AppTheme.aslanYellow.withValues(alpha: 0.9);
+        return AppTheme.aslanOfficialYellow.withValues(alpha: 0.9);
       case 'karadeniz':
         return AppTheme.karadenizMavi.withValues(alpha: 0.9);
       case 'kartal':
@@ -1067,7 +1078,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
     switch (colorSchemeStr) {
       case 'aslan':
-        return AppTheme.aslanYellow;
+        return AppTheme.aslanOfficialYellow;
       case 'karadeniz':
         return AppTheme.karadenizMavi;
       case 'kartal':
@@ -1097,4 +1108,5 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 }
+
 

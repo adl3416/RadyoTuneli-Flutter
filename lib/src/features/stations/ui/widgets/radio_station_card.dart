@@ -53,8 +53,8 @@ class RadioStationCard extends ConsumerWidget {
     final effectiveBgColor =
         backgroundColor ??
         (isNeutralTheme
-            ? (isDark 
-                ? const Color(0xFF050505)
+             ? (isDark 
+                ? const Color(0xFF171717)
                 : (themeName == 'varsayilan' || themeName == 'purple'
                     ? const Color(0xFFF1F3F5)
                     : Colors.white))

@@ -62,7 +62,7 @@ class MainScreen extends ConsumerWidget {
                 // Use the theme's text color (yellow) for unselected icons in Kanarya
                 return AppTheme.kanaryaPrimary.withOpacity(0.85);
               case 'aslan':
-                return AppTheme.aslanYellow.withOpacity(0.85);
+                return AppTheme.aslanOfficialYellow.withOpacity(0.85);
               case 'karadeniz':
                 return AppTheme.karadenizMavi.withOpacity(0.85);
               case 'kartal':
@@ -102,7 +102,7 @@ class MainScreen extends ConsumerWidget {
           if (ref.watch(colorSchemeProvider) == 'aslan') {
             // keep the theme's background (red) but ensure icons are visible
             bgColor = AppTheme.aslanRed;
-            selColor = AppTheme.aslanYellow;
+            selColor = AppTheme.aslanOfficialYellow;
             unselColor = Colors.white.withOpacity(0.9);
           }
 
@@ -141,3 +141,4 @@ class MainScreen extends ConsumerWidget {
     );
   }
 }
+

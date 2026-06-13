@@ -114,7 +114,11 @@ class FavoritesScreen extends ConsumerWidget {
                                   
                                   // Zebra effect for neutral themes
                                   Color? zebraColor;
-                                  if (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'purple') {
+                                  if (isDark) {
+                                    zebraColor = index % 2 == 0
+                                        ? const Color(0xFF171717)
+                                        : const Color(0xFF202020);
+                                  } else if (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'purple') {
                                     zebraColor = index % 2 == 0
                                         ? const Color(0xFFF1F3F5)
                                         : const Color(0xFFE5E7EB);
@@ -124,11 +128,6 @@ class FavoritesScreen extends ConsumerWidget {
                                         : AppTheme.beyazCardGrey;
                                   } else if (colorSchemeStr == 'sade') {
                                     zebraColor = index % 2 == 0 ? Colors.white : const Color(0xFFE8E8E8);
-                                  }
-                                  if (isDark) {
-                                    zebraColor = index % 2 == 0
-                                        ? const Color(0xFF050505)
-                                        : const Color(0xFF101010);
                                   }
 
                                   return Padding(
@@ -152,8 +151,8 @@ class FavoritesScreen extends ConsumerWidget {
                                       },
                                       onFavoriteToggle: () => ref.read(favoritesProvider.notifier).toggleFavorite(station.id),
                                       backgroundColor: zebraColor ?? (colorSchemeStr == 'kanarya' ? AppTheme.kanaryaSecondary : (colorSchemeStr == 'aslan' ? AppTheme.aslanRed : (colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null))))),
-                                      titleColor: colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary : (colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null)))),
-                                      playButtonBackgroundColor: colorSchemeStr == 'aslan' ? AppTheme.aslanYellow : (colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null))),
+                                      titleColor: colorSchemeStr == 'kanarya' ? AppTheme.kanaryaPrimary : (colorSchemeStr == 'aslan' ? AppTheme.aslanOfficialYellow : (colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null)))),
+                                      playButtonBackgroundColor: colorSchemeStr == 'aslan' ? AppTheme.aslanOfficialYellow : (colorSchemeStr == 'karadeniz' ? AppTheme.karadenizMavi : (colorSchemeStr == 'kartal' ? AppTheme.kartalWhite : (colorSchemeStr == 'timsah' ? AppTheme.timsahWhite : null))),
                                       playIconColor: colorSchemeStr == 'aslan' ? Colors.black : (colorSchemeStr == 'karadeniz' ? AppTheme.karadenizBordo : (colorSchemeStr == 'kartal' ? AppTheme.kartalBlack : (colorSchemeStr == 'timsah' ? AppTheme.timsahGreen : null))),
                                     ),
                                   );
@@ -338,3 +337,4 @@ class FavoritesScreen extends ConsumerWidget {
     );
   }
 }
+
