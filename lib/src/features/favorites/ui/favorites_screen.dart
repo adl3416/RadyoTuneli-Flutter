@@ -16,11 +16,15 @@ class FavoritesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final favoritesAsync = ref.watch(sortedFavoriteStationsProvider);
     final colorSchemeStr = ref.watch(colorSchemeProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     Color? appBarBg;
     Color? appBarFg;
 
-    if (colorSchemeStr == 'karadeniz') {
+    if (isDark) {
+      appBarBg = Colors.black;
+      appBarFg = Colors.white;
+    } else if (colorSchemeStr == 'karadeniz') {
       appBarBg = AppTheme.karadenizBordo;
       appBarFg = AppTheme.karadenizMavi;
     } else if (colorSchemeStr == 'kartal') {
@@ -120,6 +124,11 @@ class FavoritesScreen extends ConsumerWidget {
                                         : AppTheme.beyazCardGrey;
                                   } else if (colorSchemeStr == 'sade') {
                                     zebraColor = index % 2 == 0 ? Colors.white : const Color(0xFFE8E8E8);
+                                  }
+                                  if (isDark) {
+                                    zebraColor = index % 2 == 0
+                                        ? const Color(0xFF050505)
+                                        : const Color(0xFF101010);
                                   }
 
                                   return Padding(

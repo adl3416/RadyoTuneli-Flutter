@@ -368,6 +368,27 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: (val) =>
                 ref.read(appSettingsProvider.notifier).setAutoPlay(val),
           ),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            activeColor: sectionColor,
+            title: Text(
+              'Yumusak gecis',
+              style: TextStyle(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            subtitle: Text(
+              'Istasyon degisirken sesi kisa surede azaltip yeniden ac',
+              style: TextStyle(
+                color: colorScheme.onSurface.withValues(alpha: 0.72),
+              ),
+            ),
+            value: settings.smoothTransitions,
+            onChanged: (val) => ref
+                .read(appSettingsProvider.notifier)
+                .setSmoothTransitions(val),
+          ),
           const SizedBox(height: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

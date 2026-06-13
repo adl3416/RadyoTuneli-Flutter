@@ -24,6 +24,7 @@ class CurrentStationInfo with _$CurrentStationInfo {
     required String name,
     required String artist,
     String? logoUrl,
+    String? streamUrl,
   }) = _CurrentStationInfo;
 
   factory CurrentStationInfo.fromJson(Map<String, dynamic> json) =>

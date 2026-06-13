@@ -38,6 +38,7 @@ _$CurrentStationInfoImpl _$$CurrentStationInfoImplFromJson(
       name: json['name'] as String,
       artist: json['artist'] as String,
       logoUrl: json['logoUrl'] as String?,
+      streamUrl: json['streamUrl'] as String?,
     );
 
 Map<String, dynamic> _$$CurrentStationInfoImplToJson(
@@ -47,4 +48,5 @@ Map<String, dynamic> _$$CurrentStationInfoImplToJson(
       'name': instance.name,
       'artist': instance.artist,
       'logoUrl': instance.logoUrl,
+      'streamUrl': instance.streamUrl,
     };

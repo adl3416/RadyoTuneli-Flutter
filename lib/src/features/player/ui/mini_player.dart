@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/providers/color_scheme_provider.dart';
@@ -318,8 +319,8 @@ class _PlayerPalette {
       );
     }
 
-    const background = Color(0xFF142C6E);
-    const backgroundSoft = Color(0xFF0F1F4A);
+    const background = Color(0xFF050505);
+    const backgroundSoft = Color(0xFF000000);
 
     return _PlayerPalette(
       background: background,
@@ -327,10 +328,10 @@ class _PlayerPalette {
       border: Colors.white.withValues(alpha: 0.08),
       text: Colors.white,
       muted: Colors.white.withValues(alpha: 0.64),
-      accent: const Color(0xFF93C5FD),
-      playButton: const Color(0xFF1E3A8A),
+      accent: Colors.white,
+      playButton: const Color(0xFF111111),
       playIcon: Colors.white,
-      secondaryButton: Colors.white.withValues(alpha: 0.10),
+      secondaryButton: Colors.white.withValues(alpha: 0.08),
       secondaryBorder: Colors.white.withValues(alpha: 0.14),
       useSolidBackground: false,
     );
@@ -542,6 +543,22 @@ class FullScreenPlayer extends ConsumerWidget {
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 10),
+            _GlassActionButton(
+              icon: Icons.share_outlined,
+              color: palette.text,
+              backgroundColor: palette.text.withValues(alpha: 0.10),
+              borderColor: palette.border,
+              onTap: () async {
+                HapticFeedback.lightImpact();
+                await Share.share(
+                  station.streamUrl?.isNotEmpty == true
+                      ? 'Radyo Tuneli\'nde bunu dinliyorum: ${station.name}\n${station.streamUrl}'
+                      : 'Radyo Tuneli\'nde bunu dinliyorum: ${station.name}\n${station.artist}',
+                  subject: station.name,
+                );
+              },
             ),
             const SizedBox(height: 18),
             _RhythmVisualizer(

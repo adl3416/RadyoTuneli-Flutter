@@ -54,7 +54,7 @@ class RadioStationCard extends ConsumerWidget {
         backgroundColor ??
         (isNeutralTheme
             ? (isDark 
-                ? const Color(0xFF2D325A).withValues(alpha: 0.85) // Koyu temada belirgin kart zemini
+                ? const Color(0xFF050505)
                 : (themeName == 'varsayilan' || themeName == 'purple'
                     ? const Color(0xFFF1F3F5)
                     : Colors.white))
@@ -83,7 +83,7 @@ class RadioStationCard extends ConsumerWidget {
             : Colors.white);
     final resolvedSubtitleColor = subtitleColor ??
         (isDark
-            ? const Color(0xFFD1D5DB)
+            ? Colors.white70
             : const Color(0xFF6B7280));
     final normalizedSubtitle = subtitle.trim();
     final categoryText =
@@ -101,16 +101,24 @@ class RadioStationCard extends ConsumerWidget {
             ? const Color(0xFFF1F4F8)
             : const Color(0xFFDCE3EC))
         : Colors.white.withValues(alpha: isPlaying ? 0.24 : 0.16);
-    final resolvedFavoriteBg = isLightCard
+    final resolvedFavoriteBg = isDark
+        ? const Color(0xFF111111)
+        : isLightCard
         ? const Color(0xFFFFFFFF)
         : Colors.white.withValues(alpha: 0.10);
-    final resolvedFavoriteBorder = isLightCard
+    final resolvedFavoriteBorder = isDark
+        ? Colors.white.withValues(alpha: 0.16)
+        : isLightCard
         ? const Color(0xFFDCE3EC)
         : Colors.white.withValues(alpha: 0.16);
     final resolvedPlayBg = playButtonBackgroundColor ??
-        (isWhiteTheme ? AppTheme.beyazPrimaryBlueDark : AppTheme.orange400);
+        (isDark
+            ? const Color(0xFF111111)
+            : (isWhiteTheme ? AppTheme.beyazPrimaryBlueDark : AppTheme.orange400));
     final resolvedPlayIcon = playIconColor ?? Colors.white;
-    final resolvedFavoriteIcon = isLightCard
+    final resolvedFavoriteIcon = isDark
+        ? Colors.white
+        : isLightCard
         ? const Color(0xFF667085)
         : Colors.white.withValues(alpha: 0.86);
 

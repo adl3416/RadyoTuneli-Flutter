@@ -285,6 +285,7 @@ mixin _$CurrentStationInfo {
   String get name => throw _privateConstructorUsedError;
   String get artist => throw _privateConstructorUsedError;
   String? get logoUrl => throw _privateConstructorUsedError;
+  String? get streamUrl => throw _privateConstructorUsedError;
 
   /// Serializes this CurrentStationInfo to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -302,7 +303,12 @@ abstract class $CurrentStationInfoCopyWith<$Res> {
           CurrentStationInfo value, $Res Function(CurrentStationInfo) then) =
       _$CurrentStationInfoCopyWithImpl<$Res, CurrentStationInfo>;
   @useResult
-  $Res call({String id, String name, String artist, String? logoUrl});
+  $Res call(
+      {String id,
+      String name,
+      String artist,
+      String? logoUrl,
+      String? streamUrl});
 }
 
 /// @nodoc
@@ -324,6 +330,7 @@ class _$CurrentStationInfoCopyWithImpl<$Res, $Val extends CurrentStationInfo>
     Object? name = null,
     Object? artist = null,
     Object? logoUrl = freezed,
+    Object? streamUrl = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -342,6 +349,10 @@ class _$CurrentStationInfoCopyWithImpl<$Res, $Val extends CurrentStationInfo>
           ? _value.logoUrl
           : logoUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      streamUrl: freezed == streamUrl
+          ? _value.streamUrl
+          : streamUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -354,7 +365,12 @@ abstract class _$$CurrentStationInfoImplCopyWith<$Res>
       __$$CurrentStationInfoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String name, String artist, String? logoUrl});
+  $Res call(
+      {String id,
+      String name,
+      String artist,
+      String? logoUrl,
+      String? streamUrl});
 }
 
 /// @nodoc
@@ -374,6 +390,7 @@ class __$$CurrentStationInfoImplCopyWithImpl<$Res>
     Object? name = null,
     Object? artist = null,
     Object? logoUrl = freezed,
+    Object? streamUrl = freezed,
   }) {
     return _then(_$CurrentStationInfoImpl(
       id: null == id
@@ -392,6 +409,10 @@ class __$$CurrentStationInfoImplCopyWithImpl<$Res>
           ? _value.logoUrl
           : logoUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      streamUrl: freezed == streamUrl
+          ? _value.streamUrl
+          : streamUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -403,7 +424,8 @@ class _$CurrentStationInfoImpl implements _CurrentStationInfo {
       {required this.id,
       required this.name,
       required this.artist,
-      this.logoUrl});
+      this.logoUrl,
+      this.streamUrl});
 
   factory _$CurrentStationInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$CurrentStationInfoImplFromJson(json);
@@ -416,10 +438,12 @@ class _$CurrentStationInfoImpl implements _CurrentStationInfo {
   final String artist;
   @override
   final String? logoUrl;
+  @override
+  final String? streamUrl;
 
   @override
   String toString() {
-    return 'CurrentStationInfo(id: $id, name: $name, artist: $artist, logoUrl: $logoUrl)';
+    return 'CurrentStationInfo(id: $id, name: $name, artist: $artist, logoUrl: $logoUrl, streamUrl: $streamUrl)';
   }
 
   @override
@@ -430,12 +454,15 @@ class _$CurrentStationInfoImpl implements _CurrentStationInfo {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.artist, artist) || other.artist == artist) &&
-            (identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl));
+            (identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl) &&
+            (identical(other.streamUrl, streamUrl) ||
+                other.streamUrl == streamUrl));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, artist, logoUrl);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, artist, logoUrl, streamUrl);
 
   /// Create a copy of CurrentStationInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -459,7 +486,8 @@ abstract class _CurrentStationInfo implements CurrentStationInfo {
       {required final String id,
       required final String name,
       required final String artist,
-      final String? logoUrl}) = _$CurrentStationInfoImpl;
+      final String? logoUrl,
+      final String? streamUrl}) = _$CurrentStationInfoImpl;
 
   factory _CurrentStationInfo.fromJson(Map<String, dynamic> json) =
       _$CurrentStationInfoImpl.fromJson;
@@ -472,6 +500,8 @@ abstract class _CurrentStationInfo implements CurrentStationInfo {
   String get artist;
   @override
   String? get logoUrl;
+  @override
+  String? get streamUrl;
 
   /// Create a copy of CurrentStationInfo
   /// with the given fields replaced by the non-null parameter values.

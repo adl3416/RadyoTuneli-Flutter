@@ -36,6 +36,8 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
   StreamSubscription? _playbackSub;
   StreamSubscription? _mediaItemSub;
   Timer? _sleepTimer;
+  static const List<double> _fadeOutSteps = [0.75, 0.5, 0.25, 0.0];
+  static const List<double> _fadeInSteps = [0.25, 0.55, 0.8, 1.0];
 
   PlayerNotifier(this._audioHandler, this._ref)
       : super(const PlayerStateModel()) {
@@ -139,6 +141,7 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
             name: mediaItem.title,
             artist: mediaItem.artist ?? '',
             logoUrl: effectiveLogo,
+            streamUrl: mediaItem.extras?['streamUrl'] as String?,
           ),
         );
       } else {
@@ -253,7 +256,18 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
       }
     }
 
+    final activeAudioHandler = audioHandler;
+
     try {
+      final appSettings = _ref.read(appSettingsProvider);
+      final shouldSmoothTransition = appSettings.smoothTransitions &&
+          state.isPlaying &&
+          state.currentStation?.id != null &&
+          state.currentStation!.id != station.id;
+
+      if (shouldSmoothTransition) {
+        await _runSmoothTransition(activeAudioHandler);
+      }
       // currentStation'ı hemen set et - mini player anında görünsün
       state = state.copyWith(
         isLoading: true,
@@ -263,11 +277,12 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
           name: station.name,
           artist: station.description ?? 'Turkish Radio',
           logoUrl: station.logoUrl,
+          streamUrl: station.streamUrl,
         ),
       );
 
       // Cast to RadioAudioHandler for playStation method
-      final radioHandler = audioHandler as RadioAudioHandler;
+      final radioHandler = activeAudioHandler as RadioAudioHandler;
       await radioHandler.playStation(
         station.streamUrl,
         station.name,
@@ -276,9 +291,14 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
         stationId: station.id,
       );
 
+      if (shouldSmoothTransition) {
+        await _restoreVolume(activeAudioHandler);
+      }
+
       // Update recently played with new provider
       _ref.read(recentlyPlayedNotifierProvider.notifier).addRecentStation(station.id);
     } catch (e) {
+      await _setHandlerVolume(activeAudioHandler, 1.0);
       state = state.copyWith(
         isLoading: false,
         error: _getErrorMessage(e),
@@ -326,6 +346,28 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
       );
     } catch (e) {
       state = state.copyWith(error: _getErrorMessage(e));
+    }
+  }
+
+  Future<void> _runSmoothTransition(AudioHandler audioHandler) async {
+    for (final volume in _fadeOutSteps) {
+      await _setHandlerVolume(audioHandler, volume);
+      await Future.delayed(const Duration(milliseconds: 70));
+    }
+  }
+
+  Future<void> _restoreVolume(AudioHandler audioHandler) async {
+    for (final volume in _fadeInSteps) {
+      await _setHandlerVolume(audioHandler, volume);
+      await Future.delayed(const Duration(milliseconds: 85));
+    }
+  }
+
+  Future<void> _setHandlerVolume(AudioHandler audioHandler, double volume) async {
+    try {
+      await audioHandler.customAction('setVolume', {'volume': volume});
+    } catch (_) {
+      // Desteklenmeyen yüzeylerde sessizce devam et.
     }
   }
 

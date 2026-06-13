@@ -379,6 +379,145 @@ class AppTheme {
     );
   }
 
+  static ThemeData get pureBlackDarkTheme {
+    final textTheme = GoogleFonts.plusJakartaSansTextTheme().apply(
+      bodyColor: Colors.white,
+      displayColor: Colors.white,
+    );
+
+    const black = Color(0xFF000000);
+    const softBlack = Color(0xFF0B0B0B);
+    const outline = Color(0x26FFFFFF);
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: const ColorScheme.dark(
+        primary: Colors.white,
+        secondary: Colors.white,
+        tertiary: Colors.white,
+        surface: black,
+        onPrimary: black,
+        onSecondary: black,
+        onTertiary: black,
+        onSurface: Colors.white,
+        background: black,
+        onBackground: Colors.white,
+        surfaceVariant: softBlack,
+        onSurfaceVariant: Colors.white70,
+        outline: outline,
+        error: Color(0xFFFF6B6B),
+      ),
+      scaffoldBackgroundColor: black,
+      canvasColor: black,
+      cardColor: softBlack,
+      dividerColor: outline,
+      shadowColor: Colors.black,
+      textTheme: textTheme,
+      appBarTheme: AppBarTheme(
+        backgroundColor: black,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+          fontSize: 20,
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      drawerTheme: const DrawerThemeData(
+        backgroundColor: black,
+        surfaceTintColor: Colors.transparent,
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: black,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white.withValues(alpha: 0.72),
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
+      ),
+      iconTheme: const IconThemeData(color: Colors.white),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.white.withValues(alpha: 0.06),
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: softBlack,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: outline),
+        ),
+      ),
+      listTileTheme: ListTileThemeData(
+        tileColor: softBlack,
+        textColor: Colors.white,
+        iconColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: softBlack,
+        hintStyle: const TextStyle(color: Colors.white70),
+        labelStyle: const TextStyle(color: Colors.white70),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: outline),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: outline),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Colors.white38, width: 1.4),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: softBlack,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: outline),
+          ),
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: softBlack,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: const BorderSide(color: outline),
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Colors.white,
+          side: const BorderSide(color: outline),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: softBlack,
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: textTheme.titleLarge?.copyWith(color: Colors.white),
+        contentTextStyle: textTheme.bodyMedium?.copyWith(color: Colors.white70),
+      ),
+    );
+  }
+
 
   // ðŸŸ¡ KANARYA TEMASI - Sarı (#FFD700) + Lacivert (#001F3F)
   static const Color kanaryaPrimary = Color(0xFFFFD700); // Sarı

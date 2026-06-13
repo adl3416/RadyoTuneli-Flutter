@@ -5,19 +5,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AppSettings {
   final bool autoPlay;
   final double volume;
+  final bool smoothTransitions;
 
   const AppSettings({
     this.autoPlay = false,
     this.volume = 0.7,
+    this.smoothTransitions = false,
   });
 
   AppSettings copyWith({
     bool? autoPlay,
     double? volume,
+    bool? smoothTransitions,
   }) {
     return AppSettings(
       autoPlay: autoPlay ?? this.autoPlay,
       volume: volume ?? this.volume,
+      smoothTransitions: smoothTransitions ?? this.smoothTransitions,
     );
   }
 }
@@ -30,6 +34,7 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
 
   static const String _autoPlayKey = 'autoPlay';
   static const String _volumeKey = 'volume';
+  static const String _smoothTransitionsKey = 'smoothTransitions';
 
   Future<void> _loadSettings() async {
     print('📱 Uygulama ayarları yükleniyor...');
@@ -38,6 +43,7 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
     state = AppSettings(
       autoPlay: prefs.getBool(_autoPlayKey) ?? false,
       volume: prefs.getDouble(_volumeKey) ?? 0.7,
+      smoothTransitions: prefs.getBool(_smoothTransitionsKey) ?? false,
     );
     
     print('📱 Ayarlar yüklendi: autoPlay=${state.autoPlay}');
@@ -49,6 +55,12 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
     await prefs.setBool(_autoPlayKey, enabled);
     state = state.copyWith(autoPlay: enabled);
     print('✅ Otomatik oynat ayarı kaydedildi: $enabled');
+  }
+
+  Future<void> setSmoothTransitions(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_smoothTransitionsKey, enabled);
+    state = state.copyWith(smoothTransitions: enabled);
   }
 
 

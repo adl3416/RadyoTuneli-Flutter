@@ -29,13 +29,15 @@ class _AppRootState extends ConsumerState<AppRoot> {
             MediaQuery.platformBrightnessOf(context) == Brightness.dark);
     // Try dark variant from registry when dark mode is active
     final themeKey = isDark ? '${colorScheme}_dark' : colorScheme;
-    final registered = getThemeByName(themeKey) ?? getThemeByName(colorScheme);
+    final registered = isDark
+        ? AppTheme.pureBlackDarkTheme
+        : (getThemeByName(themeKey) ?? getThemeByName(colorScheme));
     if (registered != null) {
       selectedTheme = registered;
     } else {
       // fallback to default behavior
       print('💜 VARSAYILAN TEMA SEÇİLDİ');
-      selectedTheme = isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
+      selectedTheme = isDark ? AppTheme.pureBlackDarkTheme : AppTheme.lightTheme;
     }
     
     return MaterialApp(

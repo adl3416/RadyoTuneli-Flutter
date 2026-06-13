@@ -58,7 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final isDark = theme.brightness == Brightness.dark;
     final appBarBg = _resolveAppBarBg(theme, colorSchemeStr);
     final appBarFg = _resolveAppBarFg(theme, colorSchemeStr);
-    final pageBottom = Colors.white;
+    final pageBottom = theme.scaffoldBackgroundColor;
     final pageTop = (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'beyaz')
         ? pageBottom
         : Color.lerp(
@@ -481,7 +481,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               : const Color(0xFFF2F4F6);
                         } else if (colorSchemeStr == 'sade') {
                           final isEven = (index - (searchQuery.isEmpty ? 2 : 1)) % 2 == 0;
-                          zebraColor = isEven ? Colors.white : const Color(0xFFE8E8E8);
+                          zebraColor = isDark
+                              ? (isEven ? const Color(0xFF050505) : const Color(0xFF101010))
+                              : (isEven ? Colors.white : const Color(0xFFE8E8E8));
                         }
 
                         return Padding(
@@ -941,6 +943,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Color _resolveAppBarBg(ThemeData theme, String colorSchemeStr) {
+    if (theme.brightness == Brightness.dark) {
+      return Colors.black;
+    }
     switch (colorSchemeStr) {
       case 'kanarya':
         return AppTheme.kanaryaSecondary;
@@ -962,6 +967,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Color _resolveAppBarFg(ThemeData theme, String colorSchemeStr) {
+    if (theme.brightness == Brightness.dark) {
+      return Colors.white;
+    }
     switch (colorSchemeStr) {
       case 'kanarya':
         return AppTheme.kanaryaPrimary;
@@ -983,6 +991,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Color? _cardBackground(String colorSchemeStr) {
+    if (Theme.of(context).brightness == Brightness.dark) {
+      return const Color(0xFF050505);
+    }
     switch (colorSchemeStr) {
       case 'kanarya':
         return AppTheme.kanaryaSecondary;
@@ -1007,6 +1018,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Color? _cardTitleColor(String colorSchemeStr) {
+    if (Theme.of(context).brightness == Brightness.dark) {
+      return Colors.white;
+    }
     switch (colorSchemeStr) {
       case 'kanarya':
         return AppTheme.kanaryaPrimary;
@@ -1026,6 +1040,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Color? _cardSubtitleColor(String colorSchemeStr) {
+    if (Theme.of(context).brightness == Brightness.dark) {
+      return Colors.white70;
+    }
     switch (colorSchemeStr) {
       case 'kanarya':
         return AppTheme.kanaryaPrimary.withValues(alpha: 0.9);
@@ -1045,6 +1062,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Color? _cardPlayButtonBg(String colorSchemeStr) {
+    if (Theme.of(context).brightness == Brightness.dark) {
+      return const Color(0xFF111111);
+    }
     switch (colorSchemeStr) {
       case 'aslan':
         return AppTheme.aslanYellow;
@@ -1060,6 +1080,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Color? _cardPlayIconColor(String colorSchemeStr) {
+    if (Theme.of(context).brightness == Brightness.dark) {
+      return Colors.white;
+    }
     switch (colorSchemeStr) {
       case 'aslan':
         return Colors.black;

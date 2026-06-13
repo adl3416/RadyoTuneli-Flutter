@@ -12,10 +12,7 @@ class SplashApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
     final colorScheme = ref.watch(colorSchemeProvider);
-    
-    // Tema seçimi
-    ThemeData selectedTheme;
-    
+
     // Helper to choose between light/dark based on themeMode
     ThemeData getTheme(ThemeData light, ThemeData dark) {
       if (themeMode == ThemeMode.system) {
@@ -25,28 +22,37 @@ class SplashApp extends ConsumerWidget {
       return themeMode == ThemeMode.dark ? dark : light;
     }
 
-    switch (colorScheme) {
-      case 'kanarya':
-        selectedTheme = getTheme(AppTheme.kanarayaThemeLight, AppTheme.kanarayaThemeDark);
-        break;
-      case 'aslan':
-        selectedTheme = getTheme(AppTheme.aslanThemeLight, AppTheme.aslanThemeDark);
-        break;
-      case 'karadeniz':
-        selectedTheme = getTheme(AppTheme.karadenizThemeLight, AppTheme.karadenizThemeDark);
-        break;
-      case 'kartal':
-        selectedTheme = getTheme(AppTheme.kartalThemeLight, AppTheme.kartalThemeDark);
-        break;
-      case 'timsah':
-        selectedTheme = getTheme(AppTheme.timsahThemeLight, AppTheme.timsahThemeDark);
-        break;
-      case 'beyaz':
-        selectedTheme = getTheme(AppTheme.beyazThemeLight, AppTheme.beyazThemeDark);
-        break;
-      case 'varsayilan':
-      default:
-        selectedTheme = getTheme(AppTheme.lightTheme, AppTheme.darkTheme);
+    // Tema seçimi
+    ThemeData selectedTheme;
+
+    if (themeMode == ThemeMode.dark ||
+        (themeMode == ThemeMode.system &&
+            MediaQuery.platformBrightnessOf(context) == Brightness.dark)) {
+      selectedTheme = AppTheme.pureBlackDarkTheme;
+    } else {
+      switch (colorScheme) {
+        case 'kanarya':
+          selectedTheme = getTheme(AppTheme.kanarayaThemeLight, AppTheme.kanarayaThemeDark);
+          break;
+        case 'aslan':
+          selectedTheme = getTheme(AppTheme.aslanThemeLight, AppTheme.aslanThemeDark);
+          break;
+        case 'karadeniz':
+          selectedTheme = getTheme(AppTheme.karadenizThemeLight, AppTheme.karadenizThemeDark);
+          break;
+        case 'kartal':
+          selectedTheme = getTheme(AppTheme.kartalThemeLight, AppTheme.kartalThemeDark);
+          break;
+        case 'timsah':
+          selectedTheme = getTheme(AppTheme.timsahThemeLight, AppTheme.timsahThemeDark);
+          break;
+        case 'beyaz':
+          selectedTheme = getTheme(AppTheme.beyazThemeLight, AppTheme.beyazThemeDark);
+          break;
+        case 'varsayilan':
+        default:
+          selectedTheme = getTheme(AppTheme.lightTheme, AppTheme.darkTheme);
+      }
     }
 
     return MaterialApp(
