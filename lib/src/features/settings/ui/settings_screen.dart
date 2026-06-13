@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/main_screen.dart';
+import '../../../core/services/update_service.dart';
 import '../../../core/utils/snackbar_helper.dart';
 import '../../../shared/providers/color_scheme_provider.dart';
 import '../../../shared/providers/theme_provider.dart';
@@ -29,6 +30,7 @@ class SettingsScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final themeMode = ref.watch(themeProvider);
     final appSettings = ref.watch(appSettingsProvider);
+    final updateStatusAsync = ref.watch(appUpdateStatusProvider);
 
     final appBarBg =
         theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary;
@@ -93,6 +95,13 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                       children: [
                         _buildAppSettingsSection(context, ref, appSettings),
+                        const SizedBox(height: 24),
+                        _buildUpdateSection(
+                          context,
+                          ref,
+                          updateStatusAsync,
+                          shareUrl,
+                        ),
                         const SizedBox(height: 24),
                         _buildColorSchemeSection(context, ref),
                         const SizedBox(height: 24),
@@ -534,6 +543,185 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUpdateSection(
+    BuildContext context,
+    WidgetRef ref,
+    AsyncValue<UpdateStatus> updateStatusAsync,
+    String playStoreUrl,
+  ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final sectionColor = Colors.blue[700];
+
+    return _buildSectionCard(
+      context,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionHeader(
+            context,
+            Icons.system_update_alt_rounded,
+            'Guncelleme',
+            sectionColor,
+          ),
+          const SizedBox(height: 16),
+          updateStatusAsync.when(
+            loading: () => ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.2,
+                  color: sectionColor,
+                ),
+              ),
+              title: Text(
+                'Guncellemeler kontrol ediliyor',
+                style: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                'Google Play durumu sorgulaniyor',
+                style: TextStyle(
+                  color: colorScheme.onSurface.withValues(alpha: 0.65),
+                ),
+              ),
+            ),
+            error: (_, __) => _buildSettingsTile(
+              context,
+              'Guncelleme kontrol edilemedi',
+              'Tekrar denemek icin dokunun',
+              Icons.refresh_rounded,
+              () => ref.invalidate(appUpdateStatusProvider),
+              sectionColor,
+            ),
+            data: (status) {
+              final actionLabel = status.isDownloaded
+                  ? 'Kur'
+                  : (status.actionType == UpdateActionType.playStoreFallback
+                      ? 'Play Store\'u Ac'
+                      : 'Guncelle');
+              final detailParts = <String>[
+                if (status.availableVersionCode != null)
+                  'Surum kodu: ${status.availableVersionCode}',
+                if (status.stalenessDays != null)
+                  '${status.stalenessDays} gundur mevcut',
+              ];
+
+              return Column(
+                children: [
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: (status.isUpdateAvailable
+                                ? Colors.orange
+                                : sectionColor!)
+                            .withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        status.isUpdateAvailable
+                            ? Icons.notification_important_outlined
+                            : Icons.verified_outlined,
+                        color: status.isUpdateAvailable
+                            ? Colors.orange[700]
+                            : sectionColor,
+                        size: 22,
+                      ),
+                    ),
+                    title: Text(
+                      status.isUpdateAvailable
+                          ? 'Yeni guncelleme bulundu'
+                          : 'Uygulama guncel',
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        [
+                          status.message,
+                          if (detailParts.isNotEmpty) detailParts.join(' • '),
+                        ].join('\n'),
+                        style: TextStyle(
+                          color: colorScheme.onSurface.withValues(alpha: 0.68),
+                          height: 1.35,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => ref.invalidate(appUpdateStatusProvider),
+                          icon: const Icon(Icons.refresh_rounded, size: 18),
+                          label: const Text('Yenile'),
+                        ),
+                      ),
+                      if (status.isUpdateAvailable && status.canTriggerUpdate) ...[
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: () async {
+                              if (status.actionType ==
+                                  UpdateActionType.playStoreFallback) {
+                                final opened = await launchUrl(
+                                  Uri.parse(playStoreUrl),
+                                  mode: LaunchMode.externalApplication,
+                                );
+                                if (!opened && context.mounted) {
+                                  SnackbarHelper.showError(
+                                    context,
+                                    'Play Store acilamadi',
+                                  );
+                                }
+                                return;
+                              }
+
+                              final started = await UpdateService.startUpdate();
+                              if (!context.mounted) return;
+
+                              if (!started) {
+                                SnackbarHelper.showError(
+                                  context,
+                                  'Guncelleme baslatilamadi',
+                                );
+                                return;
+                              }
+
+                              SnackbarHelper.showSuccess(
+                                context,
+                                status.isDownloaded
+                                    ? 'Kurulum baslatildi'
+                                    : 'Guncelleme akisi baslatildi',
+                              );
+                              ref.invalidate(appUpdateStatusProvider);
+                            },
+                            icon: const Icon(Icons.system_update_alt_rounded, size: 18),
+                            label: Text(actionLabel),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),

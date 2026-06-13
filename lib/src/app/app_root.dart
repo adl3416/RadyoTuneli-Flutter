@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/theme/app_theme.dart';
-import '../core/services/update_service.dart';
 import '../shared/providers/theme_provider.dart';
 import '../shared/providers/color_scheme_provider.dart';
 import '../core/theme/theme_registry.dart';
@@ -15,18 +14,6 @@ class AppRoot extends ConsumerStatefulWidget {
 }
 
 class _AppRootState extends ConsumerState<AppRoot> {
-  @override
-  void initState() {
-    super.initState();
-    // Uygulama tamamen yüklendikten sonra güncelleme kontrolü yap
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(seconds: 2));
-      if (mounted) {
-        await UpdateService.checkForUpdate(context);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeProvider);
