@@ -342,8 +342,8 @@ class _PlayerPalette {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          background.withValues(alpha: useSolidBackground ? 0.96 : 0.75),
-          backgroundSoft.withValues(alpha: useSolidBackground ? 0.92 : 0.65),
+          background.withValues(alpha: useSolidBackground ? 0.82 : 0.68),
+          backgroundSoft.withValues(alpha: useSolidBackground ? 0.76 : 0.58),
         ],
       ),
       borderRadius: BorderRadius.zero,

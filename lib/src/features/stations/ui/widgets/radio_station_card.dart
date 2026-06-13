@@ -107,7 +107,8 @@ class RadioStationCard extends ConsumerWidget {
     final resolvedFavoriteBorder = isLightCard
         ? const Color(0xFFDCE3EC)
         : Colors.white.withValues(alpha: 0.16);
-    final resolvedPlayBg = playButtonBackgroundColor ?? AppTheme.orange400;
+    final resolvedPlayBg = playButtonBackgroundColor ??
+        (isWhiteTheme ? AppTheme.beyazPrimaryBlueDark : AppTheme.orange400);
     final resolvedPlayIcon = playIconColor ?? Colors.white;
     final resolvedFavoriteIcon = isLightCard
         ? const Color(0xFF667085)

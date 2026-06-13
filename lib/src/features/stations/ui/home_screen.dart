@@ -768,9 +768,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildNormalHeader(Color headerFg) {
-    final colorSchemeStr = ref.watch(colorSchemeProvider);
-    final headerIconColor =
-        colorSchemeStr == 'beyaz' ? AppTheme.gradientBlue : headerFg;
+    final headerIconColor = headerFg;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
@@ -802,7 +800,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             onPressed: () {
               setState(() => _isSearchActive = true);
-              _searchFocusNode.requestFocus();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  _searchFocusNode.requestFocus();
+                }
+              });
             },
             icon: Icon(Icons.search, color: headerIconColor),
           ),
