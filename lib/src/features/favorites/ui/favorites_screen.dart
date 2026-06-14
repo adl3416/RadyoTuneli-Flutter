@@ -108,9 +108,13 @@ class FavoritesScreen extends ConsumerWidget {
                                   final station = favorites[index];
                                   final isPlaying = ref.watch(playerStateProvider).currentStation?.id == station.id && ref.watch(playerStateProvider).isPlaying;
                                   
-                                  // Zebra effect for 'beyaz' and 'sade' themes
+                                  // Zebra effect for neutral themes
                                   Color? zebraColor;
-                                  if (colorSchemeStr == 'beyaz') {
+                                  if (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'purple') {
+                                    zebraColor = index % 2 == 0
+                                        ? const Color(0xFFF1F3F5)
+                                        : const Color(0xFFE5E7EB);
+                                  } else if (colorSchemeStr == 'beyaz') {
                                     zebraColor = index % 2 == 0 ? const Color(0xFFFAFBFC) : const Color(0xFFF2F4F6);
                                   } else if (colorSchemeStr == 'sade') {
                                     zebraColor = index % 2 == 0 ? Colors.white : const Color(0xFFE8E8E8);
@@ -196,7 +200,15 @@ class FavoritesScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Icon(Icons.radio, color: drawerFg, size: 28),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    'assets/images/icon.png',
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.cover,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Text(
                   'Radyo Tüneli',

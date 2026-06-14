@@ -39,12 +39,22 @@ class RadioStationCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final themeName = ref.watch(colorSchemeProvider);
+    final isWhiteTheme = themeName == 'beyaz';
 
     // Beyaz veya Sade tema için özel stil
-    final isBeyazTheme = themeName == 'beyaz' || themeName == 'sade';
+    final isNeutralTheme =
+        themeName == 'varsayilan' ||
+        themeName == 'purple' ||
+        themeName == 'beyaz' ||
+        themeName == 'sade';
     
     final effectiveBgColor =
-        backgroundColor ?? (isBeyazTheme ? Colors.white : null);
+        backgroundColor ??
+        (isNeutralTheme
+            ? (themeName == 'varsayilan' || themeName == 'purple'
+                ? const Color(0xFFF1F3F5)
+                : Colors.white)
+            : null);
     
     final primary = effectiveBgColor ?? colorScheme.primary;
     final cardStart = effectiveBgColor == null
@@ -57,15 +67,21 @@ class RadioStationCard extends ConsumerWidget {
         ? (isPlaying ? const Color(0xFF4520BE) : const Color(0xFF311C82))
         : HSLColor.fromColor(primary).withLightness(0.27).toColor();
 
-    final resolvedTitleColor = titleColor ?? (isBeyazTheme ? colorScheme.onSurface : Colors.white);
+    final resolvedTitleColor =
+        titleColor ?? (isNeutralTheme ? colorScheme.onSurface : Colors.white);
     final resolvedSubtitleColor = subtitleColor ??
-        (isBeyazTheme
+        (isNeutralTheme
             ? colorScheme.onSurface.withValues(alpha: 0.64)
             : const Color(0xFFE2D9FF).withValues(alpha: 0.92));
 
     final isLightCard = effectiveBgColor != null &&
         ThemeData.estimateBrightnessForColor(effectiveBgColor) ==
             Brightness.light;
+    final resolvedCardBorder = isLightCard
+        ? (isWhiteTheme
+            ? const Color(0xFFF1F4F8)
+            : const Color(0xFFDCE3EC))
+        : Colors.white.withValues(alpha: isPlaying ? 0.24 : 0.16);
     final resolvedFavoriteBg = isLightCard
         ? const Color(0xFFFFFFFF)
         : Colors.white.withValues(alpha: 0.10);
@@ -96,13 +112,17 @@ class RadioStationCard extends ConsumerWidget {
           BoxShadow(
             color: (effectiveBgColor == null ? cardMid : primary).withValues(
               alpha: isLightCard
-                  ? (isPlaying ? 0.10 : 0.06)
+                  ? (isWhiteTheme ? (isPlaying ? 0.05 : 0.03) : (isPlaying ? 0.10 : 0.06))
                   : (isPlaying ? 0.48 : 0.34),
             ),
             blurRadius: isLightCard ? 16 : (isPlaying ? 24 : 18),
             offset: Offset(0, isLightCard ? 8 : 12),
           ),
         ],
+        border: Border.all(
+          color: resolvedCardBorder,
+          width: isPlaying ? 1.2 : 1,
+        ),
       ),
       child: Material(
         color: Colors.transparent,

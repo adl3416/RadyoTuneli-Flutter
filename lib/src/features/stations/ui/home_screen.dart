@@ -468,10 +468,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         final station =
                             filteredStations[index - (searchQuery.isEmpty ? 2 : 1)];
                         
-                        // Zebra effect for 'beyaz' and 'sade' themes
+                        // Zebra effect for neutral themes
                         Color? zebraColor;
-                        if (colorSchemeStr == 'beyaz') {
-                          zebraColor = Colors.white;
+                        if (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'purple') {
+                          final isEven = (index - (searchQuery.isEmpty ? 2 : 1)) % 2 == 0;
+                          zebraColor = isEven
+                              ? const Color(0xFFF1F3F5)
+                              : const Color(0xFFE5E7EB);
+                        } else if (colorSchemeStr == 'beyaz') {
+                          zebraColor = index % 2 == 0
+                              ? const Color(0xFFFAFBFC)
+                              : const Color(0xFFF2F4F6);
                         } else if (colorSchemeStr == 'sade') {
                           final isEven = (index - (searchQuery.isEmpty ? 2 : 1)) % 2 == 0;
                           zebraColor = isEven ? Colors.white : const Color(0xFFE8E8E8);
@@ -588,7 +595,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Icon(Icons.radio, color: appBarFg, size: 28),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    'assets/images/icon.png',
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.cover,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Text(
                   'Radyo T\u00fcneli',
@@ -976,7 +991,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       case 'beyaz':
         return AppTheme.beyazCardGrey;
       case 'varsayilan':
-        return Colors.white;
+      case 'purple':
+        return const Color(0xFFF1F3F5);
       default:
         return null;
     }

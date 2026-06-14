@@ -423,7 +423,7 @@ class SettingsScreen extends ConsumerWidget {
             spacing: 12,
             runSpacing: 12,
             children: [
-              _buildColorOption(context, ref, 'Varsay\u0131lan', 'purple', Colors.deepPurple),
+              _buildColorOption(context, ref, 'Varsay\u0131lan', 'varsayilan', Colors.deepPurple),
               _buildColorOption(context, ref, 'Kanarya', 'kanarya', Colors.yellow),
               _buildColorOption(context, ref, 'Aslan', 'aslan', Colors.red),
               _buildColorOption(context, ref, 'Kartal', 'kartal', Colors.black),
@@ -823,7 +823,15 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Icon(Icons.radio, color: drawerFg, size: 28),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    'assets/images/icon.png',
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.cover,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Text(
                   'Radyo T\u00fcneli',
