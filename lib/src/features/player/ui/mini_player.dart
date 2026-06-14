@@ -227,19 +227,29 @@ class MiniPlayer extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (context) {
         final palette = _PlayerPalette.fromTheme(Theme.of(context));
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.9,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [palette.background, palette.backgroundSoft],
-            ),
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(24),
-            ),
-          ),
-          child: const FullScreenPlayer(),
+        return DraggableScrollableSheet(
+          initialChildSize: 0.9,
+          minChildSize: 0.12,
+          maxChildSize: 0.94,
+          expand: false,
+          snap: true,
+          snapSizes: const [0.9],
+          shouldCloseOnMinExtent: true,
+          builder: (context, _) {
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [palette.background, palette.backgroundSoft],
+                ),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+              ),
+              child: const FullScreenPlayer(),
+            );
+          },
         );
       },
     );
@@ -568,23 +578,17 @@ class FullScreenPlayer extends ConsumerWidget {
 
     final station = playerState.currentStation!;
 
-    return SingleChildScrollView(
+    return SafeArea(
+      top: false,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            _SheetDragHandle(color: palette.muted),
+            const Spacer(),
             Container(
-              width: 50,
-              height: 5,
-              decoration: BoxDecoration(
-                color: palette.muted.withValues(alpha: 0.55),
-                borderRadius: BorderRadius.circular(3),
-              ),
-            ),
-            const SizedBox(height: 32),
-            Container(
-              width: 200,
-              height: 200,
+              width: 190,
+              height: 190,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
@@ -598,11 +602,11 @@ class FullScreenPlayer extends ConsumerWidget {
               child: RadioLogo(
                 radioName: station.name,
                 logoUrl: station.logoUrl,
-                size: 200,
+                size: 190,
                 showBorder: true,
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 24),
             Text(
               station.name,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -614,18 +618,13 @@ class FullScreenPlayer extends ConsumerWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 8),
-            Text(
-              station.artist,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: palette.muted,
-                    fontSize: 16,
-                  ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            const SizedBox(height: 18),
+            _RhythmVisualizer(
+              isPlaying: playerState.isPlaying,
+              color: palette.accent,
+              glowColor: palette.playButton,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Consumer(
               builder: (context, ref, _) {
                 final favorites = ref.watch(favoritesProvider);
@@ -653,7 +652,7 @@ class FullScreenPlayer extends ConsumerWidget {
                 );
               },
             ),
-            const SizedBox(height: 24),
+            const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -727,7 +726,7 @@ class FullScreenPlayer extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 22),
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -759,7 +758,7 @@ class FullScreenPlayer extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -803,6 +802,136 @@ class _GlassActionButton extends StatelessWidget {
             icon,
             size: 28,
             color: color,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RhythmVisualizer extends StatefulWidget {
+  final bool isPlaying;
+  final Color color;
+  final Color glowColor;
+
+  const _RhythmVisualizer({
+    required this.isPlaying,
+    required this.color,
+    required this.glowColor,
+  });
+
+  @override
+  State<_RhythmVisualizer> createState() => _RhythmVisualizerState();
+}
+
+class _RhythmVisualizerState extends State<_RhythmVisualizer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  static const _barCount = 15;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+    if (widget.isPlaying) {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _RhythmVisualizer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isPlaying && !_controller.isAnimating) {
+      _controller.repeat();
+    } else if (!widget.isPlaying && _controller.isAnimating) {
+      _controller.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 58,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final progress = _controller.value;
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(_barCount, (index) {
+              final phase = (progress * math.pi * 2) + (index * 0.55);
+              final wave = (math.sin(phase) + 1) / 2;
+              final barHeight = widget.isPlaying
+                  ? 10.0 + (wave * 34.0)
+                  : 10.0 + ((index % 3) * 4.0);
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: 5,
+                    height: barHeight,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(99),
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          widget.glowColor.withValues(
+                            alpha: widget.isPlaying ? 0.95 : 0.40,
+                          ),
+                          widget.color.withValues(
+                            alpha: widget.isPlaying ? 0.90 : 0.35,
+                          ),
+                        ],
+                      ),
+                      boxShadow: widget.isPlaying
+                          ? [
+                              BoxShadow(
+                                color: widget.glowColor.withValues(alpha: 0.28),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
+                    ),
+                  ),
+                ),
+              );
+            }),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _SheetDragHandle extends StatelessWidget {
+  final Color color;
+
+  const _SheetDragHandle({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Center(
+        child: Container(
+          width: 50,
+          height: 5,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.55),
+            borderRadius: BorderRadius.circular(3),
           ),
         ),
       ),
