@@ -43,7 +43,8 @@ class RadioStationCard extends ConsumerWidget {
     // Beyaz veya Sade tema için özel stil
     final isBeyazTheme = themeName == 'beyaz' || themeName == 'sade';
     
-    final effectiveBgColor = backgroundColor ?? (isBeyazTheme ? colorScheme.surfaceVariant : null);
+    final effectiveBgColor =
+        backgroundColor ?? (isBeyazTheme ? Colors.white : null);
     
     final primary = effectiveBgColor ?? colorScheme.primary;
     final cardStart = effectiveBgColor == null

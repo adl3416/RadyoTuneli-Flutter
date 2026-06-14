@@ -53,7 +53,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final isDark = theme.brightness == Brightness.dark;
     final appBarBg = _resolveAppBarBg(theme, colorSchemeStr);
     final appBarFg = _resolveAppBarFg(theme, colorSchemeStr);
-    final pageBottom = theme.scaffoldBackgroundColor;
+    final pageBottom = Colors.white;
     final pageTop = (colorSchemeStr == 'varsayilan' || colorSchemeStr == 'beyaz')
         ? pageBottom
         : Color.lerp(
@@ -133,8 +133,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                         Color? zebraColor;
                         if (colorSchemeStr == 'beyaz') {
-                          final isEven = index % 2 == 0;
-                          zebraColor = isEven ? const Color(0xFFFAFBFC) : const Color(0xFFF2F4F6);
+                          zebraColor = Colors.white;
                         } else if (colorSchemeStr == 'sade') {
                           final isEven = index % 2 == 0;
                           zebraColor = isEven ? Colors.white : const Color(0xFFE8E8E8);
@@ -254,9 +253,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildDrawer(Color appBarBg, Color appBarFg) {
-    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
-    final drawerAccent =
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ??
+        Theme.of(context).colorScheme.onSurface;
+    final drawerIconColor =
         appBarBg.computeLuminance() > 0.85 ? const Color(0xFF344054) : appBarBg;
+    final drawerAccent = drawerIconColor;
     final favoriteAccent = appBarBg.computeLuminance() > 0.85
         ? const Color(0xFFE11D48)
         : AppTheme.gradientPink;
@@ -286,8 +287,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home, color: drawerAccent),
-            title: const Text('Ana Sayfa'),
+            leading: Icon(Icons.home, color: drawerIconColor),
+            title: Text(
+              'Ana Sayfa',
+              style: TextStyle(
+                color: textColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             onTap: () => Navigator.pop(context),
           ),
           ListTile(
@@ -299,8 +306,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.settings, color: drawerAccent),
-            title: const Text('Ayarlar'),
+            leading: Icon(Icons.settings, color: drawerIconColor),
+            title: Text(
+              'Ayarlar',
+              style: TextStyle(
+                color: textColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             onTap: () {
               Navigator.pop(context);
               ref.read(selectedTabProvider.notifier).state = 2;

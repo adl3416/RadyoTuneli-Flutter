@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
 
-  static const String _email = 'radyotuneli@gmail.com';
+  static const String _email = 'software19951995@gmail.com';
 
   void _copyEmail(BuildContext context) {
     Clipboard.setData(const ClipboardData(text: _email));
@@ -206,7 +206,7 @@ class SupportScreen extends StatelessWidget {
             _faqItem(theme, 'Radyo neden çalmıyor?', 'İnternet bağlantınızı kontrol edin. İstasyonun sunucusu geçici olarak devre dışı olabilir.'),
             _faqItem(theme, 'Favori istasyonlarım kayboldu?', 'Uygulama verilerini temizlerseniz favoriler silinir. Ayarlar > Verileri Sil seçeneğine dikkat edin.'),
             _faqItem(theme, 'Android Auto çalışmıyor?', 'Android Auto uyumluluğu için uygulamanın güncel sürümünü kullandığınızdan emin olun.'),
-            _faqItem(theme, 'Yeni istasyon eklenebilir mi?', 'radyotuneli@gmail.com adresine yazarak öneri iletebilirsiniz.'),
+            _faqItem(theme, 'Yeni istasyon eklenebilir mi?', 'software19951995@gmail.com adresine yazarak öneri iletebilirsiniz.'),
             const SizedBox(height: 8),
           ],
         ),

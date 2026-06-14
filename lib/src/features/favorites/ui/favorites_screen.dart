@@ -159,12 +159,15 @@ class FavoritesScreen extends ConsumerWidget {
   }
 
   Widget _buildDrawer(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     final drawerBg = Theme.of(context).appBarTheme.backgroundColor ??
         Theme.of(context).colorScheme.primary;
     final drawerFg = Theme.of(context).appBarTheme.foregroundColor ??
         Theme.of(context).colorScheme.onPrimary;
+    final drawerIconColor = colorScheme.onSurface.withValues(alpha: 0.88);
 
     return Drawer(
+      backgroundColor: colorScheme.surface,
       child: Column(
         children: [
           Container(
@@ -175,7 +178,7 @@ class FavoritesScreen extends ConsumerWidget {
             child: Text('Radyo Tüneli', style: TextStyle(color: drawerFg, fontSize: 24)),
           ),
           ListTile(
-            leading: const Icon(Icons.home),
+            leading: Icon(Icons.home, color: drawerIconColor),
             title: const Text('Ana Sayfa'),
             onTap: () {
               Navigator.pop(context);
@@ -183,12 +186,12 @@ class FavoritesScreen extends ConsumerWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.favorite),
+            leading: const Icon(Icons.favorite, color: Color(0xFFFB7185)),
             title: const Text('Favoriler'),
             onTap: () => Navigator.pop(context),
           ),
           ListTile(
-            leading: const Icon(Icons.settings),
+            leading: Icon(Icons.settings, color: drawerIconColor),
             title: const Text('Ayarlar'),
             onTap: () {
               Navigator.pop(context);

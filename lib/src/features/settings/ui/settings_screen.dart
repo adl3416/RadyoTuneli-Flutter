@@ -783,7 +783,7 @@ class SettingsScreen extends ConsumerWidget {
 
   Widget _buildDrawer(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-    final iconColor = _resolvedSectionIconColor(context);
+    final iconColor = colorScheme.onSurface.withValues(alpha: 0.88);
     final drawerBg = Theme.of(context).appBarTheme.backgroundColor ??
         Theme.of(context).colorScheme.primary;
     final drawerFg = Theme.of(context).appBarTheme.foregroundColor ??

@@ -299,7 +299,10 @@ class _PlayerPalette {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [background, backgroundSoft],
+          colors: [
+            background.withValues(alpha: 0.90),
+            backgroundSoft.withValues(alpha: 0.86),
+          ],
         ),
         borderRadius: BorderRadius.zero,
         border: Border(top: BorderSide(color: border, width: 1.1)),

@@ -123,7 +123,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           _bodyText(theme,
             'Gizlilik politikası ile ilgili sorularınız için:\n'
             'Bei Fragen zum Datenschutz:\n\n'
-            'E-Mail: radyotuneli@gmail.com',
+            'E-Mail: software19951995@gmail.com',
           ),
 
           const SizedBox(height: 32),

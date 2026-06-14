@@ -21,7 +21,7 @@ class ImpressumScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _sectionTitle(theme, 'Kontakt / İletişim'),
           const SizedBox(height: 8),
-          _bodyText(theme, 'E-Mail: radyotuneli@gmail.com'),
+          _bodyText(theme, 'E-Mail: software19951995@gmail.com'),
           const SizedBox(height: 24),
           _sectionTitle(theme, 'Haftungsausschluss / Sorumluluk Reddi'),
           const SizedBox(height: 8),
