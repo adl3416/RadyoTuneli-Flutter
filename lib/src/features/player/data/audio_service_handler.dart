@@ -153,6 +153,52 @@ class RadioAudioHandler extends BaseAudioHandler
   }
 
   // Favorileri SharedPreferences'dan yükle
+  String _fixMojibakeText(String value) {
+    const replacements = <String, String>{
+      'T\u00c3\u00bcneli': 'T\u00fcneli',
+      'T\u00c3\u00bcrk': 'T\u00fcrk',
+      'T\u00c3\u00bcrk\u00c3\u00bc': 'T\u00fcrk\u00fc',
+      'M\u00c3\u00bczik': 'M\u00fczik',
+      'G\u00c3\u00bcncel': 'G\u00fcncel',
+      'Yak\u00c4\u00b1n': 'Yak\u0131n',
+      'dinledi\u00c4\u009finiz': 'dinledi\u011finiz',
+      'E\u00c4\u009flence': 'E\u011flence',
+      'M\u00c3\u00bczi\u00c4\u009fi': 'M\u00fczi\u011fi',
+      'T\u00c3\u00bcrk\u00c3\u00bcler': 'T\u00fcrk\u00fcler',
+      'yay\u00c4\u00b1nlar\u00c4\u00b1': 'yay\u0131nlar\u0131',
+      'i\u00c3\u00a7erikler': 'i\u00e7erikler',
+      'Pop\u00c3\u00bcler': 'Pop\u00fcler',
+      'En \u00c3\u00a7ok': 'En \u00e7ok',
+      'kanallar\u00c4\u00b1': 'kanallar\u0131',
+      'radyolar\u00c4\u00b1n\u00c4\u00b1z': 'radyolar\u0131n\u0131z',
+      'y\u00c3\u00bckleniyor': 'y\u00fckleniyor',
+      'a\u00c3\u00a7\u00c4\u00b1n': 'a\u00e7\u0131n',
+      'd\u00c3\u00b6n\u00c3\u00bcn': 'd\u00f6n\u00fcn',
+      'Bulunamad\u00c4\u00b1': 'Bulunamad\u0131',
+      'hen\u00c3\u00bcz': 'hen\u00fcz',
+      'g\u00c3\u00b6z at\u00c4\u00b1n': 'g\u00f6z at\u0131n',
+      'Radyo T\u00c3\u00bcneli': 'Radyo T\u00fcneli',
+      '\u00c3\u00bc': '\u00fc',
+      '\u00c3\u0152': '\u00dc',
+      '\u00c3\u00a7': '\u00e7',
+      '\u00c3\u2021': '\u00c7',
+      '\u00c4\u0178': '\u011f',
+      '\u00c4\u017d': '\u011e',
+      '\u00c4\u00b1': '\u0131',
+      '\u00c4\u00b0': '\u0130',
+      '\u00c3\u00b6': '\u00f6',
+      '\u00c3\u2013': '\u00d6',
+      '\u00c5\u0178': '\u015f',
+      '\u00c5\u017d': '\u015e',
+    };
+
+    var result = value;
+    replacements.forEach((from, to) {
+      result = result.replaceAll(from, to);
+    });
+    return result;
+  }
+
   Future<void> _loadFavorites() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -363,15 +409,17 @@ class RadioAudioHandler extends BaseAudioHandler
 
     for (int i = 0; i < allStations.length; i++) {
       final station = allStations[i];
-      final name = station['name'] ?? '';
+      final name = _fixMojibakeText((station['name'] ?? '').toString());
       final stationId = station['stationuuid'] ?? station['id'] ?? name;
       final streamUrl = station['url_resolved'] ??
           station['streamUrl'] ??
           station['url'] ??
           '';
-      final genre = station['tags']?.toString().split(',').first ??
-          station['genre'] ??
-          'Genel';
+      final genre = _fixMojibakeText(
+        station['tags']?.toString().split(',').first ??
+            station['genre'] ??
+            'Genel',
+      );
       final favicon = station['favicon'] ?? station['logoUrl'] ?? '';
 
       if (streamUrl.isEmpty) continue; // URL yoksa atla
@@ -1191,8 +1239,8 @@ class RadioAudioHandler extends BaseAudioHandler
       final categoryData = _categoryInfo[mediaId]!;
       return MediaItem(
         id: mediaId,
-        title: categoryData['title']!,
-        artist: categoryData['description']!,
+        title: _fixMojibakeText(categoryData['title']!),
+        artist: _fixMojibakeText(categoryData['description']!),
         artUri: _androidAutoBrowseIconUri,
         playable: false,
         extras: {
@@ -1245,10 +1293,10 @@ class RadioAudioHandler extends BaseAudioHandler
 
         return MediaItem(
           id: categoryId,
-          title: categoryData['title']!,
+          title: _fixMojibakeText(categoryData['title']!),
           artist:
               stationCount > 0 ? '$stationCount radyo istasyonu' : 'Yakında...',
-          album: categoryData['description'],
+          album: _fixMojibakeText(categoryData['description']!),
           artUri: _androidAutoBrowseIconUri,
           playable: false,
           extras: {

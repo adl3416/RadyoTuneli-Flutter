@@ -21,6 +21,8 @@ final playerStateProvider =
   return PlayerNotifier(audioHandler, ref);
 });
 
+final sleepTimerMinutesProvider = StateProvider<int?>((ref) => null);
+
 // Currently Playing Station Provider
 final currentlyPlayingStationProvider = Provider<Station?>((ref) {
   // We'll need to implement this to return the current station
@@ -33,6 +35,7 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
   final Ref _ref;
   StreamSubscription? _playbackSub;
   StreamSubscription? _mediaItemSub;
+  Timer? _sleepTimer;
 
   PlayerNotifier(this._audioHandler, this._ref)
       : super(const PlayerStateModel()) {
@@ -151,6 +154,7 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
 
   @override
   void dispose() {
+    _sleepTimer?.cancel();
     _playbackSub?.cancel();
     _mediaItemSub?.cancel();
     super.dispose();
@@ -323,6 +327,21 @@ class PlayerNotifier extends StateNotifier<PlayerStateModel> {
     } catch (e) {
       state = state.copyWith(error: _getErrorMessage(e));
     }
+  }
+
+  void setSleepTimer(int minutes) {
+    _sleepTimer?.cancel();
+    _ref.read(sleepTimerMinutesProvider.notifier).state = minutes;
+    _sleepTimer = Timer(Duration(minutes: minutes), () async {
+      _ref.read(sleepTimerMinutesProvider.notifier).state = null;
+      await stop();
+    });
+  }
+
+  void clearSleepTimer() {
+    _sleepTimer?.cancel();
+    _sleepTimer = null;
+    _ref.read(sleepTimerMinutesProvider.notifier).state = null;
   }
 
   void clearError() {

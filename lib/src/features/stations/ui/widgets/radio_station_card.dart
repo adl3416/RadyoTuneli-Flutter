@@ -37,7 +37,9 @@ class RadioStationCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final themeName = ref.watch(colorSchemeProvider);
     final isWhiteTheme = themeName == 'beyaz';
 
@@ -51,27 +53,37 @@ class RadioStationCard extends ConsumerWidget {
     final effectiveBgColor =
         backgroundColor ??
         (isNeutralTheme
-            ? (themeName == 'varsayilan' || themeName == 'purple'
-                ? const Color(0xFFF1F3F5)
-                : Colors.white)
+            ? (isDark 
+                ? const Color(0xFF2D325A).withValues(alpha: 0.85) // Koyu temada belirgin kart zemini
+                : (themeName == 'varsayilan' || themeName == 'purple'
+                    ? const Color(0xFFF1F3F5)
+                    : Colors.white))
             : null);
     
     final primary = effectiveBgColor ?? colorScheme.primary;
     final cardStart = effectiveBgColor == null
         ? (isPlaying ? const Color(0xFF9A63FF) : const Color(0xFF7E57E7))
-        : HSLColor.fromColor(primary).withLightness(0.44).toColor();
+        : (isDark 
+            ? const Color(0xFF3B448C) 
+            : HSLColor.fromColor(primary).withLightness(0.44).toColor());
     final cardMid = effectiveBgColor == null
         ? (isPlaying ? const Color(0xFF7744EA) : const Color(0xFF5B38D2))
-        : HSLColor.fromColor(primary).withLightness(0.37).toColor();
+        : (isDark 
+            ? const Color(0xFF2D325A) 
+            : HSLColor.fromColor(primary).withLightness(0.37).toColor());
     final cardEnd = effectiveBgColor == null
         ? (isPlaying ? const Color(0xFF4520BE) : const Color(0xFF311C82))
-        : HSLColor.fromColor(primary).withLightness(0.27).toColor();
+        : (isDark 
+            ? const Color(0xFF1E244F) 
+            : HSLColor.fromColor(primary).withLightness(0.27).toColor());
 
     final resolvedTitleColor =
-        titleColor ?? (isNeutralTheme ? colorScheme.onSurface : Colors.white);
+        titleColor ?? (isNeutralTheme 
+            ? (isDark ? Colors.white : colorScheme.onSurface) 
+            : Colors.white);
     final resolvedSubtitleColor = subtitleColor ??
         (isNeutralTheme
-            ? colorScheme.onSurface.withValues(alpha: 0.64)
+            ? (isDark ? Colors.white.withValues(alpha: 0.7) : colorScheme.onSurface.withValues(alpha: 0.64))
             : const Color(0xFFE2D9FF).withValues(alpha: 0.92));
 
     final isLightCard = effectiveBgColor != null &&
@@ -149,7 +161,7 @@ class RadioStationCard extends ConsumerWidget {
                         title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        style: (Theme.of(context).textTheme.titleMedium ?? const TextStyle()).copyWith(
                           fontWeight: FontWeight.w700,
                           color: resolvedTitleColor,
                           fontSize: 15,
@@ -160,7 +172,7 @@ class RadioStationCard extends ConsumerWidget {
                         subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        style: (Theme.of(context).textTheme.bodySmall ?? const TextStyle()).copyWith(
                           color: resolvedSubtitleColor,
                           fontSize: 12,
                         ),

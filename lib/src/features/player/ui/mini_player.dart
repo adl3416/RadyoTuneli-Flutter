@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,23 +48,17 @@ class MiniPlayer extends ConsumerWidget {
       );
     }
 
+    if (playerState.currentStation == null) return const SizedBox.shrink();
+
     final station = playerState.currentStation!;
 
-    return Container(
-      height: 96 + bottomInset,
-      decoration: palette.containerDecoration,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: IgnorePointer(
-              child: CustomPaint(
-                painter: _RhythmWavePainter(
-                  color: palette.accent.withValues(alpha: 0.24),
-                ),
-              ),
-            ),
-          ),
-          Material(
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          height: 96 + bottomInset,
+          decoration: palette.containerDecoration,
+          child: Material(
             color: Colors.transparent,
             borderRadius: BorderRadius.zero,
             child: InkWell(
@@ -73,149 +68,151 @@ class MiniPlayer extends ConsumerWidget {
                 padding: EdgeInsets.fromLTRB(14, 12, 14, 12 + bottomInset),
                 child: Row(
                   children: [
-                Container(
-                  padding: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF7D56FF), Color(0xFFBB86FF)],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF7D56FF).withValues(alpha: 0.24),
-                        blurRadius: 12,
-                        offset: const Offset(0, 6),
+                    Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            palette.accent,
+                            palette.accent.withValues(alpha: 0.8),
+                          ],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: palette.accent.withValues(alpha: 0.24),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: RadioLogo(
-                    radioName: station.name,
-                    logoUrl: station.logoUrl,
-                    size: 50,
-                    showBorder: false,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        station.name,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                      child: RadioLogo(
+                        radioName: station.name,
+                        logoUrl: station.logoUrl,
+                        size: 50,
+                        showBorder: false,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            station.name,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                   color: palette.text,
                                   fontWeight: FontWeight.w700,
-                                   fontSize: 15.5,
+                                  fontSize: 15.5,
                                 ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            playerState.isPlaying ? 'Çalıyor' : 'Duraklatıldı',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: palette.muted,
+                                  fontSize: 12,
+                                ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        playerState.isPlaying ? 'Çalıyor' : 'Duraklatıldı',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: palette.muted,
-                              fontSize: 12,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-                Consumer(
-                  builder: (context, ref, child) {
-                    final favorites = ref.watch(favoritesProvider);
-                    final isFavorite = favorites.contains(station.id);
+                    ),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final favorites = ref.watch(favoritesProvider);
+                        final isFavorite = favorites.contains(station.id);
 
-                    return IconButton(
-                      key: ValueKey('fav_${station.id}_$isFavorite'),
-                      style: IconButton.styleFrom(
-                        fixedSize: const Size(42, 42),
-                        backgroundColor: palette.secondaryButton,
-                        foregroundColor:
-                            isFavorite ? AppTheme.gradientPink : palette.text,
-                        side: BorderSide(color: palette.secondaryBorder),
-                      ),
-                      onPressed: () {
-                        HapticFeedback.heavyImpact();
-                        ref.read(favoritesProvider.notifier).toggleFavorite(
-                              station.id,
+                        return IconButton(
+                          key: ValueKey('fav_${station.id}_$isFavorite'),
+                          style: IconButton.styleFrom(
+                            fixedSize: const Size(42, 42),
+                            backgroundColor: palette.secondaryButton,
+                            foregroundColor:
+                                isFavorite ? AppTheme.gradientPink : palette.text,
+                            side: BorderSide(color: palette.secondaryBorder),
+                          ),
+                          onPressed: () {
+                            HapticFeedback.heavyImpact();
+                            ref.read(favoritesProvider.notifier).toggleFavorite(
+                                  station.id,
+                                );
+                            Future.microtask(
+                              () => ref.invalidate(favoritesProvider),
                             );
-                        Future.microtask(
-                          () => ref.invalidate(favoritesProvider),
+                          },
+                          icon: Icon(
+                            isFavorite ? Icons.favorite : Icons.favorite_outline,
+                            color: isFavorite ? AppTheme.gradientPink : palette.text,
+                            size: 20,
+                          ),
                         );
                       },
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_outline,
-                        color: isFavorite ? AppTheme.gradientPink : palette.text,
-                        size: 20,
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(width: 8),
-                if (playerState.isLoading)
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: palette.secondaryButton,
-                      borderRadius: BorderRadius.circular(23),
-                      border: Border.all(
-                        color: palette.secondaryBorder,
-                        width: 1,
-                      ),
                     ),
-                    child: Center(
-                      child: _NeonSpinner(size: 30, color: palette.accent),
-                    ),
-                  )
-                else
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: palette.playButton,
-                      borderRadius: BorderRadius.circular(23),
-                      boxShadow: [
-                        BoxShadow(
-                          color: palette.playButton.withValues(alpha: 0.34),
-                          blurRadius: 16,
-                          offset: const Offset(0, 8),
+                    const SizedBox(width: 8),
+                    if (playerState.isLoading)
+                      Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: palette.secondaryButton,
+                          borderRadius: BorderRadius.circular(23),
+                          border: Border.all(
+                            color: palette.secondaryBorder,
+                            width: 1,
+                          ),
                         ),
-                      ],
-                    ),
-                    child: IconButton(
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: palette.playIcon,
+                        child: Center(
+                          child: _NeonSpinner(size: 30, color: palette.accent),
+                        ),
+                      )
+                    else
+                      Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: palette.playButton,
+                          borderRadius: BorderRadius.circular(23),
+                          boxShadow: [
+                            BoxShadow(
+                              color: palette.playButton.withValues(alpha: 0.34),
+                              blurRadius: 16,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: palette.playIcon,
+                          ),
+                          onPressed: () async {
+                            if (playerState.isPlaying) {
+                              await ref.read(playerStateProvider.notifier).pause();
+                            } else {
+                              await ref.read(playerStateProvider.notifier).resume();
+                            }
+                          },
+                          icon: Icon(
+                            playerState.isPlaying
+                                ? Icons.pause_rounded
+                                : Icons.play_arrow_rounded,
+                            color: palette.playIcon,
+                            size: 26,
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
                       ),
-                      onPressed: () async {
-                        if (playerState.isPlaying) {
-                          await ref.read(playerStateProvider.notifier).pause();
-                        } else {
-                          await ref.read(playerStateProvider.notifier).resume();
-                        }
-                      },
-                      icon: Icon(
-                        playerState.isPlaying
-                            ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded,
-                        color: palette.playIcon,
-                        size: 26,
-                      ),
-                      padding: EdgeInsets.zero,
-                    ),
-                  ),
                   ],
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -282,48 +279,59 @@ class _PlayerPalette {
   });
 
   factory _PlayerPalette.fromTheme(ThemeData theme) {
-    final background = theme.brightness == Brightness.dark
-        ? const Color(0xFF1A214F)
-        : const Color(0xFF2D235F);
-    final backgroundSoft = theme.brightness == Brightness.dark
-        ? const Color(0xFF11173C)
-        : const Color(0xFF1F1944);
-    final text = Colors.white;
-    final accent = const Color(0xFF98B5FF);
+    if (theme.brightness == Brightness.light) {
+      return _PlayerPalette(
+        background: const Color(0xFFFB8C00), // Koyu Turuncu
+        backgroundSoft: const Color(0xFFF57C00),
+        border: Colors.black.withValues(alpha: 0.08),
+        text: Colors.white,
+        muted: Colors.white.withValues(alpha: 0.8),
+        accent: Colors.white,
+        playButton: Colors.white,
+        playIcon: const Color(0xFFFB8C00),
+        secondaryButton: Colors.white.withValues(alpha: 0.1),
+        secondaryBorder: Colors.white.withValues(alpha: 0.2),
+      );
+    }
+
+    const background = Color(0xFF131525);
+    const backgroundSoft = Color(0xFF0F1121);
 
     return _PlayerPalette(
-      background: background.withValues(alpha: 0.97),
-      backgroundSoft: backgroundSoft.withValues(alpha: 0.93),
-      border: const Color(0x66A78BFF).withValues(alpha: 0.84),
-      text: text,
-      muted: const Color(0xFFD7CBFF),
-      accent: accent,
-      playButton: AppTheme.orange400,
+      background: background,
+      backgroundSoft: backgroundSoft,
+      border: Colors.white.withValues(alpha: 0.08),
+      text: Colors.white,
+      muted: Colors.white.withValues(alpha: 0.64),
+      accent: const Color(0xFFFB8C00),
+      playButton: const Color(0xFFFB8C00),
       playIcon: Colors.white,
       secondaryButton: Colors.white.withValues(alpha: 0.10),
       secondaryBorder: Colors.white.withValues(alpha: 0.14),
     );
   }
 
-  BoxDecoration get containerDecoration => BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            background.withValues(alpha: 0.90),
-            backgroundSoft.withValues(alpha: 0.86),
-          ],
-        ),
-        borderRadius: BorderRadius.zero,
-        border: Border(top: BorderSide(color: border, width: 1.1)),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xAA1A0F47).withValues(alpha: 0.42),
-            blurRadius: 20,
-            offset: const Offset(0, -8),
-          ),
+  BoxDecoration get containerDecoration {
+    return BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          background.withValues(alpha: 0.75),
+          backgroundSoft.withValues(alpha: 0.65),
         ],
-      );
+      ),
+      borderRadius: BorderRadius.zero,
+      border: Border(top: BorderSide(color: border.withValues(alpha: 0.1), width: 0.5)),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.08),
+          blurRadius: 20,
+          offset: const Offset(0, -4),
+        ),
+      ],
+    );
+  }
 }
 
 class _NeonSpinner extends StatefulWidget {
@@ -445,115 +453,6 @@ class _NeonRingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_NeonRingPainter old) => old.progress != progress;
-}
-
-class _RhythmWavePainter extends CustomPainter {
-  final Color color;
-
-  const _RhythmWavePainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final effectWidth = size.width * 0.18;
-    final startX = size.width * 0.52 - (effectWidth / 2);
-    final endX = startX + effectWidth;
-    final baseY = size.height * 0.70;
-    final width = endX - startX;
-    const heights = [
-      6.0, 10.0, 16.0, 24.0, 30.0, 22.0, 14.0, 9.0,
-      15.0, 23.0, 32.0, 42.0, 30.0, 20.0, 12.0, 8.0,
-    ];
-    final spacing = width / (heights.length - 1);
-    const neonPink = Color(0xFFFF4FD8);
-    const neonBlue = Color(0xFF5B7CFF);
-
-    for (int i = 0; i < 4; i++) {
-      final path = Path()..moveTo(startX - 16, baseY + 4 + i * 4);
-      path.quadraticBezierTo(
-        startX + width * 0.20,
-        baseY - 18 - i * 3,
-        startX + width * 0.42,
-        baseY + 1 + i * 2,
-      );
-      path.quadraticBezierTo(
-        startX + width * 0.68,
-        baseY + 16 + i * 2,
-        endX + 8,
-        baseY - 6 + i * 3,
-      );
-
-      final wavePaint = Paint()
-        ..color = (i.isEven ? neonPink : neonBlue).withValues(alpha: 0.08 - i * 0.01)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.2
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.5);
-      canvas.drawPath(path, wavePaint);
-    }
-
-    final glowFill = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-        colors: [
-          Colors.transparent,
-          neonPink.withValues(alpha: 0.08),
-          neonBlue.withValues(alpha: 0.08),
-          Colors.transparent,
-        ],
-        stops: const [0.0, 0.26, 0.74, 1.0],
-      ).createShader(Rect.fromLTWH(startX, 0, width, size.height));
-    canvas.drawRect(
-      Rect.fromLTWH(startX - 6, size.height * 0.24, width + 8, size.height * 0.40),
-      glowFill,
-    );
-
-    for (int i = 0; i < heights.length; i++) {
-      final x = startX + spacing * i;
-      final h = heights[i];
-      final top = baseY - h;
-      final barColor = Color.lerp(neonPink, neonBlue, i / (heights.length - 1))!;
-
-      final glowPaint = Paint()
-        ..color = barColor.withValues(alpha: 0.28)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 5
-        ..strokeCap = StrokeCap.round
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
-
-      final barPaint = Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.white,
-            barColor,
-            barColor.withValues(alpha: 0.85),
-          ],
-        ).createShader(Rect.fromLTWH(x - 1.5, top, 3, h))
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.9
-        ..strokeCap = StrokeCap.round;
-
-      canvas.drawLine(Offset(x, top), Offset(x, baseY), glowPaint);
-      canvas.drawLine(Offset(x, top), Offset(x, baseY), barPaint);
-    }
-
-    final notePaint = Paint()
-      ..color = neonBlue.withValues(alpha: 0.42)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-    final noteX = endX - 8;
-    final noteY = size.height * 0.26;
-    canvas.drawLine(Offset(noteX, noteY), Offset(noteX, noteY + 10), notePaint);
-    canvas.drawLine(Offset(noteX + 4, noteY - 3), Offset(noteX + 4, noteY + 7), notePaint);
-    canvas.drawLine(Offset(noteX, noteY), Offset(noteX + 4, noteY - 3), notePaint);
-    canvas.drawCircle(Offset(noteX - 1.5, noteY + 10), 1.6, Paint()..color = neonBlue.withValues(alpha: 0.42));
-    canvas.drawCircle(Offset(noteX + 2.5, noteY + 7), 1.6, Paint()..color = neonBlue.withValues(alpha: 0.42));
-  }
-
-  @override
-  bool shouldRepaint(_RhythmWavePainter oldDelegate) =>
-      oldDelegate.color != color;
 }
 
 class FullScreenPlayer extends ConsumerWidget {

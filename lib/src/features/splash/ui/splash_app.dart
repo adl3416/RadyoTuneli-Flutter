@@ -41,6 +41,9 @@ class SplashApp extends ConsumerWidget {
       case 'timsah':
         selectedTheme = getTheme(AppTheme.timsahThemeLight, AppTheme.timsahThemeDark);
         break;
+      case 'beyaz':
+        selectedTheme = getTheme(AppTheme.beyazThemeLight, AppTheme.beyazThemeDark);
+        break;
       case 'varsayilan':
       default:
         selectedTheme = getTheme(AppTheme.lightTheme, AppTheme.darkTheme);
