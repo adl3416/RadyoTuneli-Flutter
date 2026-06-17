@@ -293,6 +293,10 @@ class _PlayerPalette {
   });
 
   factory _PlayerPalette.fromTheme(ThemeData theme, String colorSchemeStr) {
+    final headerBackground = _resolveHeaderBackground(theme, colorSchemeStr);
+    final headerBackgroundSoft =
+        Color.lerp(headerBackground, Colors.black, 0.18) ?? headerBackground;
+
     if (theme.brightness == Brightness.dark) {
       return _PlayerPalette(
         background: const Color(0xFF171717),
@@ -311,9 +315,9 @@ class _PlayerPalette {
 
     if (colorSchemeStr == 'beyaz') {
       return _PlayerPalette(
-        background: const Color(0xFF3B82F6),
-        backgroundSoft: const Color(0xFF2563EB),
-        border: const Color(0xFF2563EB).withValues(alpha: 0.20),
+        background: headerBackground,
+        backgroundSoft: headerBackgroundSoft,
+        border: headerBackground.withValues(alpha: 0.20),
         text: Colors.white,
         muted: Colors.white.withValues(alpha: 0.78),
         accent: const Color(0xFFBFDBFE),
@@ -327,8 +331,8 @@ class _PlayerPalette {
 
     if (theme.brightness == Brightness.light) {
       return _PlayerPalette(
-        background: const Color(0xFF1E3A8A),
-        backgroundSoft: const Color(0xFF172554),
+        background: headerBackground,
+        backgroundSoft: headerBackgroundSoft,
         border: Colors.black.withValues(alpha: 0.08),
         text: Colors.white,
         muted: Colors.white.withValues(alpha: 0.8),
@@ -354,6 +358,30 @@ class _PlayerPalette {
       secondaryBorder: Colors.white.withValues(alpha: 0.14),
       useSolidBackground: false,
     );
+  }
+
+  static Color _resolveHeaderBackground(ThemeData theme, String colorSchemeStr) {
+    if (theme.brightness == Brightness.dark) {
+      return Colors.black;
+    }
+    switch (colorSchemeStr) {
+      case 'kanarya':
+        return AppTheme.kanaryaSecondary;
+      case 'aslan':
+        return AppTheme.aslanRed;
+      case 'karadeniz':
+        return AppTheme.karadenizBordo;
+      case 'kartal':
+        return AppTheme.kartalBlack;
+      case 'timsah':
+        return AppTheme.timsahGreen;
+      case 'sade':
+        return AppTheme.sadeDarkGrey;
+      case 'beyaz':
+        return AppTheme.beyazPrimaryBlue;
+      default:
+        return theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary;
+    }
   }
 
   BoxDecoration get containerDecoration {
