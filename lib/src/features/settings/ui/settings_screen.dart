@@ -1167,23 +1167,29 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    'assets/images/icon.png',
-                    width: 32,
-                    height: 32,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Radyo T\u00fcneli',
-                  style: TextStyle(
-                    color: drawerFg,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      'Radyo T\u00fcneli',
+                      style: TextStyle(
+                        color: drawerFg,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        'assets/images/icon2.png',
+                        width: 64,
+                        height: 64,
+                        fit: BoxFit.cover,
+                        color: drawerFg,
+                        colorBlendMode: BlendMode.srcIn,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
