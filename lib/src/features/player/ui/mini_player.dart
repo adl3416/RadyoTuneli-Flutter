@@ -24,7 +24,7 @@ class MiniPlayer extends ConsumerWidget {
 
     if (playerState.currentStation == null) {
       return Container(
-        height: 74 + bottomInset,
+        height: 68 + bottomInset,
         decoration: palette.containerDecoration,
         child: Padding(
           padding: EdgeInsets.only(bottom: bottomInset),
@@ -59,7 +59,7 @@ class MiniPlayer extends ConsumerWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
-          height: 96 + bottomInset,
+          height: 84 + bottomInset,
           decoration: palette.containerDecoration,
           child: Material(
             color: Colors.transparent,
@@ -68,7 +68,7 @@ class MiniPlayer extends ConsumerWidget {
               borderRadius: BorderRadius.zero,
               onTap: () => _showFullScreenPlayer(context, colorSchemeStr),
               child: Padding(
-                padding: EdgeInsets.fromLTRB(14, 12, 14, 12 + bottomInset),
+                padding: EdgeInsets.fromLTRB(14, 8, 14, 8 + bottomInset),
                 child: Row(
                   children: [
                     Container(
@@ -94,7 +94,7 @@ class MiniPlayer extends ConsumerWidget {
                       child: RadioLogo(
                         radioName: station.name,
                         logoUrl: station.logoUrl,
-                        size: 50,
+                        size: 44,
                         showBorder: false,
                       ),
                     ),
@@ -356,8 +356,8 @@ class _PlayerPalette {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          background.withValues(alpha: useSolidBackground ? 0.82 : 0.68),
-          backgroundSoft.withValues(alpha: useSolidBackground ? 0.76 : 0.58),
+          background.withValues(alpha: useSolidBackground ? 0.72 : 0.58),
+          backgroundSoft.withValues(alpha: useSolidBackground ? 0.66 : 0.48),
         ],
       ),
       borderRadius: BorderRadius.zero,

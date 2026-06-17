@@ -798,6 +798,9 @@ class RadioAudioHandler extends BaseAudioHandler
         }
       }
       await _player.play();
+      await _player.playerStateStream.firstWhere((state) {
+        return state.processingState == ProcessingState.ready && state.playing;
+      }).timeout(const Duration(seconds: 4));
       print("▶️ play() COMPLETED");
     } catch (e) {
       print('❌ Error playing audio: $e');
@@ -1030,9 +1033,66 @@ class RadioAudioHandler extends BaseAudioHandler
     return true;
   }
 
+  String _normalizeFallbackStationName(String value) {
+    return value
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '')
+        .trim();
+  }
+
+  List<MediaItem> _buildFallbackCandidates({
+    required String failedTitle,
+    required String failedStreamUrl,
+    String? failedStationId,
+    Set<String>? attemptedStationIds,
+    Set<String>? attemptedStreamUrls,
+  }) {
+    final normalizedFailedTitle = _normalizeFallbackStationName(failedTitle);
+    final seenIds = <String>{...?attemptedStationIds};
+    final seenUrls = <String>{
+      failedStreamUrl.trim().toLowerCase(),
+      ...?attemptedStreamUrls,
+    };
+    if (failedStationId != null && failedStationId.isNotEmpty) {
+      seenIds.add(failedStationId);
+    }
+
+    final candidates = <MediaItem>[];
+
+    void addAll(Iterable<MediaItem> items) {
+      for (final item in items) {
+        final streamUrl =
+            (item.extras?['streamUrl'] as String? ?? '').trim().toLowerCase();
+        if (item.id.isEmpty || streamUrl.isEmpty) continue;
+        if (seenIds.contains(item.id) || seenUrls.contains(streamUrl)) continue;
+        seenIds.add(item.id);
+        seenUrls.add(streamUrl);
+        candidates.add(item);
+      }
+    }
+
+    final allStations = _radioCategories['tum_radyolar'] ?? const <MediaItem>[];
+    addAll(
+      allStations.where((item) {
+        final normalizedTitle = _normalizeFallbackStationName(item.title);
+        return normalizedTitle.isNotEmpty &&
+            normalizedTitle == normalizedFailedTitle;
+      }),
+    );
+
+    addAll(_radioCategories['favoriler'] ?? const <MediaItem>[]);
+    addAll(_radioCategories['son_dinlenenler'] ?? const <MediaItem>[]);
+    addAll(_radioCategories['populer'] ?? const <MediaItem>[]);
+    addAll(allStations.take(25));
+
+    return candidates;
+  }
+
   Future<void> playStation(
       String streamUrl, String title, String artist, String? artUri,
-      {String? stationId}) async {
+      {String? stationId,
+      Set<String>? attemptedStationIds,
+      Set<String>? attemptedStreamUrls}) async {
     // Bu isteğe özgü ID al — yeni istek gelirse bu ID geçersiz kalır
     final myId = ++_playRequestId;
     print("📻 playStation[$myId] başladı: $title");
@@ -1166,7 +1226,7 @@ class RadioAudioHandler extends BaseAudioHandler
                   tag: newMediaItem,
                 ),
               )
-              .timeout(const Duration(seconds: 10));
+              .timeout(const Duration(seconds: 4));
           sourceSet = true;
           print("🎵 Audio source set (deneme ${attempt + 1}), starting playback...");
           break;
@@ -1196,6 +1256,9 @@ class RadioAudioHandler extends BaseAudioHandler
       // Start playing
       await _player.play();
 
+      await _player.playerStateStream.firstWhere((state) {
+        return state.processingState == ProcessingState.ready && state.playing;
+      }).timeout(const Duration(seconds: 4));
       print("✅ Radio station started successfully");
     } catch (e) {
       // İptal edildiyse hata gösterme — yeni istasyon zaten çalınıyor
@@ -1204,6 +1267,40 @@ class RadioAudioHandler extends BaseAudioHandler
         return;
       }
       print('❌ Error setting up station: $e');
+
+      final nextAttemptedStationIds = <String>{
+        ...?attemptedStationIds,
+        if (stationId != null && stationId.isNotEmpty) stationId,
+      };
+      final nextAttemptedStreamUrls = <String>{
+        ...?attemptedStreamUrls,
+        streamUrl.trim().toLowerCase(),
+      };
+      final fallbackCandidates = _buildFallbackCandidates(
+        failedTitle: title,
+        failedStreamUrl: streamUrl,
+        failedStationId: stationId,
+        attemptedStationIds: nextAttemptedStationIds,
+        attemptedStreamUrls: nextAttemptedStreamUrls,
+      );
+      if (fallbackCandidates.isNotEmpty) {
+        final fallback = fallbackCandidates.first;
+        final fallbackStreamUrl = fallback.extras?['streamUrl'] as String?;
+        if (fallbackStreamUrl != null && fallbackStreamUrl.isNotEmpty) {
+          print(
+              '🔄 Fallback devrede: "$title" yerine "${fallback.title}" deneniyor');
+          await playStation(
+            fallbackStreamUrl,
+            fallback.title,
+            fallback.artist ?? 'Radio',
+            fallback.extras?['logoUrl'] as String? ?? fallback.artUri?.toString(),
+            stationId: fallback.id,
+            attemptedStationIds: nextAttemptedStationIds,
+            attemptedStreamUrls: nextAttemptedStreamUrls,
+          );
+          return;
+        }
+      }
 
       // Set error state
       playbackState.add(PlaybackState(
