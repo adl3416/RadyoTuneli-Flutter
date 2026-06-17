@@ -57,7 +57,7 @@ class MiniPlayer extends ConsumerWidget {
 
     return ClipRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
         child: Container(
           height: 84 + bottomInset,
           decoration: palette.containerDecoration,
@@ -296,6 +296,8 @@ class _PlayerPalette {
     final headerBackground = _resolveHeaderBackground(theme, colorSchemeStr);
     final headerBackgroundSoft =
         Color.lerp(headerBackground, Colors.black, 0.18) ?? headerBackground;
+    final playButtonColor = _resolvePlayButtonColor(theme, colorSchemeStr);
+    final playIconColor = _resolvePlayIconColor(theme, colorSchemeStr);
 
     if (theme.brightness == Brightness.dark) {
       return _PlayerPalette(
@@ -305,8 +307,8 @@ class _PlayerPalette {
         text: Colors.white,
         muted: Colors.white.withValues(alpha: 0.64),
         accent: Colors.white,
-        playButton: const Color(0xFF111111),
-        playIcon: Colors.white,
+        playButton: playButtonColor,
+        playIcon: playIconColor,
         secondaryButton: Colors.white.withValues(alpha: 0.08),
         secondaryBorder: Colors.white.withValues(alpha: 0.14),
         useSolidBackground: false,
@@ -321,8 +323,8 @@ class _PlayerPalette {
         text: Colors.white,
         muted: Colors.white.withValues(alpha: 0.78),
         accent: const Color(0xFFBFDBFE),
-        playButton: const Color(0xFF1D4ED8),
-        playIcon: Colors.white,
+        playButton: playButtonColor,
+        playIcon: playIconColor,
         secondaryButton: Colors.white.withValues(alpha: 0.14),
         secondaryBorder: Colors.white.withValues(alpha: 0.18),
         useSolidBackground: true,
@@ -337,8 +339,8 @@ class _PlayerPalette {
         text: Colors.white,
         muted: Colors.white.withValues(alpha: 0.8),
         accent: Colors.white,
-        playButton: Colors.white,
-        playIcon: const Color(0xFF1E3A8A),
+        playButton: playButtonColor,
+        playIcon: playIconColor,
         secondaryButton: Colors.white.withValues(alpha: 0.1),
         secondaryBorder: Colors.white.withValues(alpha: 0.2),
         useSolidBackground: false,
@@ -352,8 +354,8 @@ class _PlayerPalette {
       text: Colors.white,
       muted: Colors.white.withValues(alpha: 0.64),
       accent: Colors.white,
-      playButton: const Color(0xFF111111),
-      playIcon: Colors.white,
+      playButton: playButtonColor,
+      playIcon: playIconColor,
       secondaryButton: Colors.white.withValues(alpha: 0.08),
       secondaryBorder: Colors.white.withValues(alpha: 0.14),
       useSolidBackground: false,
@@ -381,6 +383,44 @@ class _PlayerPalette {
         return AppTheme.beyazPrimaryBlue;
       default:
         return theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary;
+    }
+  }
+
+  static Color _resolvePlayButtonColor(ThemeData theme, String colorSchemeStr) {
+    if (theme.brightness == Brightness.dark) {
+      return const Color(0xFF111111);
+    }
+    switch (colorSchemeStr) {
+      case 'aslan':
+        return AppTheme.aslanOfficialYellow;
+      case 'karadeniz':
+        return AppTheme.karadenizMavi;
+      case 'kartal':
+        return AppTheme.kartalWhite;
+      case 'timsah':
+        return AppTheme.timsahWhite;
+      case 'beyaz':
+        return AppTheme.beyazPrimaryBlueDark;
+      default:
+        return AppTheme.orange400;
+    }
+  }
+
+  static Color _resolvePlayIconColor(ThemeData theme, String colorSchemeStr) {
+    if (theme.brightness == Brightness.dark) {
+      return Colors.white;
+    }
+    switch (colorSchemeStr) {
+      case 'aslan':
+        return Colors.black;
+      case 'karadeniz':
+        return AppTheme.karadenizBordo;
+      case 'kartal':
+        return AppTheme.kartalBlack;
+      case 'timsah':
+        return AppTheme.timsahGreen;
+      default:
+        return Colors.white;
     }
   }
 
