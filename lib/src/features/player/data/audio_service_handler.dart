@@ -79,6 +79,7 @@ class RadioAudioHandler extends BaseAudioHandler
   // Android Auto browse sonuçları cache - her seferinde yeniden oluşturmayı önler
   // Key: categoryId, Value: (favoritesSnapshot, result)
   final Map<String, _BrowseCacheEntry> _browseCache = {};
+  Future<void>? _defaultCategoriesLoadFuture;
 
   // Mevcut istasyon bilgisi - play() butonundan yeniden başlatmak için
   String? _currentStreamUrl;
@@ -146,6 +147,7 @@ class RadioAudioHandler extends BaseAudioHandler
     _init();
     _setupAndroidAutoSupport();
     _loadFavorites();
+    _ensureDefaultCategoriesLoaded().ignore();
   }
 
   void _setupAndroidAutoSupport() {
@@ -201,16 +203,35 @@ class RadioAudioHandler extends BaseAudioHandler
 
   Future<void> _loadFavorites() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final favorites = prefs.getStringList('favorite_stations') ?? [];
-      _favoriteIds = favorites.toSet();
+      await _refreshFavoritesFromStorage(force: true);
       print("❤️ Loaded ${_favoriteIds.length} favorites for Android Auto");
-
-      // Favoriler kategorisini güncelle
-      _updateFavoritesCategory();
     } catch (e) {
       print('❌ Error loading favorites: $e');
       _favoriteIds = <String>{};
+    }
+  }
+
+  Future<void> _refreshFavoritesFromStorage({bool force = false}) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+    final storedFavorites =
+        (prefs.getStringList('favorite_stations') ?? []).toSet();
+
+    if (!force && _setsEqual(storedFavorites, _favoriteIds)) {
+      print(
+          '❤️ Favorites sync skipped: unchanged (${storedFavorites.length} items)');
+      return;
+    }
+
+    print(
+        '❤️ Favorites sync: storage=${storedFavorites.length}, memory=${_favoriteIds.length}, force=$force');
+    _favoriteIds = storedFavorites;
+    _browseCache.clear();
+    _updateFavoritesCategory();
+
+    final current = mediaItem.value;
+    if (current != null) {
+      _syncFavoriteState(current.id);
     }
   }
 
@@ -252,6 +273,7 @@ class RadioAudioHandler extends BaseAudioHandler
   Future<void> _loadRecentlyPlayed() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      await prefs.reload();
       final recentIds = prefs.getStringList('recently_played_stations') ?? [];
 
       // Son dinlenen ID'leri kullanarak MediaItem'ları bul
@@ -311,6 +333,8 @@ class RadioAudioHandler extends BaseAudioHandler
   // Favoriye ekle/çıkar
   Future<void> toggleFavorite(String stationId) async {
     try {
+      final wasFavorite = _favoriteIds.contains(stationId);
+      print('❤️ toggleFavorite requested: stationId=$stationId, wasFavorite=$wasFavorite');
       if (_favoriteIds.contains(stationId)) {
         _favoriteIds.remove(stationId);
         print("💔 Removed from favorites: $stationId");
@@ -325,6 +349,8 @@ class RadioAudioHandler extends BaseAudioHandler
       // SharedPreferences'a kaydet
       final prefs = await SharedPreferences.getInstance();
       await prefs.setStringList('favorite_stations', _favoriteIds.toList());
+      print(
+          '❤️ Favorites persisted: stationId=$stationId, isFavorite=${_favoriteIds.contains(stationId)}, total=${_favoriteIds.length}');
 
       // Favoriler kategorisini güncelle
       _updateFavoritesCategory();
@@ -374,7 +400,7 @@ class RadioAudioHandler extends BaseAudioHandler
 
   // Kategori cache'sini JSON asset'inden yükle (Android Auto soğuk başlatma için)
   Future<void> _initializeDefaultCategories() async {
-    if (_radioCategories.isNotEmpty) return;
+    if (_hasBrowsableStationData) return;
     print("⚠️ Categories empty — JSON asset'ten yükleniyor...");
     try {
       final String jsonString =
@@ -388,12 +414,33 @@ class RadioAudioHandler extends BaseAudioHandler
     }
   }
 
+  Future<void> _ensureDefaultCategoriesLoaded() {
+    if (_hasBrowsableStationData) {
+      return Future.value();
+    }
+    return _defaultCategoriesLoadFuture ??=
+        _initializeDefaultCategories().whenComplete(() {
+          _defaultCategoriesLoadFuture = null;
+        });
+  }
+
+  bool get _hasBrowsableStationData {
+    return (_radioCategories['tum_radyolar']?.isNotEmpty ?? false) ||
+        _radioCategories.entries.any(
+          (entry) =>
+              entry.key != 'favoriler' &&
+              entry.key != 'son_dinlenenler' &&
+              entry.value.isNotEmpty,
+        );
+  }
+
   // Radyo listesini dışarıdan yükle (player_provider tarafından çağrılır)
   Future<void> loadRadioStations(List<dynamic> stations) async {
     print("🚗 Loading ${stations.length} stations for Android Auto");
 
     // Browse cache'i temizle - yeni veri geliyor
     _browseCache.clear();
+    _defaultCategoriesLoadFuture = null;
 
     // Kategorilere göre radyoları ayır
     _radioCategories.clear();
@@ -533,6 +580,7 @@ class RadioAudioHandler extends BaseAudioHandler
         MediaAction.pause,
         MediaAction.stop,
         MediaAction.playPause,
+        MediaAction.setRating,
       },
       androidCompactActionIndices: const [0, 1],
       processingState: AudioProcessingState.idle,
@@ -704,6 +752,7 @@ class RadioAudioHandler extends BaseAudioHandler
         MediaAction.playPause,
         MediaAction.skipToNext,
         MediaAction.skipToPrevious,
+        MediaAction.setRating,
       },
       androidCompactActionIndices: const [
         0,
@@ -775,6 +824,7 @@ class RadioAudioHandler extends BaseAudioHandler
           MediaAction.playPause,
           MediaAction.skipToNext,
           MediaAction.skipToPrevious,
+          MediaAction.setRating,
         },
         androidCompactActionIndices: const [
           0,
@@ -873,9 +923,11 @@ class RadioAudioHandler extends BaseAudioHandler
   /// Android Auto kalp/favori butonu — BaseAudioHandler.setRating() no-op olduğu için doğrudan override.
   @override
   Future<void> setRating(Rating rating, [Map<String, dynamic>? extras]) async {
-    print('⭐ setRating called: $rating');
+    print('⭐ setRating called: rating=$rating, extras=$extras');
     final currentStation = mediaItem.value;
     if (currentStation != null) {
+      print(
+          '⭐ setRating target: id=${currentStation.id}, title=${currentStation.title}');
       await toggleFavorite(currentStation.id);
       final isFavorite = _favoriteIds.contains(currentStation.id);
       final currentArtist = currentStation.artist ?? '';
@@ -889,17 +941,21 @@ class RadioAudioHandler extends BaseAudioHandler
       );
       this.mediaItem.add(updatedMediaItem);
       _broadcastState(_player.playerState);
-      print('❤️ Favorite toggled for \${currentStation.title}: \$isFavorite');
+      print('❤️ setRating applied: title=${currentStation.title}, isFavorite=$isFavorite');
+    } else {
+      print('⚠️ setRating ignored: no current mediaItem');
     }
   }
 
   // Android Auto favorileme desteği (Rating API) - eski compat
   @override
   Future<void> onSetRating(Rating rating, Map<String, dynamic>? extras) async {
-    print('⭐ onSetRating called with rating: $rating');
+    print('⭐ onSetRating called: rating=$rating, extras=$extras');
 
     final currentStation = mediaItem.value;
     if (currentStation != null) {
+      print(
+          '⭐ onSetRating target: id=${currentStation.id}, title=${currentStation.title}');
       await toggleFavorite(currentStation.id);
       final isFavorite = _favoriteIds.contains(currentStation.id);
 
@@ -917,6 +973,8 @@ class RadioAudioHandler extends BaseAudioHandler
       _broadcastState(_player.playerState);
 
       print('❤️ Rating updated for ${currentStation.title}: $isFavorite');
+    } else {
+      print('⚠️ onSetRating ignored: no current mediaItem');
     }
   }
 
@@ -1079,6 +1137,7 @@ class RadioAudioHandler extends BaseAudioHandler
         controls: [MediaControl.stop],
         systemActions: const {
           MediaAction.stop,
+          MediaAction.setRating,
         },
         androidCompactActionIndices: const [0],
         processingState: AudioProcessingState.loading,
@@ -1151,6 +1210,7 @@ class RadioAudioHandler extends BaseAudioHandler
         controls: [MediaControl.play],
         systemActions: const {
           MediaAction.play,
+          MediaAction.setRating,
         },
         androidCompactActionIndices: const [0],
         processingState: AudioProcessingState.error,
@@ -1271,6 +1331,8 @@ class RadioAudioHandler extends BaseAudioHandler
     print(
         "🚗🚗🚗 Android Auto: getChildren called with parentMediaId: $parentMediaId");
 
+    await _refreshFavoritesFromStorage();
+
     if (parentMediaId == AudioService.browsableRootId) {
       // Root level - return ALL categories (always visible)
       print("🚗🚗🚗 Returning ROOT level categories");
@@ -1279,7 +1341,7 @@ class RadioAudioHandler extends BaseAudioHandler
 
       // Eğer kategoriler boşsa → JSON asset'ten gerçek istasyonları yükle
       if (_radioCategories.isEmpty) {
-        await _initializeDefaultCategories();
+        await _ensureDefaultCategoriesLoaded();
       }
 
       // TÜM kategorileri döndür - Modern Grid görünümü
@@ -1327,7 +1389,7 @@ class RadioAudioHandler extends BaseAudioHandler
       final hasNoCategoryData = (_radioCategories[parentMediaId]?.isEmpty ?? true);
       final hasNoGlobalData = (_radioCategories['tum_radyolar']?.isEmpty ?? true);
       if ((_radioCategories.isEmpty || hasNoGlobalData) && hasNoCategoryData) {
-        await _initializeDefaultCategories();
+        await _ensureDefaultCategoriesLoaded();
       }
 
       final allStations = _radioCategories[parentMediaId] ?? [];
@@ -1337,9 +1399,9 @@ class RadioAudioHandler extends BaseAudioHandler
       // options varsa sayfalama uygula
       final List<MediaItem> stations;
       if (options != null) {
-        final page = (options['android.media.extra.PAGE'] as int?) ?? 0;
+        final page = _readBrowseIntOption(options, 'android.media.extra.PAGE');
         final pageSize =
-            (options['android.media.extra.PAGE_SIZE'] as int?) ?? 50;
+            _readBrowseIntOption(options, 'android.media.extra.PAGE_SIZE', 50);
         final start = page * pageSize;
         if (start >= allStations.length) {
           stations = [];
@@ -1473,6 +1535,18 @@ class RadioAudioHandler extends BaseAudioHandler
 
     print("🚗🚗🚗 Unknown parentMediaId: $parentMediaId, returning empty");
     return [];
+  }
+
+  int _readBrowseIntOption(
+    Map<String, dynamic> options,
+    String key, [
+    int fallback = 0,
+  ]) {
+    final value = options[key];
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? fallback;
+    return fallback;
   }
 
   @override
@@ -1653,6 +1727,8 @@ class RadioAudioHandler extends BaseAudioHandler
         // Şu anda çalan radyonun ID'sini al
         final currentStation = mediaItem.value;
         if (currentStation != null) {
+          print(
+              '❤️ customAction(toggleFavorite) target: id=${currentStation.id}, title=${currentStation.title}');
           await toggleFavorite(currentStation.id);
           final isFavorite = _favoriteIds.contains(currentStation.id);
           print('❤️ Favorite toggled for ${currentStation.title}: $isFavorite');
