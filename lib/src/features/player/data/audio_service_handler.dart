@@ -812,6 +812,7 @@ class RadioAudioHandler extends BaseAudioHandler
     try {
       print("⏸️ pause() CALLED");
       _userPaused = true;
+      _playRequestId++; // Bekleyen autoplay/fallback denemelerini iptal et
       await _player.stop(); // Canlı stream buffer'ını temizle
       // Bildirim'i yaşatmak için paused state yayınla (idle değil!)
       // Idle yayınlanırsa Android servisi öldürür ve radyo tamamen kapanır
@@ -849,6 +850,7 @@ class RadioAudioHandler extends BaseAudioHandler
     try {
       print("⏹️ stop() CALLED - Stopping playback...");
       _userPaused = false; // Explicit stop - servisi tamamen durdur
+      _playRequestId++; // Bekleyen autoplay/fallback denemelerini iptal et
       await _player.stop();
 
       // Bildirimin tamamen kapanması için mediaItem'ı temizle
@@ -1267,6 +1269,12 @@ class RadioAudioHandler extends BaseAudioHandler
         return;
       }
       print('❌ Error setting up station: $e');
+
+      if (_userPaused || mediaItem.value == null) {
+        print(
+            '🛑 Fallback iptal edildi: kullanıcı pause/stop yaptı, otomatik yeniden başlatma yok');
+        return;
+      }
 
       final nextAttemptedStationIds = <String>{
         ...?attemptedStationIds,

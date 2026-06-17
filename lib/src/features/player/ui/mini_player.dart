@@ -122,6 +122,12 @@ class MiniPlayer extends ConsumerWidget {
                                   fontSize: 12,
                                 ),
                           ),
+                          const SizedBox(height: 4),
+                          _MiniRhythmVisualizer(
+                            isPlaying: playerState.isPlaying,
+                            color: palette.text,
+                            glowColor: palette.accent,
+                          ),
                         ],
                       ),
                     ),
@@ -238,7 +244,7 @@ class MiniPlayer extends ConsumerWidget {
           snap: true,
           snapSizes: const [0.9],
           shouldCloseOnMinExtent: true,
-          builder: (context, _) {
+          builder: (context, scrollController) {
             return Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -250,7 +256,7 @@ class MiniPlayer extends ConsumerWidget {
                   top: Radius.circular(24),
                 ),
               ),
-              child: const FullScreenPlayer(),
+              child: FullScreenPlayer(scrollController: scrollController),
             );
           },
         );
@@ -495,7 +501,9 @@ class _NeonRingPainter extends CustomPainter {
 }
 
 class FullScreenPlayer extends ConsumerWidget {
-  const FullScreenPlayer({super.key});
+  final ScrollController? scrollController;
+
+  const FullScreenPlayer({super.key, this.scrollController});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -519,12 +527,13 @@ class FullScreenPlayer extends ConsumerWidget {
 
     return SafeArea(
       top: false,
-      child: Padding(
+      child: SingleChildScrollView(
+        controller: scrollController,
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             _SheetDragHandle(color: palette.muted),
-            const Spacer(),
+            const SizedBox(height: 20),
             Container(
               width: 190,
               height: 190,
@@ -607,7 +616,7 @@ class FullScreenPlayer extends ConsumerWidget {
                 );
               },
             ),
-            const Spacer(),
+            const SizedBox(height: 28),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -859,6 +868,102 @@ class _RhythmVisualizerState extends State<_RhythmVisualizer>
                               ),
                             ]
                           : null,
+                    ),
+                  ),
+                ),
+              );
+            }),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _MiniRhythmVisualizer extends StatefulWidget {
+  final bool isPlaying;
+  final Color color;
+  final Color glowColor;
+
+  const _MiniRhythmVisualizer({
+    required this.isPlaying,
+    required this.color,
+    required this.glowColor,
+  });
+
+  @override
+  State<_MiniRhythmVisualizer> createState() => _MiniRhythmVisualizerState();
+}
+
+class _MiniRhythmVisualizerState extends State<_MiniRhythmVisualizer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    if (widget.isPlaying) {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _MiniRhythmVisualizer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isPlaying && !_controller.isAnimating) {
+      _controller.repeat();
+    } else if (!widget.isPlaying && _controller.isAnimating) {
+      _controller.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 22,
+      height: 14,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final progress = _controller.value;
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: List.generate(4, (index) {
+              final phase = (progress * math.pi * 2) + (index * 0.7);
+              final wave = (math.sin(phase) + 1) / 2;
+              final barHeight = widget.isPlaying
+                  ? 4.0 + (wave * 8.0)
+                  : 4.0 + ((index % 2) * 2.0);
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0.7),
+                child: Container(
+                  width: 2.2,
+                  height: barHeight,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(99),
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        widget.glowColor.withValues(
+                          alpha: widget.isPlaying ? 0.9 : 0.35,
+                        ),
+                        widget.color.withValues(
+                          alpha: widget.isPlaying ? 0.85 : 0.3,
+                        ),
+                      ],
                     ),
                   ),
                 ),

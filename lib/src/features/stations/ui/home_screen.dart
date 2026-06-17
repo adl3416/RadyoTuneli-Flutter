@@ -797,13 +797,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           Expanded(
-            child: Text(
-              'Radyo T\u00fcneli',
-              style: TextStyle(
-                color: headerFg,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Row(
+              children: [
+                Text(
+                  'Radyo T\u00fcneli',
+                  style: TextStyle(
+                    color: headerFg,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(width: 10),
+                Image.asset(
+                  'assets/images/icon2.png',
+                  height: 48,
+                  fit: BoxFit.contain,
+                ),
+              ],
             ),
           ),
           IconButton(
